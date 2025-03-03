@@ -38,3 +38,55 @@ body {
 .react-tel-input .special-label {
   display: none !important;
 }
+
+
+.privacy-policy-root {
+  padding: 32px;
+  background-color: #fff;
+  min-height: 100vh;
+  /* font-family: Arial, sans-serif; */
+}
+
+.privacy-policy-title {
+  font-weight: 700;
+  margin-bottom: 16px;
+  text-align: center;
+  background-color: #614385;
+  color: white;
+  padding: 0px 5px;
+  border-radius: 4px;
+}
+
+.privacy-policy-subtitle {
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #614385;
+}
+
+.privacy-policy-paragraph {
+  line-height: 1.6;
+  margin-bottom: 16px;
+  color: #1E1E1E;
+}
+
+.privacy-policy-highlight {
+  font-weight: 700;
+  background-color: #614385;
+  color: white;
+  padding: 0px 5px;
+}
+
+.privacy-policy-divider {
+  margin: 16px 0;
+  border-top: 1px solid #ddd;
+}
+
+.privacy-policy-section {
+  margin-bottom: 24px;
+}
+
+.privacy-policy-footer {
+  text-align: center;
+  color: #777;
+  margin-top: 32px;
+}

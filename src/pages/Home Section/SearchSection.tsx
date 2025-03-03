@@ -3,9 +3,16 @@ import {
   HighlightOff,
   LocationOn,
   Schedule,
-  Search
+  Search,
 } from "@mui/icons-material";
-import { Box, Typography, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  styled,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -16,37 +23,43 @@ import CustomSingleSelect from "../../components/CustomSingleSelect";
 import CustomTimePicker from "../../components/CustomTimePicker";
 import RoomGuestSelect from "../../components/RoomGuestSelect";
 
-// const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
-//   padding: "0px 10px",
-//   textTransform: "none",
-//   borderRadius: "6px",
-//   fontFamily: "CustomFontB",
-//   "&.Mui-selected": {
-//     background: color.background,
-//     color: "white",
-//     "&:hover": {
-//       background: color.background,
-//     },
-//   },
-// }));
+const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
+  padding: "4px 10px",
+  textTransform: "none",
+  borderRadius: "6px",
+  fontFamily: "CustomFontB",
+  // border:'none',
+  background: "rgba(90, 90, 90, 0.21)",
+  boxShadow: "-4px -4px 10px rgba(0, 0, 0, 0.17) inset",
 
-// const ToggleBookingType = ({ bookingType, handleBookingType }: any) => (
-//   <ToggleButtonGroup
-//     value={bookingType}
-//     exclusive
-//     onChange={handleBookingType}
-//     sx={{
-//       mb: 2,
-//       background: color.thirdColor,
-//       p: 2,
-//       py: 1,
-//       borderRadius: "8px",
-//     }}
-//   >
-//     <StyledToggleButton value="hourly">Hourly</StyledToggleButton>
-//     <StyledToggleButton value="fullDay">Full Day</StyledToggleButton>
-//   </ToggleButtonGroup>
-// );
+  "&.Mui-selected": {
+    background: color.background,
+    color: "white",
+    "&:hover": {
+      background: color.background,
+    },
+  },
+}));
+
+const ToggleBookingType = ({ bookingType, handleBookingType }: any) => (
+  <ToggleButtonGroup
+    value={bookingType}
+    exclusive
+    onChange={handleBookingType}
+    sx={{
+      mb: 2,
+      background: color.thirdColor,
+      p: 2,
+      py: 1,
+      borderRadius: "8px",
+      border: "none",
+    }}
+  >
+    <StyledToggleButton value="hourly">Hourly</StyledToggleButton>
+    <StyledToggleButton value="fullDay">Full Day</StyledToggleButton>
+    <StyledToggleButton value="villa">Villa</StyledToggleButton>
+  </ToggleButtonGroup>
+);
 
 const options = ["Option 1", "Option 2", "Option 3", "Option 4"];
 
@@ -57,10 +70,10 @@ const options = ["Option 1", "Option 2", "Option 3", "Option 4"];
 // }
 
 const SearchSection = () => {
-  // const [bookingType, setBookingType] = useState("hourly");
-  // const handleBookingType = (event: any, newType: any) => {
-  //   if (newType !== null) setBookingType(newType);
-  // };
+  const [bookingType, setBookingType] = useState("hourly");
+  const handleBookingType = (event: any, newType: any) => {
+    if (newType !== null) setBookingType(newType);
+  };
 
   // const [locations, setLocations] = useState<{
   //   pickup: [number, number];
@@ -78,7 +91,8 @@ const SearchSection = () => {
   const isMobile = useMediaQuery("(max-width: 900px)");
 
   const [location, setLocation] = useState<string | null>(null);
-  const [date, setDate] = useState<Dayjs | null>(dayjs());
+  const [checkinDate, setCheckinDate] = useState<Dayjs | null>(dayjs());
+  const [checkOutDate, setCheckOutDate] = useState<Dayjs | null>(dayjs());
   const [time, setTime] = useState<Dayjs | null>(dayjs());
   const [roomDetails, setRoomDetails] = useState({
     rooms: 1,
@@ -95,13 +109,21 @@ const SearchSection = () => {
 
   const handleSearch = () => {
     const searchData = {
-      //  bookingType,
+      bookingType,
       location,
-      date,
+      checkinDate,
       time,
       ...roomDetails,
     };
-    console.log("Search Data:", searchData);
+    const queryParams = new URLSearchParams();
+
+    Object.entries(searchData).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        queryParams.append(key, String(value));
+      }
+    });
+  
+    navigate(`/search?${queryParams.toString()}`);
     setShowDetails(false);
   };
 
@@ -118,23 +140,25 @@ const SearchSection = () => {
           borderRadius: 3,
           textAlign: "center",
           position: "relative",
+          mt:1
         }}
       >
-        {/* <div
-        style={{
-          position: "absolute",
-          top: -25,
-          left: "50%",
-          transform: "translateX(-50%)",
-        }}
-      >
-        <ToggleBookingType
-          bookingType={bookingType}
-          handleBookingType={handleBookingType}
-        />
-      </div> */}
+        <Box
+          sx={{
+            width:'100%',
+            position: "absolute",
+            top: -35,
+            left: "50%",
+            transform: "translateX(-50%)",
+          }}
+        >
+          <ToggleBookingType
+            bookingType={bookingType}
+            handleBookingType={handleBookingType}
+          />
+        </Box>
 
-        {!showDetails && (
+        {!showDetails && PageLocation.pathname !== "/" && (
           <Box
             onClick={() => setShowDetails(true)}
             sx={{
@@ -143,7 +167,7 @@ const SearchSection = () => {
               alignItems: "center",
               justifyContent: "space-around",
               mb: 0.5,
-              mt: -2,
+              mt: -1,
             }}
           >
             <Typography sx={{ ...typoStyle, width: "100%" }}>
@@ -161,13 +185,26 @@ const SearchSection = () => {
             >
               <Typography sx={typoStyle}>
                 {" "}
-                <CalendarMonthRounded /> {date ? date.format("YYYY-MM-DD") : ""}
+                <CalendarMonthRounded />{" "}
+                {checkinDate ? checkinDate.format("YYYY-MM-DD") : ""}
               </Typography>
 
-              <Typography sx={typoStyle}>
+              {bookingType === "hourly" ? (
+                 <Typography sx={typoStyle}>
+                 {" "}
+                 <Schedule /> {time ? time.format("HH:mm") : ""}
+               </Typography>
+              ) : (
+                <Typography sx={typoStyle}>
                 {" "}
-                <Schedule /> {time ? time.format("HH:mm") : ""}
+                <CalendarMonthRounded />{" "}
+                {checkOutDate ? checkOutDate.format("YYYY-MM-DD") : ""}
               </Typography>
+              )}
+
+           
+
+         
             </div>
 
             {/* <Typography sx={typoStyle}>
@@ -176,8 +213,7 @@ const SearchSection = () => {
           </Typography> */}
           </Box>
         )}
-
-        {(showDetails || !isMobile) && (
+        {(PageLocation.pathname === "/" || showDetails || !isMobile) && (
           <>
             <Box
               sx={{
@@ -203,15 +239,25 @@ const SearchSection = () => {
           /> */}
 
               <CustomDatePicker
-                date={date}
-                setDate={setDate}
+                date={checkinDate}
+                setDate={setCheckinDate}
                 label="Checkin Date"
               ></CustomDatePicker>
-              <CustomTimePicker
-                time={time}
-                setTime={setTime}
-                label="Checkin Time"
-              />
+
+              {bookingType === "hourly" ? (
+                <CustomTimePicker
+                  time={time}
+                  setTime={setTime}
+                  label="Checkin Time"
+                />
+              ) : (
+                <CustomDatePicker
+                  date={checkOutDate}
+                  setDate={setCheckOutDate}
+                  label="Checkout Date"
+                ></CustomDatePicker>
+              )}
+
               <RoomGuestSelect
                 label="Room & Guests"
                 rooms={roomDetails.rooms}
@@ -238,6 +284,7 @@ const SearchSection = () => {
               )}
             </Box>
 
+            {PageLocation.pathname !== "/" && (
             <HighlightOff
               onClick={() => setShowDetails(false)}
               sx={{
@@ -248,6 +295,7 @@ const SearchSection = () => {
                 display: { md: "none", xs: "flex", fontWeight: "bold" },
               }}
             ></HighlightOff>
+            )}
           </>
         )}
       </Box>
@@ -256,9 +304,7 @@ const SearchSection = () => {
         <div style={{ width: "100%", display: "flex", marginTop: "20px" }}>
           <CustomButton
             customStyles={{ margin: "auto" }}
-            onClick={() => {
-              navigate("/search");
-            }}
+            onClick={handleSearch}
             startIcon={<Search />}
             variant="contained"
           >
@@ -288,3 +334,4 @@ const typoStyle = {
   px: 2,
   m: 1,
 };
+

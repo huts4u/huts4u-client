@@ -10,6 +10,8 @@ import "./styles/global.css";
 import theme from "./theme";
 import AccountPage from "./pages/Account/AccountPage";
 import BookingSummary from "./pages/BookingSummary";
+import AboutUs from "./pages/AboutUs";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 const App: React.FC = () => {
   return (
@@ -22,6 +24,8 @@ const App: React.FC = () => {
           <Route path="/search" element={<SearchResults />} />
           <Route path="/hotel/:id" element={<HotelDetails />} />
           <Route path="/booking-summary" element={<BookingSummary />} />
+          <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         </Routes>
         <Footer />
       </Router>

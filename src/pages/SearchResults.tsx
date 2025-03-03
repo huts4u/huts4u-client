@@ -22,7 +22,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import color from "../components/color";
 import CustomButton from "../components/CustomButton";
 import { amenityIcons } from "../components/data";
@@ -89,6 +89,18 @@ const hotels = [
 
 const SearchResults = () => {
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+
+  const searchData = {
+    bookingType: queryParams.get("bookingType"),
+    location: queryParams.get("location"),
+    checkinDate: queryParams.get("checkinDate"),
+    time: queryParams.get("time"),
+    roomType: queryParams.get("roomType"),
+  };
+
   const [budget, setBudget] = useState<number[]>([0, 2000000]);
   const [selected, setSelected] = useState<string | null>("3");
 
@@ -146,52 +158,54 @@ const SearchResults = () => {
         </Typography>
       </Box>
 
-      <Box
-        sx={{
-          ...BoxStyle,
-        }}
-      >
-        <Typography
+      {searchData.bookingType === "hourly" && (
+        <Box
           sx={{
-            ...style,
+            ...BoxStyle,
           }}
         >
-          Book For
-        </Typography>
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            alignItems: "center",
-            justifyContent: "space-around",
-            gap: "6px",
-          }}
-        >
-          <StyledToggleButton
-            value="3"
-            selected={selected === "3"}
-            onClick={() => handleChange("3")}
+          <Typography
+            sx={{
+              ...style,
+            }}
           >
-            3 Hours
-          </StyledToggleButton>
-          <StyledToggleButton
-            value="6"
-            selected={selected === "6"}
-            onClick={() => handleChange("6")}
+            Book For
+          </Typography>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              alignItems: "center",
+              justifyContent: "space-around",
+              gap: "6px",
+            }}
           >
-            6 Hours
-          </StyledToggleButton>
+            <StyledToggleButton
+              value="3"
+              selected={selected === "3"}
+              onClick={() => handleChange("3")}
+            >
+              3 Hours
+            </StyledToggleButton>
+            <StyledToggleButton
+              value="6"
+              selected={selected === "6"}
+              onClick={() => handleChange("6")}
+            >
+              6 Hours
+            </StyledToggleButton>
 
-          <StyledToggleButton
-            value="9"
-            selected={selected === "9"}
-            onClick={() => handleChange("9")}
-            style={{ marginTop: "6px" }}
-          >
-            9 Hours
-          </StyledToggleButton>
-        </div>
-      </Box>
+            <StyledToggleButton
+              value="9"
+              selected={selected === "9"}
+              onClick={() => handleChange("9")}
+              style={{ marginTop: "6px" }}
+            >
+              9 Hours
+            </StyledToggleButton>
+          </div>
+        </Box>
+      )}
 
       <Box
         sx={{
@@ -265,7 +279,7 @@ const SearchResults = () => {
     <Box
       sx={{
         background: color.thirdColor,
-        p: {xs:2, md:4},
+        p: { xs: 2, md: 4 },
       }}
     >
       <SearchSection></SearchSection>
@@ -310,9 +324,15 @@ const SearchResults = () => {
               alignItems: "center",
             }}
           >
-            <Typography variant="h6" sx={{ mt: 2, mb: 2, fontWeight: 600,
-                    fontSize: {xs:'16px', md:"20px"},
-             }}>
+            <Typography
+              variant="h6"
+              sx={{
+                mt: 2,
+                mb: 2,
+                fontWeight: 600,
+                fontSize: { xs: "16px", md: "20px" },
+              }}
+            >
               310 properties found
             </Typography>
             {isMobile && (
@@ -329,7 +349,7 @@ const SearchResults = () => {
             )}
           </div>
           {hotels.map((hotel) => {
-          const maxAmenities = isMobile ? 2 : 5;
+            const maxAmenities = isMobile ? 2 : 5;
             const visibleAmenities = hotel.amenities.slice(0, maxAmenities);
             const remainingAmenities = hotel.amenities.length - maxAmenities;
             return (
@@ -367,7 +387,7 @@ const SearchResults = () => {
                     padding: "0px 10px",
                     position: "relative",
                     width: "100%",
-                    minHeight:'185px'
+                    minHeight: "185px",
                   }}
                 >
                   <Box
@@ -449,13 +469,15 @@ const SearchResults = () => {
                   </Typography>
                   <Typography
                     color="textSecondary"
-                    sx={{ fontFamily: "CustomFontSB", fontSize: {xs:'12px', md:"14px"},
+                    sx={{
+                      fontFamily: "CustomFontSB",
+                      fontSize: { xs: "12px", md: "14px" },
                       display: "-webkit-box",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                       WebkitLineClamp: 1,
                       WebkitBoxOrient: "vertical",
-                     }}
+                    }}
                   >
                     {hotel.location}
                   </Typography>
@@ -522,16 +544,16 @@ const SearchResults = () => {
                     sx={{
                       position: { xs: "absolute", md: "absolute" },
                       maxWidth: "200px",
-                      minWidth:'120px',
-                      mr:{xs:3, md:0},
+                      minWidth: "120px",
+                      mr: { xs: 3, md: 0 },
 
                       // pr: 2,
                       // ml:'auto',
                       // mt:4,
                       // mx: -1,
 
-                      bottom: {xs:-16, md:0},
-                      right: {xs:-8, md:0},
+                      bottom: { xs: -16, md: 0 },
+                      right: { xs: -8, md: 0 },
                       borderRadius: "12px 0px 12px 0px",
                       p: 1,
                       background: color.background,
@@ -559,14 +581,20 @@ const SearchResults = () => {
                     </Box>
 
                     <Typography
-                      sx={{ textDecoration: "line-through", fontSize: {xs:'10px', md:"12px"}, }}
+                      sx={{
+                        textDecoration: "line-through",
+                        fontSize: { xs: "10px", md: "12px" },
+                      }}
                     >
                       ₹{hotel.originalPrice}.00
                     </Typography>
                     <Typography sx={{ fontSize: "18px" }}>
                       ₹{hotel.price}.00
                     </Typography>
-                    <Typography sx={{ fontSize: {xs:'10px', md:"12px"}, }} variant="body2">
+                    <Typography
+                      sx={{ fontSize: { xs: "10px", md: "12px" } }}
+                      variant="body2"
+                    >
                       + ₹{hotel.taxnfees} taxes & fees
                     </Typography>
                   </Box>
