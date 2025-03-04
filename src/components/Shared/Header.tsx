@@ -31,6 +31,7 @@ import {
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import color from "../color";
+import { isLoggedIn } from "../../services/axiosClient";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -121,13 +122,13 @@ const Header: React.FC = () => {
 
         <div style={{ marginRight: "20px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <IconButton
+            {isLoggedIn() ? (<>  <IconButton
               style={{ background: color.thirdColor, color: color.firstColor }}
               color="inherit"
               onClick={handleClick}
             >
               <PersonOutline />
-            </IconButton>
+            </IconButton></>) : (<></>)}
             {isMobile && (
               <IconButton color="inherit" onClick={toggleDrawer(true)}>
                 <Menu />
