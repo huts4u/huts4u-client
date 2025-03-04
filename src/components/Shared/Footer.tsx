@@ -16,9 +16,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import color from "../color";
 import CustomButton from "../CustomButton";
-import { useLocation } from "react-router-dom";
+import ContactUsModal from "./ContactUsModal";
 
 const Footer = () => {
   const location = useLocation();
@@ -31,11 +33,46 @@ const Footer = () => {
     }
   };
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [previousLocation, setPreviousLocation] = useState({
+    pathname: "",
+    search: "",
+  });
+  const navigate = useNavigate();
+
+  const handleOpenModal = () => {
+    setPreviousLocation({
+      pathname: location.pathname,
+      search: location.search,
+    });
+    setIsModalOpen(true);
+    navigate("/contact-us", { replace: true });
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    if (previousLocation.pathname) {
+      navigate(`${previousLocation.pathname}${previousLocation.search}`, {
+        replace: true,
+      });
+    } else {
+      navigate("/");
+    }
+  };
+
+  useEffect(() => {
+    if (location.pathname === "/contact-us") {
+      setIsModalOpen(true);
+    } else {
+      setIsModalOpen(false);
+    }
+  }, [location.pathname]);
+
   return (
     <Box
       sx={{
         background: renderColor,
-        pt: {xs:20, md:30},
+        pt: { xs: 20, md: 30 },
       }}
     >
       <Box
@@ -50,12 +87,12 @@ const Footer = () => {
           justifyContent="center"
           sx={{
             position: "absolute",
-            top:  {xs:-130, md:-180},
+            top: { xs: -130, md: -180 },
             left: "50%",
             transform: "translateX(-50%)",
             display: "flex",
-            height: {xs:"150px", md:"200px"},
-            width: {xs:"80%", md:'60%'},
+            height: { xs: "150px", md: "200px" },
+            width: { xs: "80%", md: "60%" },
           }}
         >
           <Box
@@ -84,8 +121,8 @@ const Footer = () => {
                 top: "50%",
                 left: "25%",
                 transform: "translate(-50%,-50%)",
-                height: {xs:"80px", md:'100px'},
-                width:{xs:"80px", md:'100px'},
+                height: { xs: "80px", md: "100px" },
+                width: { xs: "80px", md: "100px" },
                 borderRadius: "50%",
                 backgroundColor: color.thirdColor,
                 color: color.firstColor,
@@ -100,8 +137,7 @@ const Footer = () => {
               <Typography
                 sx={{
                   fontFamily: "CustomFontB",
-                  fontSize: {xs:'18px', md:"24px"},
-
+                  fontSize: { xs: "18px", md: "24px" },
                 }}
               >
                 50%
@@ -109,7 +145,7 @@ const Footer = () => {
               <Typography
                 sx={{
                   fontFamily: "CustomFontB",
-                  fontSize: {xs:'14px', md:"16px"},
+                  fontSize: { xs: "14px", md: "16px" },
                   mt: -1,
                 }}
               >
@@ -122,8 +158,8 @@ const Footer = () => {
                 top: "50%",
                 left: "25%",
                 transform: "translate(-50%,-50%)",
-                height: {xs:"100px", md:'120px'},
-                width: {xs:"100px", md:'120px'},
+                height: { xs: "100px", md: "120px" },
+                width: { xs: "100px", md: "120px" },
                 borderRadius: "50%",
                 border: "solid 2px",
                 borderColor: color.thirdColor,
@@ -136,7 +172,7 @@ const Footer = () => {
               backgroundColor: color.thirdColor,
               width: "50%",
               fontFamily: "CustomFontB",
-              fontSize: {xs:'16px', md:"24px"},
+              fontSize: { xs: "16px", md: "24px" },
               color: color.firstColor,
               display: "flex",
               flexDirection: "column",
@@ -160,12 +196,13 @@ const Footer = () => {
           spacing={4}
           justifyContent="center"
           px={2}
-          sx={{ fontFamily: "CustomFontM",
+          sx={{
+            fontFamily: "CustomFontM",
             background: "url('/assets/footer.webp')",
-            backgroundSize: {xs:'70%', md:"30%"},
+            backgroundSize: { xs: "70%", md: "30%" },
             backgroundRepeat: "no-repeat",
             backgroundPosition: "bottom left",
-           }}
+          }}
         >
           {/* About Section */}
           <Grid
@@ -176,10 +213,9 @@ const Footer = () => {
               borderRight: "solid 1px",
               px: 4,
               py: 4,
-              pb:{xs:3,md:4},
-              borderColor: {xs:'transparent', md:color.thirdColor},
-              pt: {xs:'30px !important', md:"50px !important"},
-
+              pb: { xs: 3, md: 4 },
+              borderColor: { xs: "transparent", md: color.thirdColor },
+              pt: { xs: "30px !important", md: "50px !important" },
             }}
           >
             <Typography mb={2} variant="h6" fontWeight="bold">
@@ -238,12 +274,12 @@ const Footer = () => {
 
           {/* Links Section */}
           <Grid
-        sx={{
-          pt: {xs:'0px !important', md:"50px !important"},
-          borderRight: "solid 1px",
-          borderColor: {xs:'transparent', md:color.thirdColor},
-          px: 2,
-        }}
+            sx={{
+              pt: { xs: "0px !important", md: "50px !important" },
+              borderRight: "solid 1px",
+              borderColor: { xs: "transparent", md: color.thirdColor },
+              px: 2,
+            }}
             item
             xs={12}
             sm={3}
@@ -254,18 +290,30 @@ const Footer = () => {
             <Box
               sx={{ display: "flex", flexDirection: "column", mt: 1, gap: 2 }}
             >
-              <Link href="#" underline="hover" color="inherit">
+              <Link href="/search" underline="hover" color="inherit">
                 Hotels
               </Link>
-              <Link href="#" underline="hover" color="inherit">
+              <Link href="/privacy-policy" underline="hover" color="inherit">
                 Privacy Policy
               </Link>
-              <Link href="#" underline="hover" color="inherit">
+              <Link href="/about-us" underline="hover" color="inherit">
                 About Us
               </Link>
-              <Link href="#" underline="hover" color="inherit">
+              <Link
+                href="#"
+                underline="hover"
+                color="inherit"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleOpenModal();
+                }}
+              >
                 Contact Us
               </Link>
+              <ContactUsModal
+                open={isModalOpen}
+                handleClose={handleCloseModal}
+              />
             </Box>
           </Grid>
 
@@ -275,8 +323,8 @@ const Footer = () => {
             xs={12}
             sm={4.5}
             sx={{
-              pt: {xs:'30px !important', md:"50px !important"},
-              mb:{xs:4,md:0}
+              pt: { xs: "30px !important", md: "50px !important" },
+              mb: { xs: 4, md: 0 },
             }}
           >
             <Typography gutterBottom variant="h6" fontWeight="bold">
