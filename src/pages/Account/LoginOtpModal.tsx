@@ -8,16 +8,21 @@ import { useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import color from "../../components/color";
 import "./Login.css";
+import { sendOTP, verifyOTP } from "../../services/services";
+
+import { error } from "console";
+import { toast } from "react-toastify";
 
 const LoginOtpModal = () => {
   const [step, setStep] = useState(1);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [countryCode, setCountryCode] = useState("in");
+  const [sessionId, setSessionId] = useState('');
   const navigate = useNavigate();
 
-  const [otp, setOtp] = useState(Array(6).fill(""));
+  const [otp, setOtp] = useState(Array(4).fill(""));
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const otpRefs = Array.from({ length: 6 }, () =>
+  const otpRefs = Array.from({ length: 4 }, () =>
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useRef<HTMLInputElement>(null)
   );
@@ -40,9 +45,25 @@ const LoginOtpModal = () => {
     }),
     onSubmit: (values) => {
       setPhoneNumber(values.phone);
-      setStep(2);
+      sendOtp(values.phone)
     },
   });
+
+  const sendOtp = async (phoneNumber: any) => {
+    console.log(phoneNumber.slice(2));
+    const payLoad = {
+      "phone": phoneNumber.slice(2)
+    };
+
+    sendOTP(payLoad).then((res) => {
+      console.log(res);
+      toast(res?.data?.msg);
+      setSessionId(res?.data?.data)
+      setStep(2);
+    }).catch((error) => {
+      console.log(error);
+    })
+  }
 
   const handleOtpChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
@@ -50,14 +71,24 @@ const LoginOtpModal = () => {
     newOtp[index] = value;
     setOtp(newOtp);
 
-    if (value && index < 5) {
+    if (value && index < 3) {
       otpRefs[index + 1].current?.focus();
     }
   };
 
   const handleOtpSubmit = () => {
-    if (otp.join("").length === 6) {
-      navigate("/booking-summary", { replace: true });
+    if (otp.join("").length === 4) {
+      const payLoad = {
+        "otp": otp.join(""),
+        "sessionId": sessionId
+      }
+      verifyOTP(payLoad).then((res) => {
+        toast(res?.data?.msg);
+        navigate(`/booking-summary/${phoneNumber}`, { replace: true, state: { phoneNumber } });
+      }).catch((err) => {
+        toast(err);
+      })
+
     } else {
       alert("Enter complete OTP");
     }
