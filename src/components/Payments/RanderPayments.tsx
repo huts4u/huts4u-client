@@ -65,7 +65,7 @@ const RenderRazorpay: React.FC<RenderRazorpayProps> = ({
                         paymentId: response.razorpay_payment_id,
                         signature: response.razorpay_signature,
                     });
-                    // alert("Payment Successful");
+                    alert("Payment Successful");
                     // const payLoad = {
                     //     transactionId: response.razorpay_payment_id,
                     //     status: "success",
@@ -75,7 +75,7 @@ const RenderRazorpay: React.FC<RenderRazorpayProps> = ({
                     // };
                     // console.log(payLoad);
                     // navigate("/my-courses");
-                    toast('payment Successful!')
+                    // toast('payment Successful!')
                     navigate('/');
                 } catch (error) {
                     alert("Payment verification failed. Please try again.");

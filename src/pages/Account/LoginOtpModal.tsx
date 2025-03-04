@@ -12,6 +12,7 @@ import { sendOTP, verifyOTP } from "../../services/services";
 
 import { error } from "console";
 import { toast } from "react-toastify";
+import { setCurrentAccessToken, setCurrentUser } from "../../services/axiosClient";
 
 const LoginOtpModal = () => {
   const [step, setStep] = useState(1);
@@ -80,9 +81,12 @@ const LoginOtpModal = () => {
     if (otp.join("").length === 4) {
       const payLoad = {
         "otp": otp.join(""),
-        "sessionId": sessionId
+        "sessionId": sessionId,
+        "phone": phoneNumber.slice(2)
       }
       verifyOTP(payLoad).then((res) => {
+        setCurrentAccessToken(res?.data?.data?.token);
+        setCurrentUser(res?.data?.data?.user);
         toast(res?.data?.msg);
         navigate(`/booking-summary/${phoneNumber}`, { replace: true, state: { phoneNumber } });
       }).catch((err) => {

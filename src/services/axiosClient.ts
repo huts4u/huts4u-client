@@ -21,7 +21,7 @@ export function isLoggedIn() {
 
 export async function logout() {
     localStorage.clear();
-    window.location.href = '/login';
+    window.location.href = '/';
     return 0;
 }
 
@@ -30,6 +30,20 @@ export function setCurrentAccessToken(accessToken: any) {
     return localStorage.setItem('accessToken', accessToken)
 }
 
+export function setCurrentUser(user: any) {
+    return localStorage.setItem('user', user)
+}
+export function getphoneNumber(): string {
+    let token: any = localStorage.getItem('accessToken');
+    if (token) {
+        let decoded: any = jwtDecode(token);
+        console.log("user Details bro!=",decoded)
+        return decoded.phoneNumber || '';
+    }
+    else {
+        return '';
+    }
+}
 
 
 
