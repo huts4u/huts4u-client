@@ -1,15 +1,22 @@
 import { StarRounded } from "@mui/icons-material";
 import {
-    Box,
-    Card,
-    CardContent,
-    CardMedia,
-    Divider,
-    Typography,
+  Box,
+  Card,
+  CardContent,
+  CardMedia,
+  Divider,
+  Typography,
 } from "@mui/material";
 import CustomButton from "../components/CustomButton";
 import color from "../components/color";
 import { BoxStyle, CustomTextField } from "../components/style";
+import { useLocation } from "react-router-dom";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { createOrder, getPortfolioDetails, Signup } from "../services/services";
+import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
+import RenderRazorpay from "../components/Payments/RanderPayments";
 
 const bookingData = {
   hotelName: "Best Western Ashoka",
@@ -28,11 +35,84 @@ const bookingData = {
   guest: {
     name: "",
     email: "",
-    phone: "",
+
   },
 };
+const validationSchema = Yup.object({
+  name: Yup.string().required("Name is required"),
+  email: Yup.string().email("Invalid email").optional(),
+});
 
 const BookingSummary = () => {
+  const location = useLocation();
+  const phoneNumber = location.state?.phoneNumber;
+  console.log(phoneNumber)
+
+
+  // useEffect(() => {
+  //   getPortfolioDetails(phoneNumber.slice(2)).then((res) => {
+  //     console.log(res.data)
+  //   })
+  // }, [])
+  const [orderDetails, setOrderDetails] = useState(null);
+  const handlePayment = async () => {
+    try {
+      const roomPrice = parseFloat(bookingData.roomPrice) || 0;
+      const serviceCharges = 200;
+      const totalAmount = roomPrice + serviceCharges;
+
+      console.log("Total Amount before payment:", totalAmount);
+
+      if (totalAmount === 0) {
+        alert("Booking amount cannot be zero.");
+        return;
+      }
+
+      const payLoad = {
+        amount: totalAmount,
+        currency: "INR",
+      };
+
+      console.log("Payload sent to createOrder:", payLoad);
+      const response = await createOrder(payLoad);
+
+      console.log("Payment Response:", response);
+
+      if (response?.data) {
+        // alert("Payment successful!");
+        setOrderDetails(response.data);
+      } else {
+        alert("Payment failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error during payment:", error);
+      alert("Payment failed. Please try again.");
+    }
+  };
+
+
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      email: "",
+    },
+    validationSchema,
+    onSubmit: (values) => {
+      // console.log("Form submitted with values:", values);
+      const payLoad = {
+        userName: values.name,
+        email: values.email,
+        phoneNumber: phoneNumber.slice(2),
+        isVerified: true
+      }
+      Signup(payLoad).then((res) => {
+        console.log(res)
+      }).catch((err) => {
+        toast(err);
+      })
+      handlePayment();
+    },
+  });
   return (
     <Box
       sx={{
@@ -197,39 +277,82 @@ const BookingSummary = () => {
           </Typography> */}
           {/* <Divider sx={{ my: 2 }} /> */}
 
-          <Typography
+          {/* <Typography
             variant="h6"
             mt={4}
             sx={{ color: color.firstColor, fontWeight: "bold" }}
           >
             Guest Information
-          </Typography>
-          <CustomTextField
+          </Typography> */}
+          {/* <CustomTextField
             label="Guest Name"
             value={bookingData.guest.name}
             fullWidth
             margin="normal"
           />
           <CustomTextField
-            label="Email Address"
+            label="Email Address (Optional)"
             value={bookingData.guest.email}
             fullWidth
             margin="normal"
-          />
-          <CustomTextField
+          /> */}
+          {/* <CustomTextField
             label="Mobile Number"
             value={bookingData.guest.phone}
             fullWidth
             margin="normal"
-          />
-          <CustomButton
+          /> */}
+          {/* <CustomButton
             variant="contained"
             color="primary"
             fullWidth
             sx={{ mt: 2 }}
           >
             Pay Now
-          </CustomButton>
+          </CustomButton> */}
+          <form onSubmit={formik.handleSubmit}>
+            <Typography variant="h6" mt={4} sx={{ color: color.firstColor, fontWeight: "bold" }}>
+              Guest Information
+            </Typography>
+
+            {/* Guest Name Field */}
+            <CustomTextField
+              label="Guest Name"
+              name="name"
+              fullWidth
+              margin="normal"
+              value={formik.values.name}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.name && Boolean(formik.errors.name)}
+              helperText={formik.touched.name && formik.errors.name}
+            />
+
+            {/* Email Field */}
+            <CustomTextField
+              label="Email Address (Optional)"
+              name="email"
+              fullWidth
+              margin="normal"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.email && Boolean(formik.errors.email)}
+              helperText={formik.touched.email && formik.errors.email}
+            />
+
+            <CustomButton variant="contained" color="primary" fullWidth sx={{ mt: 2 }} type="submit">
+              Pay Now
+            </CustomButton>
+            {orderDetails && (
+              <RenderRazorpay
+                orderDetails={orderDetails}
+                amount={bookingData.roomPrice}
+              // courseId={cartItems[0].id}
+              // userId={getUserId()}
+              />
+            )}
+          </form>
         </CardContent>
       </Card>
 
