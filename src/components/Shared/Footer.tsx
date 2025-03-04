@@ -16,11 +16,9 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import color from "../color";
 import CustomButton from "../CustomButton";
-import ContactUsModal from "./ContactUsModal";
 
 const Footer = () => {
   const location = useLocation();
@@ -33,40 +31,40 @@ const Footer = () => {
     }
   };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [previousLocation, setPreviousLocation] = useState({
-    pathname: "",
-    search: "",
-  });
-  const navigate = useNavigate();
+  // const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [previousLocation, setPreviousLocation] = useState({
+  //   pathname: "",
+  //   search: "",
+  // });
+  // const navigate = useNavigate();
 
-  const handleOpenModal = () => {
-    setPreviousLocation({
-      pathname: location.pathname,
-      search: location.search,
-    });
-    setIsModalOpen(true);
-    navigate("/contact-us", { replace: true });
-  };
+  // const handleOpenModal = () => {
+  //   setPreviousLocation({
+  //     pathname: location.pathname,
+  //     search: location.search,
+  //   });
+  //   setIsModalOpen(true);
+  //   navigate("/contact-us", { replace: true });
+  // };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    if (previousLocation.pathname) {
-      navigate(`${previousLocation.pathname}${previousLocation.search}`, {
-        replace: true,
-      });
-    } else {
-      navigate("/");
-    }
-  };
+  // const handleCloseModal = () => {
+  //   setIsModalOpen(false);
+  //   if (previousLocation.pathname) {
+  //     navigate(`${previousLocation.pathname}${previousLocation.search}`, {
+  //       replace: true,
+  //     });
+  //   } else {
+  //     navigate("/");
+  //   }
+  // };
 
-  useEffect(() => {
-    if (location.pathname === "/contact-us") {
-      setIsModalOpen(true);
-    } else {
-      setIsModalOpen(false);
-    }
-  }, [location.pathname]);
+  // useEffect(() => {
+  //   if (location.pathname === "/contact-us") {
+  //     setIsModalOpen(true);
+  //   } else {
+  //     setIsModalOpen(false);
+  //   }
+  // }, [location.pathname]);
 
   return (
     <Box
@@ -299,21 +297,9 @@ const Footer = () => {
               <Link href="/about-us" underline="hover" color="inherit">
                 About Us
               </Link>
-              <Link
-                href="#"
-                underline="hover"
-                color="inherit"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleOpenModal();
-                }}
-              >
+              <Link href="/contact-us" underline="hover" color="inherit">
                 Contact Us
               </Link>
-              <ContactUsModal
-                open={isModalOpen}
-                handleClose={handleCloseModal}
-              />
             </Box>
           </Grid>
 

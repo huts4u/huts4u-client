@@ -31,8 +31,12 @@ const SectionHeader: React.FC<TimePickerProps> = ({ primaryText, subText }) => {
         // width={textWidth + 40}
         justifyContent="space-between"
       >
-        <Box flex="1" width="100px" bgcolor={color.firstColor}
-        sx={{height:{xs:'4px', md:'8px'}}} />
+        <Box
+          flex="1"
+          width="100px"
+          bgcolor={color.firstColor}
+          sx={{ height: { xs: "4px", md: "8px" } }}
+        />
         <Typography
           ref={textRef}
           fontWeight="bold"
@@ -40,21 +44,26 @@ const SectionHeader: React.FC<TimePickerProps> = ({ primaryText, subText }) => {
           mx={2}
           fontFamily={"CustomFontB"}
           sx={{
-            fontSize:{xs:'22px',md:'44px'},
-            maxWidth:'80%',
+            fontSize: { xs: "22px", md: "44px" },
+            maxWidth: "80%",
           }}
         >
           {primaryText}
         </Typography>
-        <Box flex="1"  width="100px" bgcolor={color.firstColor}
-           sx={{height:{xs:'4px', md:'8px'}}} />
+        <Box
+          flex="1"
+          width="100px"
+          bgcolor={color.firstColor}
+          sx={{ height: { xs: "4px", md: "8px" } }}
+        />
       </Box>
       <Typography
         variant="body2"
         color={color.firstColor}
         fontFamily={"CustomFontB"}
-        sx={{textTransform:'uppercase',
-          fontSize:{xs:'10px',md:'14px'}
+        sx={{
+          textTransform: "uppercase",
+          fontSize: { xs: "10px", md: "14px" },
         }}
       >
         {subText}
