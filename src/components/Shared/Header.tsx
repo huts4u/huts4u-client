@@ -58,8 +58,8 @@ const Header: React.FC = () => {
     { label: "Home", icon: <Home />, path: "/" },
     { label: "Hotels", icon: <Hotel />, path: "/search" },
     { label: "Contact", icon: <ContactMail />, path: "/contact" },
-    { label: "Help", icon: <Help />, path: "/help" },
-    { label: "About", icon: <Info />, path: "/about" },
+    // { label: "Help", icon: <Help />, path: "/help" },
+    { label: "About", icon: <Info />, path: "/about-us" },
   ];
   return (
     <AppBar
@@ -149,7 +149,7 @@ const Header: React.FC = () => {
                   height: "70px",
                   width: "100px",
                   objectFit: "contain",
-                  mb:1
+                  mb: 1
                 }}
                 image="/assets/logo.png"
               />
@@ -168,16 +168,16 @@ const Header: React.FC = () => {
                         background: color.background,
                         borderRadius: "50%",
                         color: "white",
-                        width:'24px',
-                        height:'24px',
-                        minWidth:'0px'
+                        width: '24px',
+                        height: '24px',
+                        minWidth: '0px'
                       }}
                     >
                       {link.icon}
                     </ListItemIcon>
                     <ListItemText primary={link.label} />
 
-                    <ChevronRightRounded/>
+                    <ChevronRightRounded />
                   </ListItemButton>
                 </ListItem>
               ))}

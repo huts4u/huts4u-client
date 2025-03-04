@@ -10,6 +10,7 @@ import {
     DialogTitle,
 } from "@mui/material";
 import color from "../color";
+import { toast } from "react-toastify";
 
 interface RenderRazorpayProps {
     orderDetails: any;
@@ -51,11 +52,12 @@ const RenderRazorpay: React.FC<RenderRazorpayProps> = ({
             return;
         }
 
+        console.log(orderDetails)
         const options = {
             key: R_KEY_ID || "",
-            amount: orderDetails.amount,
-            currency: orderDetails.currency,
-            order_id: orderDetails.id,
+            amount: orderDetails.data.amount,
+            currency: orderDetails.data.currency,
+            order_id: orderDetails.data.id,
             handler: async (response: any) => {
                 try {
                     await verifyPayment({
@@ -63,7 +65,7 @@ const RenderRazorpay: React.FC<RenderRazorpayProps> = ({
                         paymentId: response.razorpay_payment_id,
                         signature: response.razorpay_signature,
                     });
-                    alert("Payment Successful");
+                    // alert("Payment Successful");
                     // const payLoad = {
                     //     transactionId: response.razorpay_payment_id,
                     //     status: "success",
@@ -73,6 +75,7 @@ const RenderRazorpay: React.FC<RenderRazorpayProps> = ({
                     // };
                     // console.log(payLoad);
                     // navigate("/my-courses");
+                    toast('payment Successful!')
                     navigate('/');
                 } catch (error) {
                     alert("Payment verification failed. Please try again.");

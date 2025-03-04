@@ -10,7 +10,7 @@ import {
 import CustomButton from "../components/CustomButton";
 import color from "../components/color";
 import { BoxStyle, CustomTextField } from "../components/style";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { createOrder, getPortfolioDetails, Signup } from "../services/services";
@@ -46,15 +46,20 @@ const validationSchema = Yup.object({
 const BookingSummary = () => {
   const location = useLocation();
   const phoneNumber = location.state?.phoneNumber;
-  console.log(phoneNumber)
+
+  const [user, setUser] = useState<any>({});
+  console.log(user)
 
 
-  // useEffect(() => {
-  //   getPortfolioDetails(phoneNumber.slice(2)).then((res) => {
-  //     console.log(res.data)
-  //   })
-  // }, [])
+  useEffect(() => {
+    getPortfolioDetails(phoneNumber.slice(2)).then((res) => {
+      setUser(res?.data?.data);
+    }).catch((err) => {
+      console.log(err);
+    })
+  }, [])
   const [orderDetails, setOrderDetails] = useState(null);
+  // console.log(orderDetails)
   const handlePayment = async () => {
     try {
       const roomPrice = parseFloat(bookingData.roomPrice) || 0;
@@ -93,10 +98,11 @@ const BookingSummary = () => {
 
   const formik = useFormik({
     initialValues: {
-      name: "",
-      email: "",
+      name: user?.userName || "",
+      email: user?.email || "",
     },
     validationSchema,
+    enableReinitialize: true,
     onSubmit: (values) => {
       // console.log("Form submitted with values:", values);
       const payLoad = {
@@ -105,13 +111,19 @@ const BookingSummary = () => {
         phoneNumber: phoneNumber.slice(2),
         isVerified: true
       }
-      Signup(payLoad).then((res) => {
-        console.log(res)
-      }).catch((err) => {
-        toast(err);
-      })
-      handlePayment();
+      if (user?.data === null) {
+        Signup(payLoad).then((res) => {
+          console.log(res)
+        }).catch((err) => {
+          toast(err);
+        })
+        handlePayment();
+      } else {
+        handlePayment();
+      }
+
     },
+
   });
   return (
     <Box
@@ -325,7 +337,7 @@ const BookingSummary = () => {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               error={formik.touched.name && Boolean(formik.errors.name)}
-              helperText={formik.touched.name && formik.errors.name}
+            // helperText={formik.touched.name && formik.errors.name}
             />
 
             {/* Email Field */}
@@ -338,7 +350,7 @@ const BookingSummary = () => {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               error={formik.touched.email && Boolean(formik.errors.email)}
-              helperText={formik.touched.email && formik.errors.email}
+            // helperText={formik.touched.email && formik.errors.email}
             />
 
             <CustomButton variant="contained" color="primary" fullWidth sx={{ mt: 2 }} type="submit">
