@@ -29,8 +29,8 @@ const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
   borderRadius: "6px",
   fontFamily: "CustomFontB",
   // border:'none',
-  background: "rgba(90, 90, 90, 0.21)",
-  boxShadow: "-4px -4px 10px rgba(0, 0, 0, 0.17) inset",
+  background: "rgba(163, 163, 163, 0.21)",
+  boxShadow: "-4px -4px 10px rgba(0, 0, 0, 0.11) inset",
 
   "&.Mui-selected": {
     background: color.background,
