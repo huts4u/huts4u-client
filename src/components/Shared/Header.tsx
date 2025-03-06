@@ -104,7 +104,7 @@ const Header: React.FC = () => {
               top: "50%",
               transform: "translateY(-50%)",
             }}
-            image="/assets/logo.png"
+            image="/assets/huts4ulogo.png"
           />
 
           {!isMobile &&

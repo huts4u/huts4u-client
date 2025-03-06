@@ -40,6 +40,8 @@ const CustomTimePicker: React.FC<TimePickerProps> = ({
         <MobileTimePicker
           value={time}
           onChange={setTime}
+          views={["hours"]} // Only show hour selection
+          minutesStep={60} // Ensure only full hour selection
           slotProps={{
             textField: {
               sx: {

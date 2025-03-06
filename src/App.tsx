@@ -1,6 +1,6 @@
 import { ThemeProvider } from "@mui/material";
-import React from "react";
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Route, BrowserRouter as Router, Routes, useLocation } from "react-router-dom";
 import Footer from "./components/Shared/Footer";
 import Header from "./components/Shared/Header";
 import HomePage from "./pages/HomePage";
@@ -13,11 +13,21 @@ import BookingSummary from "./pages/BookingSummary";
 import AboutUs from "./pages/AboutUs";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ContactUs from "./pages/ContactUs";
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
 
 const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <Router>
+        <ScrollToTop />
         <Header />
         <Routes>
           <Route path="/" element={<HomePage />} />

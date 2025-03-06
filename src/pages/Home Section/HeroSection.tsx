@@ -12,7 +12,7 @@ const HeroSection: React.FC = () => {
       sx={{
         height: "calc(100vh - 64px)",
         maxHeight: { xs: "100vh", md: "700px" },
-        background: "url('/assets/bg.jpg')",
+        background: "url('/assets/bg_optimized.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         position: "relative",
@@ -79,7 +79,7 @@ const HeroSection: React.FC = () => {
           display: { xs: "none", md: "block" },
           flex: 1,
           height: "100%",
-          background: "url('/assets/konark hero.jpg')",
+          background: "url('/assets/konark_hero_optimized.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           zIndex: 2,
