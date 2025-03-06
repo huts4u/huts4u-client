@@ -31,7 +31,7 @@ const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
   // border:'none',
   background: "rgba(163, 163, 163, 0.21)",
   boxShadow: "-4px -4px 10px rgba(0, 0, 0, 0.11) inset",
-
+  fontSize: "inherit",
   "&.Mui-selected": {
     background: color.background,
     color: "white",
@@ -53,6 +53,7 @@ const ToggleBookingType = ({ bookingType, handleBookingType }: any) => (
       py: 1,
       borderRadius: "8px",
       border: "none",
+      fontSize: { xs: "14px", md: "16px" },
     }}
   >
     <StyledToggleButton value="hourly">Hourly</StyledToggleButton>
@@ -122,7 +123,7 @@ const SearchSection = () => {
         queryParams.append(key, String(value));
       }
     });
-  
+
     navigate(`/search?${queryParams.toString()}`);
     setShowDetails(false);
   };
@@ -140,14 +141,14 @@ const SearchSection = () => {
           borderRadius: 3,
           textAlign: "center",
           position: "relative",
-          mt:1
+          mt: 1,
         }}
       >
         <Box
           sx={{
-            width:'100%',
+            width: "100%",
             position: "absolute",
-            top: -35,
+            top: {xs:-35, md:-35},
             left: "50%",
             transform: "translateX(-50%)",
           }}
@@ -190,21 +191,17 @@ const SearchSection = () => {
               </Typography>
 
               {bookingType === "hourly" ? (
-                 <Typography sx={typoStyle}>
-                 {" "}
-                 <Schedule /> {time ? time.format("HH:mm") : ""}
-               </Typography>
+                <Typography sx={typoStyle}>
+                  {" "}
+                  <Schedule /> {time ? time.format("HH:mm") : ""}
+                </Typography>
               ) : (
                 <Typography sx={typoStyle}>
-                {" "}
-                <CalendarMonthRounded />{" "}
-                {checkOutDate ? checkOutDate.format("YYYY-MM-DD") : ""}
-              </Typography>
+                  {" "}
+                  <CalendarMonthRounded />{" "}
+                  {checkOutDate ? checkOutDate.format("YYYY-MM-DD") : ""}
+                </Typography>
               )}
-
-           
-
-         
             </div>
 
             {/* <Typography sx={typoStyle}>
@@ -285,16 +282,16 @@ const SearchSection = () => {
             </Box>
 
             {PageLocation.pathname !== "/" && (
-            <HighlightOff
-              onClick={() => setShowDetails(false)}
-              sx={{
-                position: "absolute",
-                top: 4,
-                right: 4,
-                color: "white",
-                display: { md: "none", xs: "flex", fontWeight: "bold" },
-              }}
-            ></HighlightOff>
+              <HighlightOff
+                onClick={() => setShowDetails(false)}
+                sx={{
+                  position: "absolute",
+                  top: 4,
+                  right: 4,
+                  color: "white",
+                  display: { md: "none", xs: "flex", fontWeight: "bold" },
+                }}
+              ></HighlightOff>
             )}
           </>
         )}
@@ -334,4 +331,3 @@ const typoStyle = {
   px: 2,
   m: 1,
 };
-

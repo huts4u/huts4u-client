@@ -5,6 +5,8 @@ import {
   RadioProps,
   styled,
   TextField,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import color from "./color";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
@@ -174,3 +176,10 @@ export const CustomTextField = styled(TextField)({
     color: color.firstColor,
   },
 });
+
+
+export const useScreenSize = () => {
+  const theme = useTheme();
+  const isBelow400px = useMediaQuery(theme.breakpoints.down(400));
+  return { isBelow400px };
+};

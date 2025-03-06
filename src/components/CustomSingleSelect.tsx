@@ -27,7 +27,13 @@ const CustomSingleSelect: React.FC<SingleSelectProps> = ({
         color: color.firstColor,
       }}
     >
-      <Typography sx={{ px: "10px", fontFamily: "CustomFontM" }}>
+      <Typography
+        sx={{
+          px: "10px",
+          fontSize: { xs: "14px", md: "16px" },
+          fontFamily: "CustomFontM",
+        }}
+      >
         {label}
       </Typography>
       <Autocomplete
@@ -37,7 +43,7 @@ const CustomSingleSelect: React.FC<SingleSelectProps> = ({
         options={options}
         renderInput={(params) => (
           <TextField
-          placeholder="location"
+            placeholder="location"
             {...params}
             InputProps={{
               ...params.InputProps,
@@ -63,7 +69,7 @@ const CustomSingleSelect: React.FC<SingleSelectProps> = ({
               "& .MuiInputBase-input": {
                 color: color.firstColor,
                 fontFamily: "CustomFontB",
-                fontSize: "20px",
+                fontSize: { xs: "18px", md: "20px" },
               },
             }}
           />

@@ -1,8 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import {
-    LocalizationProvider,
-    MobileTimePicker
-} from "@mui/x-date-pickers";
+import { LocalizationProvider, MobileTimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Dayjs } from "dayjs";
 import color from "./color";
@@ -31,7 +28,13 @@ const CustomTimePicker: React.FC<TimePickerProps> = ({
           color: color.firstColor,
         }}
       >
-        <Typography sx={{ px: "10px", fontFamily: "CustomFontM" }}>
+        <Typography
+          sx={{
+            px: "10px",
+            fontSize: { xs: "14px", md: "16px" },
+            fontFamily: "CustomFontM",
+          }}
+        >
           {label}
         </Typography>
         <MobileTimePicker
@@ -56,7 +59,7 @@ const CustomTimePicker: React.FC<TimePickerProps> = ({
                   padding: "0px 10px",
                   color: color.firstColor,
                   fontFamily: "CustomFontB",
-                  fontSize: "20px",
+                  fontSize: { xs: "18px", md: "20px" },
                 },
               },
             },

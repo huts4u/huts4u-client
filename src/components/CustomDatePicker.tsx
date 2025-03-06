@@ -1,8 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import {
-  LocalizationProvider,
-  MobileDatePicker
-} from "@mui/x-date-pickers";
+import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Dayjs } from "dayjs";
 import color from "./color";
@@ -31,7 +28,13 @@ const CustomDatePicker: React.FC<DatePickerProps> = ({
           color: color.firstColor,
         }}
       >
-        <Typography sx={{ px: "10px", fontFamily: "CustomFontM" }}>
+        <Typography
+          sx={{
+            px: "10px",
+            fontSize: { xs: "14px", md: "16px" },
+            fontFamily: "CustomFontM",
+          }}
+        >
           {label}
         </Typography>
         <MobileDatePicker
@@ -56,7 +59,7 @@ const CustomDatePicker: React.FC<DatePickerProps> = ({
                   padding: "0px 10px", // Adjust text padding
                   color: color.firstColor, // Change text color
                   fontFamily: "CustomFontB",
-                  fontSize: "20px",
+                  fontSize: { xs: "18px", md: "20px" },
                 },
               },
             },

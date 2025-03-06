@@ -22,8 +22,11 @@ const CustomButton: React.FC<CustomButtonProps> = ({
         padding:'10px 20px',
         borderRadius:'8px',
         boxShadow:'-4px -4px 10px rgba(255, 255, 255, 0.36) inset',
-        fontSize:'18px',
         ...customStyles,
+      }}
+      sx={{
+        fontSize: { xs: "16px", md: "18px" },
+
       }}
       {...props}
     >

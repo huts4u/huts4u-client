@@ -9,9 +9,12 @@ import {
 } from "@mui/material";
 import Slider from "react-slick";
 import color from "../../components/color";
-import { CustomNextArrow } from "../../components/style";
+import { CustomNextArrow, useScreenSize } from "../../components/style";
 
 const HotelCardCarousel = ({ hotels }: any) => {
+
+  const { isBelow400px } = useScreenSize();
+  
   const settings = {
     dots: false,
     infinite: true,
@@ -42,7 +45,7 @@ const HotelCardCarousel = ({ hotels }: any) => {
         <Box p={2} key={hotel.id} display={"flex"} alignItems={"center"}>
           <Card
             sx={{
-              width: "320px",
+              width:isBelow400px?'300px': "320px",
               // mx: "auto",
               boxShadow: "none",
               borderRadius: "12px",

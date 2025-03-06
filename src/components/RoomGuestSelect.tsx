@@ -49,13 +49,20 @@ const RoomGuestSelect: React.FC<RoomGuestSelectProps> = ({
         minWidth: "200px",
       }}
     >
-      <Typography sx={{ px: "10px", fontFamily: "CustomFontM" }}>
+      <Typography
+        sx={{
+          px: "10px",
+          fontSize: { xs: "14px", md: "16px" },
+          fontFamily: "CustomFontM",
+        }}
+      >
         {label}
       </Typography>
       <Box sx={{ cursor: "pointer", px: 1 }} onClick={handleClick}>
         <Typography
           sx={{
-            fontSize: "18px",
+            fontSize: { xs: "18px", md: "20px" },
+
             fontFamily: "CustomFontB",
           }}
         >

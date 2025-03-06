@@ -1,9 +1,12 @@
 import { Box, Typography } from "@mui/material";
 import React from "react";
 import color from "../../components/color";
+import { useScreenSize } from "../../components/style";
 import SearchSection from "./SearchSection";
 
 const HeroSection: React.FC = () => {
+  const { isBelow400px } = useScreenSize();
+
   return (
     <Box
       sx={{
@@ -25,7 +28,7 @@ const HeroSection: React.FC = () => {
           top: 0,
           left: 0,
           zIndex: 1,
-          opacity: {xs:0,md:0.84},
+          opacity: { xs: 0, md: 0.84 },
         }}
       ></Box>
 
@@ -41,7 +44,7 @@ const HeroSection: React.FC = () => {
         <Box
           sx={{
             position: "absolute",
-            top: {xs:'10%', md:"14%"},
+            top: isBelow400px ? "5%" : { xs: "10%", md: "14%" },
             left: "10%",
           }}
         >
@@ -53,7 +56,7 @@ const HeroSection: React.FC = () => {
               py: 0.5,
               width: "fit-content",
               mb: 2,
-              fontSize: { xs: "16px", md: "24px" },
+              fontSize: isBelow400px ? "14px" : { xs: "16px", md: "24px" },
               borderRadius: "4px",
             }}
           >
@@ -62,7 +65,7 @@ const HeroSection: React.FC = () => {
           <Typography
             sx={{
               lineHeight: 1.2,
-              fontSize: { xs: "32px", md: "48px" },
+              fontSize: isBelow400px ? "24px" : { xs: "32px", md: "48px" },
               fontFamily: "CustomFontB",
             }}
           >
@@ -87,9 +90,9 @@ const HeroSection: React.FC = () => {
 
       <Box
         sx={{
-          width: {xs:'90%', md:"80%"},
+          width: { xs: "90%", md: "80%" },
           position: "absolute",
-          bottom: "12%",
+          bottom: isBelow400px ? "4%" : "12%",
           left: "50%",
           transform: "translateX(-50%)",
           zIndex: 3,

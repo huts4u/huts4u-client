@@ -1,6 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import color from "./color";
+import { useScreenSize } from "./style";
 
 interface TimePickerProps {
   primaryText: string;
@@ -10,13 +11,13 @@ interface TimePickerProps {
 const SectionHeader: React.FC<TimePickerProps> = ({ primaryText, subText }) => {
   const textRef = useRef<HTMLDivElement>(null);
   const [textWidth, setTextWidth] = useState(0);
+  const { isBelow400px } = useScreenSize();
 
   useEffect(() => {
     if (textRef.current) {
       setTextWidth(textRef.current.offsetWidth);
     }
   }, []);
-
   return (
     <Box
       display="flex"
@@ -44,7 +45,7 @@ const SectionHeader: React.FC<TimePickerProps> = ({ primaryText, subText }) => {
           mx={2}
           fontFamily={"CustomFontB"}
           sx={{
-            fontSize: { xs: "22px", md: "44px" },
+            fontSize: isBelow400px ? "18px" : { xs: "22px", md: "44px" },
             maxWidth: "80%",
           }}
         >
@@ -63,7 +64,7 @@ const SectionHeader: React.FC<TimePickerProps> = ({ primaryText, subText }) => {
         fontFamily={"CustomFontB"}
         sx={{
           textTransform: "uppercase",
-          fontSize: { xs: "10px", md: "14px" },
+          fontSize: isBelow400px ? "8px" : { xs: "10px", md: "14px" },
         }}
       >
         {subText}
