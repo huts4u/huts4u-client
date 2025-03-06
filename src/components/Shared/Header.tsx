@@ -31,7 +31,7 @@ import {
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import color from "../color";
-import { isLoggedIn } from "../../services/axiosClient";
+import { isLoggedIn, logout } from "../../services/axiosClient";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -258,7 +258,7 @@ const Header: React.FC = () => {
               </MenuItem>
               <MenuItem
                 style={{ fontSize: "inherit", borderRadius: "52px" }}
-                onClick={handleClose}
+                onClick={() => logout()}
               >
                 {" "}
                 <Logout
