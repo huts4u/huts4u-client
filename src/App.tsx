@@ -7,7 +7,8 @@ import "./styles/global.css";
 import theme from "./theme";
 
 // Directly import HomePage (No Lazy Loading)
-import HomePage from "./pages/HomePage";
+
+const HomePage = lazy(() => import("./pages/HomePage"));
 
 // Lazy load other pages
 const HotelDetails = lazy(() => import("./pages/HotelDetails"));
