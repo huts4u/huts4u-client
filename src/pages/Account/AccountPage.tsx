@@ -31,7 +31,7 @@ const AccountPage = () => {
         margin: "auto",
         minHeight: "100vh",
         p: 4,
-        background: "url('/assets/bg.jpg')",
+        background: "url('https://s3.ap-south-1.amazonaws.com/huts4u.shop/bg_optimized.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "bottom",
         position: "relative",
@@ -113,7 +113,7 @@ const AccountPage = () => {
                   mt: "150px",
                   width: "100%",
                   borderRadius: "8px",
-                  color:color.firstColor
+                  color: color.firstColor
                   // boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.11)",
                   // border: "solid 2px",
                   // borderColor: color.thirdColor,

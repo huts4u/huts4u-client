@@ -37,25 +37,25 @@ const AboutUs = () => {
       title: "Our History",
       content:
         "Established in 1990, our hotel has been providing exceptional hospitality services for over three decades. Nestled in the heart of Bhubaneswar, we have evolved with the city, blending traditional charm with modern amenities to offer our guests a unique experience. Our rich legacy is a testament to our commitment to excellence and guest satisfaction.",
-      image: "/assets/konark hero.jpg",
+      image: "https://s3.ap-south-1.amazonaws.com/huts4u.shop/konark_hero_optimized.jpg",
     },
     {
       title: "Our Mission & Values",
       content:
         "We are committed to delivering unparalleled service, ensuring sustainability, and enriching our community. Our core values—integrity, excellence, and respect—guide every aspect of our operations, from our eco-friendly initiatives to our personalized guest services. We believe in creating memorable experiences while being responsible stewards of our environment.",
-      image: "/assets/Our Mission & Values.jpg",
+      image: "https://s3.ap-south-1.amazonaws.com/huts4u.shop/Our+Mission+%26+Values.jpg",
     },
     {
       title: "Community Engagement",
       content:
         "We actively participate in local events and support various community initiatives to give back to society. Our collaborations with local artisans and participation in cultural festivals reflect our dedication to promoting regional heritage and fostering community growth. We believe that a strong community is the foundation of our success.",
-      image: "/assets/Community Engagement.jpg",
+      image: "https://s3.ap-south-1.amazonaws.com/huts4u.shop/Community+Engagement.jpg",
     },
     {
       title: "Ready to Book Your Stay?",
       content:
         "Explore our rooms and make a reservation today to experience luxury and comfort like never before. Whether you’re here for business or leisure, our tailored services and state-of-the-art facilities ensure a memorable stay. Join us and discover why our guests return time and time again.",
-      image: "/assets/feature 2.jpg",
+      image: "https://s3.ap-south-1.amazonaws.com/huts4u.shop/feature+1.jpg",
     },
   ];
 
@@ -156,7 +156,7 @@ const AlternatingSection = ({
         component="img"
         sx={{
           height: 200,
-          width:{xs:'100%', md:300},
+          width: { xs: '100%', md: 300 },
           minHeight: 200,
           minWidth: 300,
           borderRadius: 2,

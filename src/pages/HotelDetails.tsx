@@ -54,14 +54,14 @@ const hotelData = {
     "Breakfast",
   ],
   images: [
-    "/assets/hotel 1.jpg",
-    "/assets/hotel 2.jpg",
-    "/assets/room-image 1.jpg",
-    "/assets/room-image 2.jpg",
-    "/assets/room-image 3.jpg",
-    "/assets/room-image 3.jpg",
-    "/assets/room-image 3.jpg",
-    "/assets/room-image 3.jpg",
+    "https://s3.ap-south-1.amazonaws.com/huts4u.shop/hotel+1.jpg",
+    "https://s3.ap-south-1.amazonaws.com/huts4u.shop/hotel+2.jpg",
+    "https://s3.ap-south-1.amazonaws.com/huts4u.shop/room-image+1.jpg",
+    "https://s3.ap-south-1.amazonaws.com/huts4u.shop/room-image+2.jpg",
+    "https://s3.ap-south-1.amazonaws.com/huts4u.shop/room-image+3.jpg",
+    "https://s3.ap-south-1.amazonaws.com/huts4u.shop/room-image+3.jpg",
+    "https://s3.ap-south-1.amazonaws.com/huts4u.shop/room-image+3.jpg",
+    "https://s3.ap-south-1.amazonaws.com/huts4u.shop/room-image+3.jpg",
   ],
   rooms: [
     {
@@ -85,7 +85,7 @@ const hotelData = {
         "Air Conditioning",
         "Air Conditioning",
       ],
-      image: "/assets/room-image 1.jpg",
+      image: "https://s3.ap-south-1.amazonaws.com/huts4u.shop/room-image+1.jpg",
     },
     {
       id: 2,
@@ -103,7 +103,7 @@ const hotelData = {
         "Laundry Service",
         "Air Conditioning",
       ],
-      image: "/assets/room-image 1.jpg",
+      image: "https://s3.ap-south-1.amazonaws.com/huts4u.shop/room-image+1.jpg",
     },
     {
       id: 3,
@@ -121,7 +121,7 @@ const hotelData = {
         "Laundry Service",
         "Air Conditioning",
       ],
-      image: "/assets/room-image 1.jpg",
+      image: "https://s3.ap-south-1.amazonaws.com/huts4u.shop/room-image+1.jpg",
     },
   ],
 };
@@ -442,9 +442,9 @@ const HotelDetails = () => {
 
               ...(isSticky &&
                 window.scrollY >= stopPosition && {
-                  position: "absolute",
-                  bottom: "85px",
-                }),
+                position: "absolute",
+                bottom: "85px",
+              }),
 
               // Stick to the bottom for screen sizes below 900px
               "@media (max-width: 900px)": {
@@ -681,7 +681,7 @@ const HotelDetails = () => {
                         ₹
                         {
                           selectedRoom.price[
-                            slot as keyof typeof selectedRoom.price
+                          slot as keyof typeof selectedRoom.price
                           ]
                         }
                         <br />
@@ -718,10 +718,10 @@ const HotelDetails = () => {
                   ₹
                   {selectedSlot.roomId && selectedSlot.slot
                     ? hotelData.rooms.find(
-                        (room) => room.id === selectedSlot.roomId
-                      )?.price[
-                        selectedSlot.slot as keyof typeof selectedRoom.price
-                      ]
+                      (room) => room.id === selectedSlot.roomId
+                    )?.price[
+                    selectedSlot.slot as keyof typeof selectedRoom.price
+                    ]
                     : 0}
                   .00
                 </Typography>

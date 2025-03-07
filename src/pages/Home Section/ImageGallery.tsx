@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
 
 const images = [
-  { src: "/assets/khandagiri.jpg", name: "khandagiri" },
-  { src: "/assets/puri.jpg", name: "puri" },
-  { src: "/assets/dhauli.jpg", name: "dhauli" },
-  { src: "/assets/konark.jpg", name: "konark" },
-  { src: "/assets/chilika.jpg", name: "chilika" },
+  { src: "https://s3.ap-south-1.amazonaws.com/huts4u.shop/khandagiri_optimized.jpg", name: "khandagiri" },
+  { src: "https://s3.ap-south-1.amazonaws.com/huts4u.shop/puri.jpg", name: "puri" },
+  { src: "https://s3.ap-south-1.amazonaws.com/huts4u.shop/dhauli.jpg", name: "dhauli" },
+  { src: "https://s3.ap-south-1.amazonaws.com/huts4u.shop/konark_hero_optimized.jpg", name: "konark" },
+  { src: "https://s3.ap-south-1.amazonaws.com/huts4u.shop/chilika.jpg", name: "chilika" },
 ];
 
 const ImageGallery = () => {
@@ -39,7 +39,7 @@ const ImageGallery = () => {
             minWidth: { xs: 100, md: images.length > 4 ? 200 : "25%" },
             width: "100px",
             textAlign: "center",
-            height:  { xs: 100, md: 200 },
+            height: { xs: 100, md: 200 },
             position: "relative",
             overflow: "hidden",
             borderRadius: "12px",

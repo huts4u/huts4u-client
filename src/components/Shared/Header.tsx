@@ -88,7 +88,7 @@ const Header: React.FC = () => {
               height: "64px",
               width: "120px",
             }}
-            image="/assets/logo bg.png"
+            image="https://s3.ap-south-1.amazonaws.com/huts4u.shop/logo+bg.png"
           />
           <CardMedia
             onClick={() => {
@@ -104,7 +104,7 @@ const Header: React.FC = () => {
               top: "50%",
               transform: "translateY(-50%)",
             }}
-            image="/assets/huts4ulogo.png"
+            image="https://s3.ap-south-1.amazonaws.com/huts4u.shop/huts4ulogo.png"
           />
 
           {!isMobile &&
@@ -152,7 +152,7 @@ const Header: React.FC = () => {
                   objectFit: "contain",
                   mb: 1
                 }}
-                image="/assets/logo.png"
+                image="https://s3.ap-south-1.amazonaws.com/huts4u.shop/huts4ulogo.png"
               />
               {navLinks.map((link) => (
                 <ListItem key={link.label} disablePadding>

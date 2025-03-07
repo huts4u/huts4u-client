@@ -8,7 +8,7 @@ const PrivacyPolicy = () => {
   return (
     <Container
       className="privacy-policy-root"
-      style={{ background: "white", padding: "16px",paddingTop:0 }}
+      style={{ background: "white", padding: "16px", paddingTop: 0 }}
     >
       <SectionHeader
         primaryText={"Privacy Policy"}
@@ -174,9 +174,9 @@ const PrivacyPolicy = () => {
               alignItems: "center",
             }}
           >
-         <Mail
+            <Mail
               style={{ marginTop: "-3px", marginRight: "5px" }}
-              />
+            />
             huts4u@mail.com
           </a>
         </Typography>

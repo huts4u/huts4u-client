@@ -95,7 +95,7 @@ const Footer = () => {
         >
           <Box
             sx={{
-              background: "url('/assets/bg.jpg')",
+              background: "url('https://s3.ap-south-1.amazonaws.com/huts4u.shop/bg_optimized.jpg')",
               backgroundSize: "cover",
               backgroundRepeat: "no-repeat",
               width: "50%",
@@ -196,7 +196,7 @@ const Footer = () => {
           px={2}
           sx={{
             fontFamily: "CustomFontM",
-            background: "url('/assets/footer.webp')",
+            background: "url('https://s3.ap-south-1.amazonaws.com/huts4u.shop/footer.webp')",
             backgroundSize: { xs: "70%", md: "30%" },
             backgroundRepeat: "no-repeat",
             backgroundPosition: "bottom left",

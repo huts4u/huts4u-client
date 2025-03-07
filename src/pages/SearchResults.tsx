@@ -47,7 +47,7 @@ const hotels = [
       "Breakfast",
       "Breakfast",
     ],
-    image: "/assets/hotel 1.jpg",
+    image: "https://s3.ap-south-1.amazonaws.com/huts4u.shop/hotel+1.jpg",
   },
   {
     id: 2,
@@ -65,7 +65,7 @@ const hotels = [
       "Private Beach",
       "Breakfast",
     ],
-    image: "/assets/hotel 2.jpg",
+    image: "https://s3.ap-south-1.amazonaws.com/huts4u.shop/hotel+2.jpg",
   },
   {
     id: 3,
@@ -83,7 +83,7 @@ const hotels = [
       "Private Beach",
       "Breakfast",
     ],
-    image: "/assets/room-image 2.jpg",
+    image: "https://s3.ap-south-1.amazonaws.com/huts4u.shop/room-image+2.jpg",
   },
 ];
 

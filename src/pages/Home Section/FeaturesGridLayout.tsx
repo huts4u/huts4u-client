@@ -12,7 +12,7 @@ const ImageGridLayout = () => {
                 sx={{
                   position: "relative",
                   height: "100%",
-                  background: "url('/assets/feature 1.jpg')",
+                  background: "url('https://s3.ap-south-1.amazonaws.com/huts4u.shop/feature+1.jpg')",
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }}
@@ -41,7 +41,7 @@ const ImageGridLayout = () => {
                 sx={{
                   position: "relative",
                   height: "100%",
-                  background: "url('/assets/feature 2.jpg')",
+                  background: "url('https://s3.ap-south-1.amazonaws.com/huts4u.shop/feature+2.jpg')",
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }}
@@ -70,7 +70,7 @@ const ImageGridLayout = () => {
                 sx={{
                   position: "relative",
                   height: "100%",
-                  background: "url('/assets/feature 3.jpg')",
+                  background: "url('https://s3.ap-south-1.amazonaws.com/huts4u.shop/feature+3.jpg')",
                   backgroundSize: "cover",
                   backgroundPosition: "center top",
                 }}
@@ -102,10 +102,10 @@ const ImageGridLayout = () => {
             sx={{
               position: "relative",
               height: "100%",
-              background: "url('/assets/feature 4.jpg')",
+              background: "url('https://s3.ap-south-1.amazonaws.com/huts4u.shop/feature+4.jpg')",
               backgroundSize: "cover",
               backgroundPosition: "center",
-              
+
             }}
           >
             <StyledTypography style={{ top: 26 }}>
@@ -122,17 +122,17 @@ const ImageGridLayout = () => {
 export default ImageGridLayout;
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
-  width:'100%',
+  width: '100%',
   position: "absolute",
   bottom: 26,
   left: "50%",
   transform: "translateX(-50%)",
-  color: color.thirdColor, 
+  color: color.thirdColor,
   textAlign: "center",
   lineHeight: 1.2,
 
   "& span": {
     fontWeight: 600,
-    fontSize: {xs:'20px', md:"22px"},
+    fontSize: { xs: '20px', md: "22px" },
   },
 }));

@@ -176,7 +176,7 @@ const BookingSummary = () => {
                 width: { xs: "100%", md: "250px" },
                 borderRadius: "12px",
               }}
-              image="/assets/room-image 1.jpg"
+              image="https://s3.ap-south-1.amazonaws.com/huts4u.shop/room-image+1.jpg"
             />
             <div>
               <Typography

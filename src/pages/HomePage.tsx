@@ -11,21 +11,21 @@ const HomePage = () => {
   const hotelData = [
     {
       id: 1,
-      image: "/assets/room-image 1.jpg",
+      image: "https://s3.ap-south-1.amazonaws.com/huts4u.shop/room-image+1.jpg",
       title: "Deluxe Room",
       price: "₹3500.00 / night",
       rating: 4.5,
     },
     {
       id: 2,
-      image: "/assets/room-image 2.jpg",
+      image: "https://s3.ap-south-1.amazonaws.com/huts4u.shop/room-image+2.jpg",
       title: "Luxury Suite",
       price: "₹5000.00 / night",
       rating: 4.8,
     },
     {
       id: 3,
-      image: "/assets/room-image 3.jpg",
+      image: "https://s3.ap-south-1.amazonaws.com/huts4u.shop/room-image+3.jpg",
       title: "Standard Room",
       price: "₹2200.00 / night",
       rating: 4.2,
