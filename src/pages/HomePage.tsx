@@ -1,14 +1,11 @@
-import { Box, Container, CircularProgress } from "@mui/material";
-import { Suspense, lazy } from "react";
+import { Box, Container } from "@mui/material";
 import HeroSection from "./Home Section/HeroSection";
-
-// Lazy load components
-const SectionHeader = lazy(() => import("../components/SectionHeader"));
-const FAQSection = lazy(() => import("./Home Section/FAQSection"));
-const ImageGridLayout = lazy(() => import("./Home Section/FeaturesGridLayout"));
-const HotelCardCarousel = lazy(() => import("./Home Section/HotelCardCarousel"));
-const ImageGallery = lazy(() => import("./Home Section/ImageGallery"));
-const TestimonialsCarousel = lazy(() => import("./Home Section/TestimonialsCarousel"));
+import SectionHeader from "../components/SectionHeader";
+import FAQSection from "./Home Section/FAQSection";
+import ImageGridLayout from "./Home Section/FeaturesGridLayout";
+import HotelCardCarousel from "./Home Section/HotelCardCarousel";
+import ImageGallery from "./Home Section/ImageGallery";
+import TestimonialsCarousel from "./Home Section/TestimonialsCarousel";
 
 const HomePage = () => {
   const hotelData = [
@@ -41,29 +38,27 @@ const HomePage = () => {
       <HeroSection />
 
       <Container sx={{ maxWidth: "1500px !important", overflow: "hidden" }}>
-        <Suspense fallback={<CircularProgress sx={{ display: "block", margin: "auto" }} />}>
-          <ImageGallery />
+        <ImageGallery />
 
-          <SectionHeader
-            primaryText={"Discover Top Rooms"}
-            subText={"Raising Comfort To The Highest Level"}
-          />
-          <HotelCardCarousel hotels={hotelData} />
+        <SectionHeader
+          primaryText={"Discover Top Rooms"}
+          subText={"Raising Comfort To The Highest Level"}
+        />
+        <HotelCardCarousel hotels={hotelData} />
 
-          <ImageGridLayout />
+        <ImageGridLayout />
 
-          <SectionHeader
-            primaryText={"What They Are Saying"}
-            subText={"Our Genuine Customer Reviews"}
-          />
-          <TestimonialsCarousel />
+        <SectionHeader
+          primaryText={"What They Are Saying"}
+          subText={"Our Genuine Customer Reviews"}
+        />
+        <TestimonialsCarousel />
 
-          <SectionHeader
-            primaryText={"Frequently Asked Questions"}
-            subText={"Answers to Your Most Common Questions"}
-          />
-          <FAQSection />
-        </Suspense>
+        <SectionHeader
+          primaryText={"Frequently Asked Questions"}
+          subText={"Answers to Your Most Common Questions"}
+        />
+        <FAQSection />
       </Container>
     </Box>
   );

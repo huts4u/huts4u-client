@@ -96,7 +96,7 @@ const Header: React.FC = () => {
             }}
             component="img"
             sx={{
-              height: "70px",
+              height: "65px",
               width: "100px",
               objectFit: "contain",
               position: "absolute",
@@ -104,7 +104,7 @@ const Header: React.FC = () => {
               top: "50%",
               transform: "translateY(-50%)",
             }}
-            image="https://s3.ap-south-1.amazonaws.com/huts4u.shop/huts4ulogo.png"
+            image="https://s3.ap-south-1.amazonaws.com/huts4u.shop/huts4ufinallogo-removebg-preview.png"
           />
 
           {!isMobile &&
@@ -152,7 +152,7 @@ const Header: React.FC = () => {
                   objectFit: "contain",
                   mb: 1
                 }}
-                image="https://s3.ap-south-1.amazonaws.com/huts4u.shop/huts4ulogo.png"
+                image="https://s3.ap-south-1.amazonaws.com/huts4u.shop/huts4ufinallogo-removebg-preview.png"
               />
               {navLinks.map((link) => (
                 <ListItem key={link.label} disablePadding>

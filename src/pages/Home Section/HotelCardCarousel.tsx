@@ -10,11 +10,13 @@ import {
 import Slider from "react-slick";
 import color from "../../components/color";
 import { CustomNextArrow, useScreenSize } from "../../components/style";
+import { useNavigate } from "react-router-dom";
+
 
 const HotelCardCarousel = ({ hotels }: any) => {
 
   const { isBelow400px } = useScreenSize();
-  
+
   const settings = {
     dots: false,
     infinite: true,
@@ -38,14 +40,16 @@ const HotelCardCarousel = ({ hotels }: any) => {
       },
     ],
   };
+  const navigate = useNavigate();
 
   return (
     <Slider {...settings}>
       {hotels.map((hotel: any, index: number) => (
         <Box p={2} key={hotel.id} display={"flex"} alignItems={"center"}>
           <Card
+            onClick={() => navigate(`/hotel/${hotel.id}`)}
             sx={{
-              width:isBelow400px?'300px': "320px",
+              width: isBelow400px ? '300px' : "320px",
               // mx: "auto",
               boxShadow: "none",
               borderRadius: "12px",
