@@ -26,12 +26,14 @@ import {
   MenuList,
   Popover,
   Toolbar,
+  Typography,
   useMediaQuery,
 } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import color from "../color";
 import { isLoggedIn, logout } from "../../services/axiosClient";
+import CustomButton from "../CustomButton";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -122,13 +124,37 @@ const Header: React.FC = () => {
 
         <div style={{ marginRight: "20px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            {isLoggedIn() ? (<>  <IconButton
-              style={{ background: color.thirdColor, color: color.firstColor }}
-              color="inherit"
-              onClick={handleClick}
-            >
-              <PersonOutline />
-            </IconButton></>) : (<></>)}
+            {isLoggedIn() ? (
+              <>
+                {" "}
+                <CustomButton
+                  onClick={() => {
+                    navigate("/property-registration");
+                  }}
+                  variant="contained"
+                  customStyles={{
+                    width: "100%",
+                    fontSize: "12px",
+                    marginRight: "20px",
+                  }}
+                >
+                  {" "}
+                  Join as hotelier
+                </CustomButton>
+                <IconButton
+                  style={{
+                    background: color.thirdColor,
+                    color: color.firstColor,
+                  }}
+                  color="inherit"
+                  onClick={handleClick}
+                >
+                  <PersonOutline />
+                </IconButton>
+              </>
+            ) : (
+              <></>
+            )}
             {isMobile && (
               <IconButton color="inherit" onClick={toggleDrawer(true)}>
                 <Menu />
@@ -150,7 +176,7 @@ const Header: React.FC = () => {
                   height: "70px",
                   width: "100px",
                   objectFit: "contain",
-                  mb: 1
+                  mb: 1,
                 }}
                 image="/assets/logo.png"
               />
@@ -169,9 +195,9 @@ const Header: React.FC = () => {
                         background: color.background,
                         borderRadius: "50%",
                         color: "white",
-                        width: '24px',
-                        height: '24px',
-                        minWidth: '0px'
+                        width: "24px",
+                        height: "24px",
+                        minWidth: "0px",
                       }}
                     >
                       {link.icon}

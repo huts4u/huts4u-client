@@ -66,9 +66,6 @@ const EditProfileForm = ({
               padding: 3,
               background: "#f6f6f6",
               boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.11) inset",
-
-              // border: "solid 2px",
-              // borderColor: color.firstColor,
               borderRadius: 2,
               minHeight: "100vh",
               zIndex: 2,

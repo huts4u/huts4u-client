@@ -13,6 +13,7 @@ import BookingSummary from "./pages/BookingSummary";
 import AboutUs from "./pages/AboutUs";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ContactUs from "./pages/ContactUs";
+import PropertyForm from "./pages/Hotel Registration/PropertyForm";
 
 const App: React.FC = () => {
   return (
@@ -28,6 +29,7 @@ const App: React.FC = () => {
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/contact-us" element={<ContactUs />} />
+          <Route path="/property-registration" element={<PropertyForm />} />
         </Routes>
         <Footer />
       </Router>

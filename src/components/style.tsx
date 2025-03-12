@@ -1,3 +1,4 @@
+import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import {
   FormControlLabel,
   IconButton,
@@ -6,10 +7,9 @@ import {
   styled,
   TextField,
   useMediaQuery,
-  useTheme,
+  useTheme
 } from "@mui/material";
 import color from "./color";
-import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 
 export const BoxStyle = {
   p: 2,
@@ -149,7 +149,7 @@ export const CustomNextArrow = (props: any) => {
 };
 
 export const CustomTextField = styled(TextField)({
-  marginBottom:'10px',
+  marginBottom: "10px",
   "& .MuiOutlinedInput-root": {
     "& fieldset": {
       border: "none",
@@ -166,20 +166,45 @@ export const CustomTextField = styled(TextField)({
   },
   "& .MuiInputBase-input": {
     color: color.firstColor,
-
   },
   "& .MuiInputLabel-root": {
     color: color.firstColor,
-
   },
   "& .MuiInputLabel-root.Mui-focused": {
     color: color.firstColor,
   },
 });
 
-
 export const useScreenSize = () => {
   const theme = useTheme();
   const isBelow400px = useMediaQuery(theme.breakpoints.down(400));
   return { isBelow400px };
+};
+
+export const inputSx = {
+  border: "none",
+  borderRadius: "52px",
+  boxShadow: "4px 4px 10px rgba(104, 39, 184, 0.17)",
+  color: color.firstColor,
+  padding: "0px",
+  marginTop: "0px",
+  width: "100%",
+  boxSizing: "border-box",
+  "& .MuiOutlinedInput-root": {
+    padding: "0px",
+    borderBottom: "4px solid",
+    borderColor: color.firstColor,
+    "& fieldset": {
+      border: "none",
+    },
+    "&:hover fieldset": {
+      border: "none",
+    },
+    "&.Mui-focused fieldset": {
+      border: "none",
+    },
+    "& .MuiInputLabel-root": {
+      color: color.firstColor,
+    },
+  },
 };
