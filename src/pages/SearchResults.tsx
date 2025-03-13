@@ -32,7 +32,7 @@ import SearchSection from "./Home Section/SearchSection";
 const hotels = [
   {
     id: 1,
-    name: "Hotel Metropol by Maier Private hotels",
+    propertyName: "Hotel Metropol by Maier Private hotels",
     location: "Mancheswar, Bhubaneswar",
     rating: 4.7,
     reviews: 354,
@@ -51,7 +51,7 @@ const hotels = [
   },
   {
     id: 2,
-    name: "Hotel Metropol by Maier Private hotels",
+    propertyName: "Hotel Metropol by Maier Private hotels",
     location: "Mancheswar, Bhubaneswar",
     rating: 4.7,
     reviews: 354,
@@ -69,7 +69,7 @@ const hotels = [
   },
   {
     id: 3,
-    name: "Hotel Metropol by Maier Private hotels",
+    propertyName: "Hotel Metropol by Maier Private hotels",
     location: "Mancheswar, Bhubaneswar",
     rating: 4.7,
     reviews: 354,
@@ -380,7 +380,7 @@ const SearchResults = () => {
                   component="img"
                   sx={{ width: { xs: "100%", md: 280 }, height: "100%" }}
                   image={hotel.image}
-                  alt={hotel.name}
+                  alt={hotel.propertyName}
                 />
                 <CardContent
                   style={{
@@ -465,7 +465,7 @@ const SearchResults = () => {
                       WebkitBoxOrient: "vertical",
                     }}
                   >
-                    {hotel.name}
+                    {hotel.propertyName}
                   </Typography>
                   <Typography
                     color="textSecondary"

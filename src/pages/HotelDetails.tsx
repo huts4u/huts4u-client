@@ -40,7 +40,7 @@ import LoginOtpModal from "./Account/LoginOtpModal";
 import SearchSection from "./Home Section/SearchSection";
 
 const hotelData = {
-  name: "Hotel Metropol by Maier Private hotels",
+  propertyName: "Hotel Metropol by Maier Private hotels",
   address: "Plot no 10, 11, Mancheswar, Bhubaneswar, Odisha 751001, India",
   description:
     "A good description should be a narrative. It should tell the story of your property. It should focus on the emotions that the property and its amenities evoke. This is where you can describe the style of the property, the history of those who have operated there, and the importance of its place in the neighborhood.",
@@ -53,7 +53,7 @@ const hotelData = {
     "Private Beach",
     "Breakfast",
   ],
-  images: [
+  propertyImages: [
     "/assets/hotel 1.jpg",
     "/assets/hotel 2.jpg",
     "/assets/room-image 1.jpg",
@@ -66,7 +66,7 @@ const hotelData = {
   rooms: [
     {
       id: 1,
-      name: "Deluxe Double Room",
+      propertyName: "Deluxe Double Room",
       size: "225 sqft (21 sq.m) | Double Bed",
       price: {
         "3 hrs": 1543,
@@ -89,7 +89,7 @@ const hotelData = {
     },
     {
       id: 2,
-      name: "Superior Double Room",
+      propertyName: "Superior Double Room",
       size: "250 sqft (23 sq.m) | Queen Bed",
       price: {
         "3 hrs": 1743,
@@ -107,7 +107,7 @@ const hotelData = {
     },
     {
       id: 3,
-      name: "Superior Double Room",
+      propertyName: "Superior Double Room",
       size: "250 sqft (23 sq.m) | Queen Bed",
       price: {
         "3 hrs": 1743,
@@ -277,7 +277,7 @@ const HotelDetails = () => {
               color: color.firstColor,
             }}
           >
-            {hotelData.name}
+            {hotelData.propertyName}
           </Typography>
           <Typography
             color="textSecondary"
@@ -292,7 +292,7 @@ const HotelDetails = () => {
           </Typography>
 
           <Box py={2} sx={{ pr: { xs: 0, md: 2 }, mx: -1 }}>
-            <ImageGrid images={hotelData.images}></ImageGrid>
+            <ImageGrid propertyImages={hotelData.propertyImages}></ImageGrid>
           </Box>
 
           <Box
@@ -639,7 +639,7 @@ const HotelDetails = () => {
                           control={<CustomRadio />}
                           label={
                             <Typography sx={{ fontWeight: "bold" }}>
-                              {selectedRoom.name}
+                              {selectedRoom.propertyName}
                             </Typography>
                           }
                         />
@@ -826,7 +826,7 @@ const HotelDetails = () => {
                           width: { xs: "100%", md: "250px" },
                         }}
                         image={room.image}
-                        alt={room.name}
+                        alt={room.propertyName}
                       />
 
                       <Typography
@@ -852,7 +852,7 @@ const HotelDetails = () => {
                           transition: "all 0.3s",
                         }}
                       >
-                        {room.name}
+                        {room.propertyName}
                       </Typography>
                       <Typography variant="body2">{room.size}</Typography>
                     </Box>
@@ -936,13 +936,13 @@ const HotelDetails = () => {
 export default HotelDetails;
 
 interface ImageGridProps {
-  images: string[];
+  propertyImages: string[];
 }
 
-const ImageGrid: React.FC<ImageGridProps> = ({ images }) => {
-  const maxImages = Math.min(images.length, 7);
-  const displayImages = images.slice(0, maxImages);
-  const hasMore = images.length > 7;
+const ImageGrid: React.FC<ImageGridProps> = ({ propertyImages }) => {
+  const maxImages = Math.min(propertyImages.length, 7);
+  const displayImages = propertyImages.slice(0, maxImages);
+  const hasMore = propertyImages.length > 7;
   const [open, setOpen] = useState(false);
   const isMobile = useMediaQuery("(max-width: 900px)");
 
@@ -1032,7 +1032,7 @@ const ImageGrid: React.FC<ImageGridProps> = ({ images }) => {
           }}
         >
           <Typography variant="body2">
-            + {isMobile ? images.length - 1 : images.length - 7} More
+            + {isMobile ? propertyImages.length - 1 : propertyImages.length - 7} More
           </Typography>
         </Box>
       )}
@@ -1072,7 +1072,7 @@ const ImageGrid: React.FC<ImageGridProps> = ({ images }) => {
               gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
             }}
           >
-            {images.map((img, index) => (
+            {propertyImages.map((img, index) => (
               <img
                 key={index}
                 src={img}
@@ -1095,7 +1095,7 @@ const ImageGrid: React.FC<ImageGridProps> = ({ images }) => {
 const RoomAmenities = ({
   room,
 }: {
-  room: { name: string; amenities: string[] };
+  room: { propertyName: string; amenities: string[] };
 }) => {
   const [showAll, setShowAll] = useState(false);
   const displayedAmenities = showAll

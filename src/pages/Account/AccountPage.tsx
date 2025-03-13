@@ -46,7 +46,6 @@ const AccountPage = () => {
           position: "absolute",
           zIndex: 1,
           backdropFilter: "blur(2px)",
-          // background: 'white',
         }}
       ></Box>
 
@@ -61,7 +60,6 @@ const AccountPage = () => {
           style={{
             display: "flex",
             flexDirection: "column",
-
             // gap: "20px",
             maxWidth: 600,
             margin: "auto",
@@ -76,11 +74,9 @@ const AccountPage = () => {
                 display: "flex",
                 alignItems: "center",
                 flexDirection: "column",
-                // justifyContent: "center",
                 borderRadius: "12px",
                 position: "relative",
                 overflow: "hidden",
-                // boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.11)",
                 backdropFilter: "blur(10px)",
                 background: "#f6f6f6",
               }}
@@ -114,9 +110,6 @@ const AccountPage = () => {
                   width: "100%",
                   borderRadius: "8px",
                   color:color.firstColor
-                  // boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.11)",
-                  // border: "solid 2px",
-                  // borderColor: color.thirdColor,
                 }}
               >
                 <Typography variant="h5" fontWeight="bold" >
