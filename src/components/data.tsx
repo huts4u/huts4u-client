@@ -77,3 +77,21 @@ export const amenitiesOptions = [
   "BBQ Facilities",
   "Fire Safety",
 ];
+
+
+export const roomTypes = [
+  { value: "Single Room", label: "Single Room", details: "A basic room with a single bed, ideal for solo travelers." },
+  { value: "Double Room", label: "Double Room", details: "Comes with a double bed or two single beds, suitable for two people." },
+  { value: "Deluxe Room", label: "Deluxe Room", details: "A more spacious version of a standard room with better furnishings." },
+  { value: "Executive Room", label: "Executive Room", details: "Designed for business travelers with a work desk and extra amenities." },
+  { value: "Club Room", label: "Club Room", details: "Offers premium benefits like lounge access and complimentary breakfast." },
+  { value: "Suite Room", label: "Suite Room", details: "A larger space with a separate living area, ideal for families or business executives." },
+  { value: "Presidential Suite", label: "Presidential Suite", details: "A luxurious option with multiple rooms and high-end services." },
+  { value: "Royal Suite", label: "Royal Suite", details: "Inspired by Indian royalty with grand interiors and luxury amenities." },
+  { value: "Heritage Room", label: "Heritage Room", details: "Traditional decor and antique furnishings, found in heritage hotels." },
+  { value: "Cottage/Villa", label: "Cottage/Villa", details: "Standalone accommodations, often found in resorts with private gardens or pools." },
+  { value: "Treehouse Room", label: "Treehouse Room", details: "Unique elevated rooms, mostly available in nature retreats." },
+  { value: "Houseboat Room", label: "Houseboat Room", details: "Found in Kerala and Kashmir, offering a floating hotel experience." },
+  { value: "Studio Apartment", label: "Studio Apartment", details: "A self-contained unit with a kitchenette, preferred for long stays." },
+  { value: "Serviced Apartment", label: "Serviced Apartment", details: "A fully furnished apartment with hotel-like services." },
+];

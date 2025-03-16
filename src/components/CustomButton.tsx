@@ -16,17 +16,17 @@ const CustomButton: React.FC<CustomButtonProps> = ({
     <Button
       onClick={onClick}
       style={{
+        width: "fit-content",
         background: color.background,
         textTransform: "none",
         fontFamily: "CustomFontB",
-        padding:'10px 20px',
-        borderRadius:'8px',
-        boxShadow:'-4px -4px 10px rgba(255, 255, 255, 0.36) inset',
+        padding: "10px 25px",
+        borderRadius: "8px",
+        boxShadow: "-4px -4px 10px rgba(255, 255, 255, 0.36) inset",
         ...customStyles,
       }}
       sx={{
         fontSize: { xs: "16px", md: "18px" },
-
       }}
       {...props}
     >

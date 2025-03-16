@@ -2,11 +2,9 @@
 import {
   AddCircleOutline,
   CheckCircle,
-  Close,
   ExpandLess,
   ExpandMore,
-  FiberManualRecord,
-  Star,
+  Star
 } from "@mui/icons-material";
 import {
   Box,
@@ -18,24 +16,26 @@ import {
   FormControl,
   Grid,
   List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Modal,
   RadioGroup,
   styled,
   Tab,
   Tabs,
   ToggleButton,
   Typography,
-  useMediaQuery,
+  useMediaQuery
 } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import color from "../components/color";
 import CustomButton from "../components/CustomButton";
 import { amenityIcons } from "../components/data";
-import { BoxStyle, CustomRadio, StyledLabel } from "../components/style";
+import {
+  BoxStyle,
+  CustomRadio,
+  ImageGrid,
+  RoomAmenities,
+  StyledLabel,
+} from "../components/style";
 import LoginOtpModal from "./Account/LoginOtpModal";
 import SearchSection from "./Home Section/SearchSection";
 
@@ -934,248 +934,6 @@ const HotelDetails = () => {
 };
 
 export default HotelDetails;
-
-interface ImageGridProps {
-  propertyImages: string[];
-}
-
-const ImageGrid: React.FC<ImageGridProps> = ({ propertyImages }) => {
-  const maxImages = Math.min(propertyImages.length, 7);
-  const displayImages = propertyImages.slice(0, maxImages);
-  const hasMore = propertyImages.length > 7;
-  const [open, setOpen] = useState(false);
-  const isMobile = useMediaQuery("(max-width: 900px)");
-
-  return (
-    <Box
-      sx={{
-        display: { xs: "block", md: "grid" },
-        gap: { xs: 0, md: 1 },
-        width: "100%",
-        height: "300px",
-        gridTemplateColumns:
-          displayImages.length > 5 ? "40% 20% 20% 20%" : "60% 20% 20%",
-        gridTemplateRows: "auto",
-        "& img": {
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          borderRadius: "8px",
-        },
-        position: "relative",
-      }}
-    >
-      <Box
-        onClick={() => setOpen(true)}
-        sx={{
-          gridColumn: { xs: "auto", md: "span 1" },
-          gridRow: { xs: "auto", md: "span 2" },
-          height: "300px",
-          width: { xs: "100%", md: "auto" },
-          display: { xs: "block", md: "grid" },
-        }}
-      >
-        <img src={displayImages[0]} alt="Main" />
-      </Box>
-
-      {!isMobile &&
-        displayImages.slice(1).map((src, index) => {
-          if (index % 2 === 0) {
-            return (
-              <Box
-                onClick={() => setOpen(true)}
-                key={index}
-                display="grid"
-                sx={{
-                  gridTemplateRows: "146px 146px",
-                  height: "300px",
-                  gap: "8px",
-                }}
-              >
-                <img
-                  src={src}
-                  alt={`Image ${index + 2}`}
-                  style={{ height: "100%", width: "100%", objectFit: "cover" }}
-                />
-
-                {displayImages[index + 2] && (
-                  <img
-                    src={displayImages[index + 2]}
-                    alt={`Image ${index + 3}`}
-                    style={{
-                      height: "100%",
-                      width: "100%",
-                      objectFit: "cover",
-                    }}
-                  />
-                )}
-              </Box>
-            );
-          }
-          return null;
-        })}
-
-      {hasMore && (
-        <Box
-          sx={{
-            position: "absolute",
-            bottom: 10,
-            right: 10,
-            background: color.background,
-            color: "white",
-            borderRadius: "8px",
-            p: 1,
-            textAlign: "center",
-            cursor: "pointer",
-            boxShadow:
-              "-4px -4px 10px rgba(32, 32, 32, 0.28) inset, 0px 0px 10px rgba(32, 32, 32, 0.28)",
-          }}
-        >
-          <Typography variant="body2">
-            + {isMobile ? propertyImages.length - 1 : propertyImages.length - 7} More
-          </Typography>
-        </Box>
-      )}
-
-      <Modal open={open} onClose={() => setOpen(false)}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "80%",
-            height: "80%",
-            bgcolor: "white",
-            boxShadow: 24,
-            p: 2,
-            overflowY: "auto",
-            borderRadius: "8px",
-          }}
-        >
-          <Typography variant="h6" textAlign="center" mb={2}>
-            All Images
-          </Typography>
-
-          <Close
-            onClick={() => setOpen(false)}
-            sx={{
-              position: "absolute",
-              top: 10,
-              right: 10,
-            }}
-          ></Close>
-          <Box
-            display="grid"
-            gap={2}
-            sx={{
-              gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
-            }}
-          >
-            {propertyImages.map((img, index) => (
-              <img
-                key={index}
-                src={img}
-                alt={`Image ${index + 1}`}
-                style={{
-                  width: "100%",
-                  height: "150px",
-                  objectFit: "cover",
-                  borderRadius: "8px",
-                }}
-              />
-            ))}
-          </Box>
-        </Box>
-      </Modal>
-    </Box>
-  );
-};
-
-const RoomAmenities = ({
-  room,
-}: {
-  room: { propertyName: string; amenities: string[] };
-}) => {
-  const [showAll, setShowAll] = useState(false);
-  const displayedAmenities = showAll
-    ? room.amenities
-    : room.amenities.slice(0, 6);
-  const halfIndex = Math.ceil(displayedAmenities.length / 2);
-  const firstColumn = displayedAmenities.slice(0, halfIndex);
-  const secondColumn = displayedAmenities.slice(halfIndex);
-
-  return (
-    <>
-      <Box sx={{ mt: { xs: 1, md: 0 } }}>
-        <Grid container spacing={{ xs: 1, md: 0 }}>
-          {[firstColumn, secondColumn].map((column, colIndex) => (
-            <Grid item xs={6} md={12} key={colIndex}>
-              <List disablePadding>
-                {column.map((amenity, index) => {
-                  const isLastItem =
-                    colIndex === 1 &&
-                    index === column.length - 1 &&
-                    room.amenities.length > 6;
-
-                  return (
-                    <ListItem
-                      key={index}
-                      sx={{
-                        py: 0.2,
-                        px: { xs: 0, md: 2 },
-                        display: "flex",
-                        alignItems: "center",
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "flex-start",
-                        }}
-                      >
-                        <ListItemIcon sx={{ minWidth: "20px", mt: 0.5 }}>
-                          <FiberManualRecord sx={{ fontSize: "8px" }} />
-                        </ListItemIcon>
-                        <ListItemText
-                          style={{ margin: 0 }}
-                          primary={amenity}
-                          primaryTypographyProps={{
-                            style: { fontSize: "12px" },
-                          }}
-                        />
-                      </div>
-
-                      {isLastItem && (
-                        <>
-                          <Button
-                            onClick={() => setShowAll(!showAll)}
-                            sx={{
-                              textTransform: "none",
-                              fontSize: "14px",
-                              ml: "auto",
-                              p: 0,
-                              color: color.firstColor,
-                              fontWeight: "bold",
-                            }}
-                          >
-                            {showAll ? "Show Less" : "... Show All"}
-                          </Button>
-                          {showAll ? <ExpandLess /> : <ExpandMore />}
-                        </>
-                      )}
-                    </ListItem>
-                  );
-                })}
-              </List>
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
-    </>
-  );
-};
 
 const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
   borderRadius: "4px",

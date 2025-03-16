@@ -13,7 +13,14 @@ import BookingSummary from "./pages/BookingSummary";
 import AboutUs from "./pages/AboutUs";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ContactUs from "./pages/ContactUs";
-import PropertyForm from "./pages/Hotel Registration/PropertyForm";
+import PropertyForm from "./pages/Hotel/PropertyForm";
+import Login from "./pages/Account/Login";
+import Signup from "./pages/Account/Signup";
+import HotelLayout from "./components/Shared/HotelLayout";
+import Dashboard from "./pages/Hotel/Dashboard";
+import MyHotels from "./pages/Hotel/MyHotels";
+import MyHotelDetails from "./pages/Hotel/MyHotelDetails";
+import ApplicationPreview from "./pages/Hotel/ApplicationPreview";
 
 const App: React.FC = () => {
   return (
@@ -22,6 +29,8 @@ const App: React.FC = () => {
         <Header />
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/account" element={<AccountPage />} />
           <Route path="/search" element={<SearchResults />} />
           <Route path="/hotel/:id" element={<HotelDetails />} />
@@ -30,6 +39,15 @@ const App: React.FC = () => {
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/property-registration" element={<PropertyForm />} />
+
+
+          <Route element={<HotelLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/my-hotels" element={<MyHotels />} />
+          <Route path="/hotel-details/:id" element={<MyHotelDetails />} />
+          <Route path="/hotel-applications" element={<MyHotels />} />
+          <Route path="/hotel-application/:id" element={<ApplicationPreview />} />
+          </Route>
         </Routes>
         <Footer />
       </Router>

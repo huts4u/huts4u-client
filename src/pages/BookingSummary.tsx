@@ -7,16 +7,16 @@ import {
   Divider,
   Typography,
 } from "@mui/material";
+import { useFormik } from "formik";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
+import * as Yup from "yup";
 import CustomButton from "../components/CustomButton";
+import RenderRazorpay from "../components/Payments/RanderPayments";
 import color from "../components/color";
 import { BoxStyle, CustomTextField } from "../components/style";
-import { useLocation, useParams } from "react-router-dom";
-import { useFormik } from "formik";
-import * as Yup from "yup";
 import { createOrder, getPortfolioDetails, Signup } from "../services/services";
-import { toast } from "react-toastify";
-import { useEffect, useState } from "react";
-import RenderRazorpay from "../components/Payments/RanderPayments";
 
 const bookingData = {
   hotelName: "Best Western Ashoka",
@@ -35,7 +35,6 @@ const bookingData = {
   guest: {
     name: "",
     email: "",
-
   },
 };
 const validationSchema = Yup.object({
@@ -48,16 +47,17 @@ const BookingSummary = () => {
   const phoneNumber = location.state?.phoneNumber;
 
   const [user, setUser] = useState<any>({});
-  console.log(user)
-
+  console.log(user);
 
   useEffect(() => {
-    getPortfolioDetails(phoneNumber.slice(2)).then((res) => {
-      setUser(res?.data?.data);
-    }).catch((err) => {
-      console.log(err);
-    })
-  }, [])
+    getPortfolioDetails(phoneNumber.slice(2))
+      .then((res) => {
+        setUser(res?.data?.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [phoneNumber]);
   const [orderDetails, setOrderDetails] = useState(null);
   // console.log(orderDetails)
   const handlePayment = async () => {
@@ -95,7 +95,6 @@ const BookingSummary = () => {
     }
   };
 
-
   const formik = useFormik({
     initialValues: {
       name: user?.userName || "",
@@ -109,21 +108,21 @@ const BookingSummary = () => {
         userName: values.name,
         email: values.email,
         phoneNumber: phoneNumber.slice(2),
-        isVerified: true
-      }
+        isVerified: true,
+      };
       if (user?.data === null) {
-        Signup(payLoad).then((res) => {
-          console.log(res)
-        }).catch((err) => {
-          toast(err);
-        })
+        Signup(payLoad)
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((err) => {
+            toast(err);
+          });
         handlePayment();
       } else {
         handlePayment();
       }
-
     },
-
   });
   return (
     <Box
@@ -323,7 +322,11 @@ const BookingSummary = () => {
             Pay Now
           </CustomButton> */}
           <form onSubmit={formik.handleSubmit}>
-            <Typography variant="h6" mt={4} sx={{ color: color.firstColor, fontWeight: "bold" }}>
+            <Typography
+              variant="h6"
+              mt={4}
+              sx={{ color: color.firstColor, fontWeight: "bold" }}
+            >
               Guest Information
             </Typography>
 
@@ -337,7 +340,7 @@ const BookingSummary = () => {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               error={formik.touched.name && Boolean(formik.errors.name)}
-            // helperText={formik.touched.name && formik.errors.name}
+              // helperText={formik.touched.name && formik.errors.name}
             />
 
             {/* Email Field */}
@@ -350,18 +353,24 @@ const BookingSummary = () => {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               error={formik.touched.email && Boolean(formik.errors.email)}
-            // helperText={formik.touched.email && formik.errors.email}
+              // helperText={formik.touched.email && formik.errors.email}
             />
 
-            <CustomButton variant="contained" color="primary" fullWidth sx={{ mt: 2 }} type="submit">
+            <CustomButton
+              variant="contained"
+              color="primary"
+              fullWidth
+              sx={{ mt: 2 }}
+              type="submit"
+            >
               Pay Now
             </CustomButton>
             {orderDetails && (
               <RenderRazorpay
                 orderDetails={orderDetails}
                 amount={bookingData.roomPrice}
-              // courseId={cartItems[0].id}
-              // userId={getUserId()}
+                // courseId={cartItems[0].id}
+                // userId={getUserId()}
               />
             )}
           </form>

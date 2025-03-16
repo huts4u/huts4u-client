@@ -83,7 +83,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         {isDragActive ? "Drop files here..." : `Click or drag files to upload ${label}`}
       </Typography>
       <Typography variant="caption" display="block">
-        {multiple ? `Up to ${maxFiles} files` : "Single file"}, Max {maxSize / (1024 * 1024)}MB each, <br/> (PDF, JPEG, PNG, WEBP)
+        {multiple ? `Up to ${maxFiles} files` : "Single file"}, Max {maxSize / (1024 * 1024)}MB each, <br/> (JPEG, PNG, WEBP)
       </Typography>
 
       {/* Show Error Messages */}

@@ -7,18 +7,20 @@ import "react-phone-input-2/lib/material.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import color from "../../components/color";
-import "./Login.css";
 import { sendOTP, verifyOTP } from "../../services/services";
+import "./Login.css";
 
-import { error } from "console";
 import { toast } from "react-toastify";
-import { setCurrentAccessToken, setCurrentUser } from "../../services/axiosClient";
+import {
+  setCurrentAccessToken,
+  setCurrentUser,
+} from "../../services/axiosClient";
 
 const LoginOtpModal = () => {
   const [step, setStep] = useState(1);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [countryCode, setCountryCode] = useState("in");
-  const [sessionId, setSessionId] = useState('');
+  const [sessionId, setSessionId] = useState("");
   const navigate = useNavigate();
 
   const [otp, setOtp] = useState(Array(4).fill(""));
@@ -46,25 +48,27 @@ const LoginOtpModal = () => {
     }),
     onSubmit: (values) => {
       setPhoneNumber(values.phone);
-      sendOtp(values.phone)
+      sendOtp(values.phone);
     },
   });
 
   const sendOtp = async (phoneNumber: any) => {
     console.log(phoneNumber.slice(2));
     const payLoad = {
-      "phone": phoneNumber.slice(2)
+      phone: phoneNumber.slice(2),
     };
 
-    sendOTP(payLoad).then((res) => {
-      console.log(res);
-      toast(res?.data?.msg);
-      setSessionId(res?.data?.data)
-      setStep(2);
-    }).catch((error) => {
-      console.log(error);
-    })
-  }
+    sendOTP(payLoad)
+      .then((res) => {
+        console.log(res);
+        toast(res?.data?.msg);
+        setSessionId(res?.data?.data);
+        setStep(2);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const handleOtpChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
@@ -80,19 +84,23 @@ const LoginOtpModal = () => {
   const handleOtpSubmit = () => {
     if (otp.join("").length === 4) {
       const payLoad = {
-        "otp": otp.join(""),
-        "sessionId": sessionId,
-        "phone": phoneNumber.slice(2)
-      }
-      verifyOTP(payLoad).then((res) => {
-        setCurrentAccessToken(res?.data?.data?.token);
-        setCurrentUser(res?.data?.data?.user);
-        toast(res?.data?.msg);
-        navigate(`/booking-summary/${phoneNumber}`, { replace: true, state: { phoneNumber } });
-      }).catch((err) => {
-        toast(err);
-      })
-
+        otp: otp.join(""),
+        sessionId: sessionId,
+        phone: phoneNumber.slice(2),
+      };
+      verifyOTP(payLoad)
+        .then((res) => {
+          setCurrentAccessToken(res?.data?.data?.token);
+          setCurrentUser(res?.data?.data?.user);
+          toast(res?.data?.msg);
+          navigate(`/booking-summary/${phoneNumber}`, {
+            replace: true,
+            state: { phoneNumber },
+          });
+        })
+        .catch((err) => {
+          toast(err);
+        });
     } else {
       alert("Enter complete OTP");
     }

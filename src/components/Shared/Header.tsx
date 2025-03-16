@@ -3,7 +3,6 @@ import {
   ChevronRightRounded,
   ContactMail,
   CorporateFare,
-  Help,
   Home,
   Hotel,
   Info,
@@ -26,13 +25,12 @@ import {
   MenuList,
   Popover,
   Toolbar,
-  Typography,
   useMediaQuery,
 } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import color from "../color";
 import { isLoggedIn, logout } from "../../services/axiosClient";
+import color from "../color";
 import CustomButton from "../CustomButton";
 
 const Header: React.FC = () => {
@@ -63,16 +61,18 @@ const Header: React.FC = () => {
     { label: "Contact", icon: <ContactMail />, path: "/contact-us" },
     // { label: "Help", icon: <Help />, path: "/help" },
     { label: "About", icon: <Info />, path: "/about-us" },
+    { label: "Hotelier", icon: <Info />, path: "/dashboard" },
   ];
   return (
     <AppBar
-      position="static"
+      position="sticky"
       sx={{
         background: color.background,
         p: 0,
         zIndex: 100,
-        position: "relative",
+        // position: "relative",
         boxShadow: "none",
+        top:0
       }}
     >
       <Toolbar
@@ -127,20 +127,20 @@ const Header: React.FC = () => {
             {isLoggedIn() ? (
               <>
                 {" "}
+                {!isMobile && (
                 <CustomButton
                   onClick={() => {
                     navigate("/property-registration");
                   }}
                   variant="contained"
                   customStyles={{
-                    width: "100%",
                     fontSize: "12px",
                     marginRight: "20px",
                   }}
                 >
                   {" "}
                   Join as hotelier
-                </CustomButton>
+                </CustomButton> )}
                 <IconButton
                   style={{
                     background: color.thirdColor,
@@ -153,7 +153,22 @@ const Header: React.FC = () => {
                 </IconButton>
               </>
             ) : (
-              <></>
+              <>
+                {" "}
+                <CustomButton
+                  onClick={() => {
+                    navigate("/login");
+                  }}
+                  variant="contained"
+                  customStyles={{
+                    fontSize: "12px",
+                    marginRight: "20px",
+                  }}
+                >
+                  {" "}
+                  Login
+                </CustomButton>
+              </>
             )}
             {isMobile && (
               <IconButton color="inherit" onClick={toggleDrawer(true)}>

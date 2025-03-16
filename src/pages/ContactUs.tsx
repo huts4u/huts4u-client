@@ -223,7 +223,7 @@ const ContactUs = ({ open, handleClose }: any) => {
                   helperText={touched.message && errors.message}
                 />
 
-                <CustomButton variant="contained" color="primary" type="submit">
+                <CustomButton customStyles={{margin:'auto'}} variant="contained" color="primary" type="submit">
                   Submit
                 </CustomButton>
               </Form>
