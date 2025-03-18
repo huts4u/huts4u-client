@@ -21,6 +21,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import color from "../../components/color";
 import CustomButton from "../../components/CustomButton";
 import { amenityIcons } from "../../components/data";
+import { useEffect, useState } from "react";
+import { getMyAllHotels, getMyAllHotelswithBelongsTo } from "../../services/services";
+import { getUserId } from "../../services/axiosClient";
 
 const hotels = [
   {
@@ -88,6 +91,34 @@ const MyHotels = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
+  const [pendinghotel, setPendingHotel] = useState<any[]>([]);
+  const [rejecthotel, setRejectHotel] = useState<any[]>([]);
+  const [aprovedhotel, setAprovedHotel] = useState<any[]>([]);
+  // const [count, setCount] = useState<any>("");
+
+
+  useEffect(() => {
+    getMyAllHotelswithBelongsTo({
+      userId: getUserId(),
+      // status: 'Aproved',
+      secondTable: 'Room'
+    }).then((res) => {
+      const data = res?.data?.data;
+      if (data) {
+        const pendingHotels = data.filter((hotel: any) => hotel.status === 'Pending');
+        const approvedHotels = data.filter((hotel: any) => hotel.status === 'Aproved');
+        const rejectedHotels = data.filter((hotel: any) => hotel.status === 'Reject');
+        setPendingHotel(pendingHotels);
+        setAprovedHotel(approvedHotels);
+        setRejectHotel(rejectedHotels);
+
+        // console.log('Pending:', pendingHotels);
+        // console.log('Approved:', approvedHotels);
+        // console.log('Rejected:', rejectedHotels);
+      }
+    })
+  }, [])
+
   const renderUrl = () => {
     switch (location.pathname) {
       case "/hotel-applications":
@@ -99,12 +130,19 @@ const MyHotels = () => {
     }
   };
 
+  // console.log("my hotels:", hotel)
+
+  const displayHotels =
+    renderUrl() === "application"
+      ? [...aprovedhotel, ...pendinghotel, ...rejecthotel]
+      : aprovedhotel;
+  console.log(displayHotels)
   return (
     <Box
       sx={{
         background: color.thirdColor,
         px: { xs: 2, md: 4 },
-        py:4,
+        py: 4,
       }}
     >
       <Grid container spacing={2} mt={-3}>
@@ -124,7 +162,7 @@ const MyHotels = () => {
               fontSize: { xs: "16px", md: "20px" },
             }}
           >
-            310 {renderUrl() === "hotel" ? "Properties" : "Applications"}
+            {aprovedhotel.length}{" "}{renderUrl() === "hotel" ? "Properties" : "Applications"}
           </Typography>
 
           <CustomButton
@@ -142,10 +180,10 @@ const MyHotels = () => {
         </Grid>
 
         <Grid item xs={12} md={12}>
-          {hotels.map((hotel) => {
+          {displayHotels.map((hotel) => {
             const maxAmenities = isMobile ? 2 : 5;
-            const visibleAmenities = hotel.amenities.slice(0, maxAmenities);
-            const remainingAmenities = hotel.amenities.length - maxAmenities;
+            const visibleAmenities = hotel?.rooms[0]?.amenities?.slice(0, maxAmenities);
+            const remainingAmenities = hotel?.rooms[0]?.amenities?.length - maxAmenities;
             return (
               <Card
                 onClick={() => {
@@ -165,7 +203,7 @@ const MyHotels = () => {
                   transition: "all 0.3s ease",
                   cursor: "pointer",
                   border: "solid 1px transparent",
-                  height: { xs: "fit-content", md:renderUrl() === "hotel" ?180: 200 },
+                  height: { xs: "fit-content", md: renderUrl() === "hotel" ? 180 : 200 },
                   "&:hover": {
                     transform: "scale(1.02)",
                     borderColor: color.firstColor,
@@ -175,7 +213,7 @@ const MyHotels = () => {
                 <CardMedia
                   component="img"
                   sx={{ width: { xs: "100%", md: 280 }, height: "100%" }}
-                  image={hotel.image}
+                  image={hotel?.propertyImages[0]}
                   alt={hotel.propertyName}
                 />
                 <CardContent
@@ -231,17 +269,17 @@ const MyHotels = () => {
                     <Box
                       sx={{
                         position: "absolute",
-                        top: { xs:5, md: 0 },
+                        top: { xs: 5, md: 0 },
                         right: { xs: 25, md: 0 },
                         background:
                           hotel.status === "Approved"
                             ? "Green"
                             : hotel.status === "Pending"
-                            ? "Yellow"
-                            : "Red",
+                              ? "Yellow"
+                              : "Red",
                         color: "white",
                         px: 2,
-                        borderRadius:{ xs: '4px', md: "0 4px 0 4px"},
+                        borderRadius: { xs: '4px', md: "0 4px 0 4px" },
                         py: 0.5,
                         display: "flex",
                         justifyContent: "center",
@@ -251,7 +289,7 @@ const MyHotels = () => {
                       }}
                     >
                       {hotel.status}{" "}
-                      {hotel.status === "Approved" ? (
+                      {hotel.status === "Aproved" ? (
                         <CheckCircle
                           sx={{
                             fontSize: "18px",
@@ -272,7 +310,7 @@ const MyHotels = () => {
                       )}
                     </Box>
                   )}
-                      <Typography
+                  <Typography
                     sx={{
                       fontWeight: 600,
                       color: color.thirdColor,
@@ -321,7 +359,7 @@ const MyHotels = () => {
                       WebkitBoxOrient: "vertical",
                     }}
                   >
-                    {hotel.location}
+                    {hotel?.address}
                   </Typography>
 
                   <Box
@@ -340,7 +378,7 @@ const MyHotels = () => {
                     >
                       {renderUrl() === "hotel"
                         ? "Couple Friendly"
-                        : "Reception Mobile: 987654653"}
+                        : `Reception Mobile: ${hotel?.receptionMobile}`}
                     </Typography>
                     <Typography
                       color="textSecondary"
@@ -355,11 +393,11 @@ const MyHotels = () => {
                     >
                       {renderUrl() === "hotel"
                         ? "Pet Friendly"
-                        : "Reception Email: reception@example.com"}
+                        : `Reception Email:${hotel?.receptionEmail} `}
                     </Typography>
                   </Box>
 
-                  {renderUrl() === "hotel" ? (
+                  {renderUrl() === "hotel" && hotel?.rooms[0]?.amenities?.length ? (
                     <Box
                       sx={{
                         display: "flex",
@@ -369,23 +407,26 @@ const MyHotels = () => {
                         maxWidth: { xs: "50%", md: "80%" },
                       }}
                     >
-                      {visibleAmenities.map((amenity, index) => (
-                        <Chip
-                          key={index}
-                          label={amenity}
-                          icon={amenityIcons[amenity] || <AddCircleOutline />}
-                          size="small"
-                          sx={{ bgcolor: "transparent", fontSize: "10px" }}
-                        />
-                      ))}
+                      {
+                        visibleAmenities.map((amenity: any, index: any) => (
+                          <Chip
+                            key={index}
+                            label={amenity}
+                            icon={amenityIcons[amenity] || <AddCircleOutline />}
+                            size="small"
+                            sx={{ bgcolor: "transparent", fontSize: "10px" }}
+                          />
+                        ))
+                      }
 
-                      {remainingAmenities > 0 && (
+
+                      {/* {remainingAmenities > 0 && (
                         <Chip
                           label={`+${remainingAmenities} more`}
                           size="small"
                           sx={{ bgcolor: "#eee", fontSize: "10px" }}
                         />
-                      )}
+                      )} */}
                     </Box>
                   ) : (
                     <Box
@@ -408,7 +449,7 @@ const MyHotels = () => {
                           width: "fit-content",
                         }}
                       >
-                        Property Type: Villa
+                        Property Type: {hotel.propertyType}
                       </Typography>
                       <Typography
                         fontWeight={"bold"}
@@ -421,21 +462,7 @@ const MyHotels = () => {
                           width: "fit-content",
                         }}
                       >
-                        Stay type: Overnight
-                      </Typography>
-
-                      <Typography
-                        fontWeight={"bold"}
-                        fontSize={"14px"}
-                        sx={{
-                          background: color.background,
-                          color: "white",
-                          borderRadius: "4px",
-                          px: 1,
-                          width: "fit-content",
-                        }}
-                      >
-                        Gst No: 22ABCDE1234F1Z5
+                        Stay type: {hotel?.rooms[0]?.stayType}
                       </Typography>
 
                       <Typography
@@ -449,7 +476,7 @@ const MyHotels = () => {
                           width: "fit-content",
                         }}
                       >
-                        PAN No: ABCDE1234F
+                        Gst No: {hotel.gstNo}
                       </Typography>
 
                       <Typography
@@ -463,7 +490,21 @@ const MyHotels = () => {
                           width: "fit-content",
                         }}
                       >
-                        Applied on 25th Jan 2025
+                        PAN No: {hotel.panNo}
+                      </Typography>
+
+                      <Typography
+                        fontWeight={"bold"}
+                        fontSize={"14px"}
+                        sx={{
+                          background: color.background,
+                          color: "white",
+                          borderRadius: "4px",
+                          px: 1,
+                          width: "fit-content",
+                        }}
+                      >
+                        Applied on :
                       </Typography>
                     </Box>
                   )}
@@ -508,10 +549,10 @@ const MyHotels = () => {
                         fontSize: { xs: "10px", md: "12px" },
                       }}
                     >
-                      ₹{hotel.originalPrice}.00
+                      ₹{hotel?.rooms[0]?.rateFor1Night}.00
                     </Typography>
                     <Typography sx={{ fontSize: "18px" }}>
-                      ₹{hotel.price}.00
+                      ₹{hotel?.rooms[0]?.rateFor1Night}.00
                     </Typography>
                     <Typography
                       sx={{ fontSize: { xs: "10px", md: "12px" } }}

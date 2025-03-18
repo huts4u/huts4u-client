@@ -21,6 +21,7 @@ import Dashboard from "./pages/Hotel/Dashboard";
 import MyHotels from "./pages/Hotel/MyHotels";
 import MyHotelDetails from "./pages/Hotel/MyHotelDetails";
 import ApplicationPreview from "./pages/Hotel/ApplicationPreview";
+import PrivateRoute from "./components/PrivateRoute";
 
 const App: React.FC = () => {
   return (
@@ -42,11 +43,11 @@ const App: React.FC = () => {
 
 
           <Route element={<HotelLayout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/my-hotels" element={<MyHotels />} />
-          <Route path="/hotel-details/:id" element={<MyHotelDetails />} />
-          <Route path="/hotel-applications" element={<MyHotels />} />
-          <Route path="/hotel-application/:id" element={<ApplicationPreview />} />
+            <Route path="/dashboard" element={<PrivateRoute component={Dashboard} />} />
+            <Route path="/my-hotels" element={<PrivateRoute component={MyHotels} />} />
+            <Route path="/hotel-details/:id" element={<PrivateRoute component={MyHotelDetails} />} />
+            <Route path="/hotel-applications" element={<PrivateRoute component={MyHotels} />} />
+            <Route path="/hotel-application/:id" element={<PrivateRoute component={ApplicationPreview} />} />
           </Route>
         </Routes>
         <Footer />

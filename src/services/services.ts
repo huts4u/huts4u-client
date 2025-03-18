@@ -23,3 +23,29 @@ export function createOrder (payload:any) {
     return client.post(`/razorpay/orders`, payload);
   };
   
+
+export function hotelRegister(payLoad:any){
+    return client.post('/auth/register', payLoad);
+}
+
+export function SignIn(payLoad:any){
+    return client.post('/auth/login', payLoad);
+}
+
+export function hotelPost(payLoad:any){
+    return client.post('/Hotel/create', payLoad);
+}
+export function roomPost(payLoad:any){
+    return client.post('/Room/insertMany', payLoad);
+}
+
+export function docsUpload(payLoad:any) {
+    return client.post("/auth/upload-doc", payLoad);
+}
+
+export function getMyAllHotels(payLoad:any){
+    return client.post('/Hotel/search-record', payLoad);
+}
+export function getMyAllHotelswithBelongsTo(payLoad:any){
+    return client.post('/Hotel/get-all-record-with-belongs-to', payLoad);
+}

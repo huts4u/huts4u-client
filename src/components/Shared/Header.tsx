@@ -29,7 +29,7 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { isLoggedIn, logout } from "../../services/axiosClient";
+import { getUserRole, isLoggedIn, logout } from "../../services/axiosClient";
 import color from "../color";
 import CustomButton from "../CustomButton";
 
@@ -72,7 +72,7 @@ const Header: React.FC = () => {
         zIndex: 100,
         // position: "relative",
         boxShadow: "none",
-        top:0
+        top: 0
       }}
     >
       <Toolbar
@@ -124,23 +124,23 @@ const Header: React.FC = () => {
 
         <div style={{ marginRight: "20px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            {isLoggedIn() ? (
+            {isLoggedIn() && getUserRole() === 'Hotel' ? (
               <>
                 {" "}
                 {!isMobile && (
-                <CustomButton
-                  onClick={() => {
-                    navigate("/property-registration");
-                  }}
-                  variant="contained"
-                  customStyles={{
-                    fontSize: "12px",
-                    marginRight: "20px",
-                  }}
-                >
-                  {" "}
-                  Join as hotelier
-                </CustomButton> )}
+                  <CustomButton
+                    onClick={() => {
+                      navigate("/property-registration");
+                    }}
+                    variant="contained"
+                    customStyles={{
+                      fontSize: "12px",
+                      marginRight: "20px",
+                    }}
+                  >
+                    {" "}
+                    Join as hotelier
+                  </CustomButton>)}
                 <IconButton
                   style={{
                     background: color.thirdColor,
@@ -155,6 +155,7 @@ const Header: React.FC = () => {
             ) : (
               <>
                 {" "}
+
                 <CustomButton
                   onClick={() => {
                     navigate("/login");
@@ -166,7 +167,7 @@ const Header: React.FC = () => {
                   }}
                 >
                   {" "}
-                  Login
+                  Join As a Hotel With Us
                 </CustomButton>
               </>
             )}

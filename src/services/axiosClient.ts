@@ -1,10 +1,10 @@
 import { createAxiosClient } from "./axiosConfig";
 import { jwtDecode } from "jwt-decode";
 
-// const BASE_URL = 'http://localhost:8080/api/'
+const BASE_URL = 'http://localhost:8080/api/'
 
 
-const BASE_URL = 'https://huts4u.shop/api/'
+// const BASE_URL = 'https://huts4u.shop/api/'
 
 
 export function getCurrentAccessToken() {
@@ -38,7 +38,7 @@ export function getphoneNumber(): string {
     let token: any = localStorage.getItem('accessToken');
     if (token) {
         let decoded: any = jwtDecode(token);
-        console.log("user Details bro!=",decoded)
+        // console.log("user Details bro!=",decoded)
         return decoded.phoneNumber || '';
     }
     else {
@@ -46,7 +46,41 @@ export function getphoneNumber(): string {
     }
 }
 
+export function getUserId(): string {
+    let token: any = localStorage.getItem('accessToken');
+    if (token) {
+        let decoded: any = jwtDecode(token);
+        // console.log("user Details bro!=",decoded)
+        return decoded.id || '';
+    }
+    else {
+        return '';
+    }
+}
 
+export function getUserRole(): string {
+    let token: any = localStorage.getItem('accessToken');
+    if (token) {
+        let decoded: any = jwtDecode(token);
+        // console.log("user Details bro!=",decoded)
+        return decoded.role || '';
+    }
+    else {
+        return '';
+    }
+}
+
+export function getUserName():string{
+    let token: any = localStorage.getItem('accessToken');
+    if (token) {
+        let decoded: any = jwtDecode(token);
+        // console.log("user Details bro!=",decoded)
+        return decoded.name || '';
+        }else {
+            return '';
+        }
+
+}
 
 
 

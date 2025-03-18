@@ -12,12 +12,12 @@ interface ImageUploaderProps {
   maxSize?: number;
 }
 
-const ImageUploader: React.FC<ImageUploaderProps> = ({ 
-  label, 
-  onFileSelect, 
-  multiple = false, 
-  maxFiles = 1, 
-  maxSize = 5 * 1024 * 1024 
+const ImageUploader: React.FC<ImageUploaderProps> = ({
+  label,
+  onFileSelect,
+  multiple = false,
+  maxFiles = 1,
+  maxSize = 5 * 1024 * 1024,
 }) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
@@ -29,18 +29,23 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         setError("Some files were rejected. Please check size and format.");
         return;
       }
-  
 
       if (selectedFiles.length + acceptedFiles.length > maxFiles) {
         setError(`You can only upload up to ${maxFiles} files.`);
         return;
       }
 
-      setError(null); // Clear any previous errors
+      setError(null);
 
-      const newPreviews = acceptedFiles.map((file) => URL.createObjectURL(file));
-      setPreviews((prev) => (multiple ? [...prev, ...newPreviews] : newPreviews));
-      setSelectedFiles((prev) => (multiple ? [...prev, ...acceptedFiles] : acceptedFiles));
+      const newPreviews = acceptedFiles.map((file) =>
+        URL.createObjectURL(file)
+      );
+      setPreviews((prev) =>
+        multiple ? [...prev, ...newPreviews] : newPreviews
+      );
+      setSelectedFiles((prev) =>
+        multiple ? [...prev, ...acceptedFiles] : acceptedFiles
+      );
 
       onFileSelect(multiple ? [...selectedFiles, ...acceptedFiles] : acceptedFiles[0]);
     },
@@ -74,7 +79,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         padding: "16px",
         textAlign: "center",
         cursor: "pointer",
-        position: "relative"
+        position: "relative",
       }}
     >
       <input {...getInputProps()} />
@@ -83,24 +88,39 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         {isDragActive ? "Drop files here..." : `Click or drag files to upload ${label}`}
       </Typography>
       <Typography variant="caption" display="block">
-        {multiple ? `Up to ${maxFiles} files` : "Single file"}, Max {maxSize / (1024 * 1024)}MB each, <br/> (JPEG, PNG, WEBP)
+        {multiple ? `Up to ${maxFiles} files` : "Single file"}, Max{" "}
+        {maxSize / (1024 * 1024)}MB each, (JPEG, PNG, WEBP)
       </Typography>
 
-      {/* Show Error Messages */}
-      {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+      {error && (
+        <Alert severity="error" sx={{ mt: 2 }}>
+          {error}
+        </Alert>
+      )}
 
-      {/* Image Previews */}
       <Box sx={{ display: "flex", flexWrap: "wrap", mt: 2, gap: 1 }}>
         {previews.map((src, index) => (
-          <Box key={index} sx={{ position: "relative", display: "inline-block" }}>
+          <Box key={index} sx={{ position: "relative" }}>
             <img
               src={src}
               alt={`preview-${index}`}
-              style={{ width: 80, height: 80, borderRadius: 8, objectFit: "cover", border: "1px solid #ddd" }}
+              style={{
+                width: 80,
+                height: 80,
+                borderRadius: 8,
+                objectFit: "cover",
+                border: "1px solid #ddd",
+              }}
             />
             <IconButton
               size="small"
-              sx={{ position: "absolute", top: 0, right: 0, bgcolor: "rgba(0,0,0,0.5)", color: "white" }}
+              sx={{
+                position: "absolute",
+                top: 0,
+                right: 0,
+                bgcolor: "rgba(0,0,0,0.5)",
+                color: "white",
+              }}
               onClick={(e) => {
                 e.stopPropagation();
                 handleDelete(index);

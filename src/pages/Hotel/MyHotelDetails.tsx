@@ -1,32 +1,33 @@
 /* eslint-disable jsx-a11y/img-redundant-alt */
 import {
-    AddCircleOutline,
-    CheckCircle,
-    Edit,
-    Star
+  AddCircleOutline,
+  CheckCircle,
+  Edit,
+  Star
 } from "@mui/icons-material";
 import {
-    Box,
-    Button,
-    Card,
-    CardMedia,
-    Chip,
-    Grid,
-    List,
-    styled,
-    Tab,
-    Tabs,
-    ToggleButton,
-    Typography,
-    useMediaQuery,
+  Box,
+  Button,
+  Card,
+  CardMedia,
+  Chip,
+  Grid,
+  List,
+  styled,
+  Tab,
+  Tabs,
+  ToggleButton,
+  Typography,
+  useMediaQuery,
 } from "@mui/material";
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import color from "../../components/color";
 import CustomButton from "../../components/CustomButton";
 import { amenityIcons } from "../../components/data";
 import { BoxStyle, ImageGrid, RoomAmenities } from "../../components/style";
 import theme from "../../theme";
+import { getMyAllHotelswithBelongsTo } from "../../services/services";
 
 const hotelData = {
   propertyName: "Hotel Metropol by Maier Private hotels",
@@ -126,6 +127,7 @@ const hotelData = {
 const MyHotelDetails = () => {
   const [selectedRoom, setSelectedRoom] = useState(hotelData.rooms[0]);
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const { id } = useParams();
 
   const [expanded, setExpanded] = useState(false);
   const maxLength = isMobile ? 100 : 350;
@@ -133,6 +135,29 @@ const MyHotelDetails = () => {
   const [value, setValue] = useState(0);
 
   const navigate = useNavigate();
+  const [hotelData1, setHotelData1] = useState<any>([]);
+
+  const [roomData, setRoomData] = useState<any>([]);
+  console.log(id);
+
+  useEffect(() => {
+    getMyAllHotelswithBelongsTo({
+      id: id,
+      secondTable: 'Room'
+    }).then((res) => {
+      setHotelData1(res?.data?.data[0]);
+      setRoomData(res?.data?.data[0]?.rooms[0]);
+      const rooms = res?.data?.data[0]?.rooms;
+      if (rooms.length > 0) {
+        setSelectedRoom(rooms[0]);
+      }
+    }).catch((err) => {
+      console.log(err);
+    })
+  }, [])
+
+  console.log(selectedRoom)
+
 
   return (
     <Box
@@ -188,7 +213,7 @@ const MyHotelDetails = () => {
               color: color.firstColor,
             }}
           >
-            {hotelData.propertyName}
+            {hotelData1?.propertyName}
           </Typography>
           <Typography
             color="textSecondary"
@@ -199,7 +224,7 @@ const MyHotelDetails = () => {
               mt: { xs: 1, md: 0 },
             }}
           >
-            {hotelData.address}
+            {hotelData1?.address}
           </Typography>
 
           <Box py={2} sx={{ pr: { xs: 0, md: 2 }, mx: -1 }}>
@@ -227,7 +252,8 @@ const MyHotelDetails = () => {
                 gap: "6px",
               }}
             >
-              <Star></Star> {hotelData.rating} ({hotelData.reviews} reviews)
+              <Star></Star>
+              {/* {hotelData1.rating} ({hotelData.reviews} reviews) */}
             </Typography>
           </Box>
 
@@ -249,10 +275,10 @@ const MyHotelDetails = () => {
                 mt: 1,
               }}
             >
-              {expanded || hotelData.description.length <= maxLength
-                ? hotelData.description
-                : `${hotelData.description.substring(0, maxLength)}...`}
-              {hotelData.description.length > maxLength && (
+              {expanded || hotelData1?.propertyDesc?.length <= maxLength
+                ? hotelData1?.propertyDesc
+                : `${hotelData1?.propertyDesc?.substring(0, maxLength)}...`}
+              {hotelData1?.propertyDesc?.length > maxLength && (
                 <Button
                   sx={{
                     textTransform: "none",
@@ -293,7 +319,7 @@ const MyHotelDetails = () => {
                 width: "fit-content",
               }}
             >
-              {hotelData.amenities.slice(0, 5).map((amenity, index) => (
+              {roomData?.amenities?.slice(0, 5).map((amenity: any, index: any) => (
                 <div
                   style={{
                     display: "flex",
@@ -368,7 +394,7 @@ const MyHotelDetails = () => {
 
           <TabPanel value={value} index={0}>
             <Grid container spacing={2}>
-              {hotelData.rooms.map((room) => (
+              {Array.isArray(roomData) && roomData.map((room: any) => (
                 <Grid item xs={12} md={6} key={room.id}>
                   <Card
                     onClick={() => setSelectedRoom(room)}
@@ -410,8 +436,8 @@ const MyHotelDetails = () => {
                           borderRadius: "12px",
                           width: { xs: "100%", md: "100%" },
                         }}
-                        image={room.image}
-                        alt={room.propertyName}
+                        image={room?.image}
+                        alt={room?.roomCategory}
                       />
 
                       <Typography

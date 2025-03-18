@@ -1,10 +1,10 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import {
-    Box,
-    Button,
-    IconButton,
-    InputAdornment,
-    Typography,
+  Box,
+  Button,
+  IconButton,
+  InputAdornment,
+  Typography,
 } from "@mui/material";
 import { useFormik } from "formik";
 import { useState } from "react";
@@ -12,6 +12,9 @@ import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import CustomButton from "../../components/CustomButton";
 import { LoginTextField } from "../../components/style";
+import { SignIn } from "../../services/services";
+import { setCurrentAccessToken } from "../../services/axiosClient";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -32,6 +35,21 @@ const Login = () => {
     }),
     onSubmit: (values) => {
       console.log("Login Data:", values);
+      const payLoad = {
+        email: values.email,
+        password: values.password
+      }
+      SignIn(payLoad).then((res) => {
+        if (res?.data?.data?.accessToken) {
+          setCurrentAccessToken(res?.data?.data?.accessToken);
+        }
+        if (res?.data?.data?.role === "Hotel") {
+          window.location.href = "/dashboard"
+        } else {
+          window.location.href = "/admin-dashboard"
+        }
+        toast(res?.data?.msg);
+      })
     },
   });
 
@@ -70,7 +88,7 @@ const Login = () => {
           textAlign: "center",
           zIndex: 2,
           position: "relative",
-          p:2
+          p: 2
         }}
       >
         <Typography variant="h4" fontWeight="bold" mb={1} color="white">

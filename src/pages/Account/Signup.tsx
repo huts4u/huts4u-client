@@ -11,16 +11,20 @@ import { useState } from "react";
 import * as Yup from "yup";
 import CustomButton from "../../components/CustomButton";
 import { LoginTextField } from "../../components/style";
+import { hotelRegister } from "../../services/services";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+  const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
       fullName: "",
       email: "",
+      phone: "",
       password: "",
       confirmPassword: "",
     },
@@ -29,21 +33,40 @@ const Signup = () => {
       email: Yup.string()
         .email("Invalid email format")
         .required("Email is required"),
-        password: Yup.string()
+      password: Yup.string()
         .min(6, "Password must be at least 6 characters")
         .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
         .matches(/[a-z]/, "Password must contain at least one lowercase letter")
         .matches(/\d/, "Password must contain at least one number")
         .matches(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain at least one special character")
         .required("Password is required"),
-      
+
       confirmPassword: Yup.string()
         .oneOf([Yup.ref("password"), undefined], "Passwords must match")
         .required("Confirm Password is required"),
-      
+      phone: Yup.string()
+        .matches(/^[0-9]{10}$/, "Phone number must be exactly 10 digits")
+        .required("Phone number is required"),
+
     }),
     onSubmit: (values) => {
       console.log("Signup Data:", values);
+      const payLoad = {
+
+        userName: values.fullName,
+        email: values.email,
+        phoneNumber: values.phone,
+        password: values.password,
+        role: "Hotel"
+
+      }
+      hotelRegister(payLoad).then((res) => {
+        toast(res?.data?.msg);
+        navigate('/login');
+      }).catch((err) => {
+        toast(err);
+      })
+
     },
   });
 
@@ -79,8 +102,8 @@ const Signup = () => {
           textAlign: "center",
           zIndex: 2,
           position: "relative",
-          my:4,
-          p:2
+          my: 4,
+          p: 2
         }}
       >
         <Typography variant="h4" fontWeight="bold" mb={1} color="white">
@@ -112,6 +135,17 @@ const Signup = () => {
             onBlur={formik.handleBlur}
             error={formik.touched.email && Boolean(formik.errors.email)}
             helperText={formik.touched.email && formik.errors.email}
+          />
+          <LoginTextField
+            fullWidth
+            label="Phone No."
+            name="phone"
+            type="text"
+            value={formik.values.phone}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.phone && Boolean(formik.errors.phone)}
+            helperText={formik.touched.phone && formik.errors.phone}
           />
 
           <LoginTextField
@@ -188,7 +222,7 @@ const Signup = () => {
           <Button
             fullWidth
             sx={{ textTransform: "none", mt: 2, color: "white" }}
-            onClick={() => console.log("Already have an account Clicked")}
+            onClick={() => navigate('/login')}
           >
             Already have an account?
           </Button>

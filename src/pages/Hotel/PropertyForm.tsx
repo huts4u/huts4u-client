@@ -31,6 +31,11 @@ import {
 } from "../../components/data";
 import ImageUploader from "../../components/ImageUploader";
 import { BpRadio, CustomTextField, inputSx } from "../../components/style";
+import { docsUpload, hotelPost, roomPost } from "../../services/services";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { getUserId } from "../../services/axiosClient";
 
 const validationSchema = Yup.object().shape({
   propertyName: Yup.string()
@@ -100,10 +105,10 @@ const validationSchema = Yup.object().shape({
 
   panCard: Yup.mixed().required("PAN Card is required"),
 
-  propertyImages: Yup.array()
-    .of(Yup.mixed().required("Each image is required"))
-    .min(7, "At least seven property images are required")
-    .required("Property images are required"),
+  // propertyImages: Yup.array()
+  //   .of(Yup.mixed().required("Each image is required"))
+  //   .min(3, "At least three property images are required")
+  //   .required("Property images are required"),
 
   propertyPolicies: Yup.string()
     .trim()
@@ -114,7 +119,7 @@ const validationSchema = Yup.object().shape({
   stayType: Yup.string().required("Required"),
   rooms: Yup.array().of(
     Yup.object().shape({
-      roomCategory: Yup.string().required("Room category is required"),
+      // roomCategory: Yup.string().required("Room category is required"),
       roomSize: Yup.string().required("Room size is required"),
       rateFor1Night: Yup.number()
         .typeError("Rate for 1 night must be a valid number")
@@ -199,19 +204,81 @@ const validationSchema = Yup.object().shape({
         .typeError("Number of free children must be a number")
         .required("Number of free children is required")
         .min(0, "Cannot be negative"),
-        numberOfRoomsAvailable: Yup.number()
+      numberOfRoomsAvailable: Yup.number()
         .typeError("No. of Available Rooms must be a number")
         .required("No. of available rooms are required")
         .min(0, "Cannot be negative"),
       amenities: Yup.array()
         .of(Yup.string().required("Amenity cannot be empty"))
         .min(1, "At least one amenity is required"),
-      roomImage: Yup.mixed().required("Room image is required"),
+      // roomImage: Yup.mixed().required("Room image is required"),
     })
   ),
 });
 
 const PropertyForm = () => {
+  const [previewImage, setPreviewImage] = useState<string | null>(null); // To hold a single image
+  const [uploading, setUploading] = useState(false);
+  const handleFileChange = async (
+    file: File,
+    setFieldValue: (value: string) => void
+  ) => {
+    if (file) {
+      const formData = new FormData();
+      formData.append('files', file);
+
+      setUploading(true);
+      try {
+        const res = await docsUpload(formData);
+        const uploadedUrl = res?.data?.data?.doc0;
+
+        if (uploadedUrl) {
+          setPreviewImage(uploadedUrl);
+          setFieldValue(uploadedUrl);
+        }
+      } catch (error) {
+        console.error('Error uploading file:', error);
+      } finally {
+        setUploading(false);
+      }
+    }
+  };
+
+  const handleFileChange1 = async (
+    files: File[],
+    setFieldValue: (value: string[]) => void
+  ) => {
+    if (files.length) {
+      const uploadedUrls: string[] = [];
+
+      setUploading(true);
+      try {
+        for (const file of files) {
+          const formData = new FormData();
+          formData.append("files", file);
+
+          const res = await docsUpload(formData);
+          const uploadedUrl = res?.data?.data?.doc0;
+
+          if (uploadedUrl) {
+            uploadedUrls.push(uploadedUrl);
+          }
+        }
+
+        if (uploadedUrls.length) {
+          setFieldValue(uploadedUrls); // ✅ Set array of uploaded URLs
+        }
+      } catch (error) {
+        console.error("Error uploading files:", error);
+      } finally {
+        setUploading(false);
+      }
+    }
+  };
+
+  const navigate = useNavigate();
+
+
   const formik = useFormik({
     initialValues: {
       propertyName: "",
@@ -226,6 +293,10 @@ const PropertyForm = () => {
       state: "",
       pincode: "",
       landmark: "",
+      bankaccountNo: "",
+      bankname: "",
+      ifsccode: "",
+      bankpassbook: "",
       googleBusinessPage: "",
       gstNo: "",
       panNo: "",
@@ -259,6 +330,70 @@ const PropertyForm = () => {
     validationSchema,
     onSubmit: (values) => {
       console.log(values);
+      const payLoad = {
+        userId: getUserId(),
+        propertyName: values.propertyName,
+        propertyType: values.propertyType,
+        propertyDesc: values.propertyDescription,
+        ownerMobile: values.ownerMobile,
+        ownerEmail: values.ownerEmail,
+        receptionMobile: values.receptionMobile,
+        receptionEmail: values.receptionEmail,
+        address: values.address,
+        city: values.city,
+        state: values.state,
+        pincode: values.pincode,
+        landmark: values.landmark,
+        googleBusinessPage: values.googleBusinessPage,
+        gstNo: values.gstNo,
+        panNo: values.panNo,
+        gstCertificateImage: values.gstCertificate,
+        panCardImage: values.panCard,
+        extraService: values.propertyServices,
+        bankName: values.bankname,
+        bankAccountNumber: values.bankaccountNo,
+        bankIfsc: values.ifsccode,
+        propertyImages: values.propertyImages,
+        bankPassbook: values.bankpassbook,
+        propertyPolicy: values.propertyPolicies,
+        status: "Pending"
+      }
+
+
+      hotelPost(payLoad).then((res) => {
+
+        if (res?.data?.data?.id) {
+
+          const roomPayload = values.rooms.map((room) => ({
+            hotelId: res?.data?.data?.id,
+            stayType: values.stayType,
+            roomCategory: room.roomCategory,
+            roomSize: room.roomSize,
+            availableRooms: room.numberOfRoomsAvailable,
+            rateFor1Night: room.rateFor1Night,
+            rateFor3Hour: room.rateFor3Hour,
+            rateFor6Hour: room.rateFor6Hour,
+            rateFor12Hour: room.rateFor12Hour,
+            additionalGuestRate: room.additionalGuestRate,
+            additionalChildRate: room.additionalChildRate,
+            standardRoomOccupancy: room.standardRoomOccupancy,
+            maxRoomOccupancy: room.maxRoomOccupancy,
+            numberOfFreeChildren: room.numberOfFreeChildren,
+            amenities: room.amenities,
+            roomImages: room.roomImage,
+          }));
+          console.log(roomPayload)
+          roomPost(roomPayload).then((res) => {
+            toast(res?.data?.msg);
+            navigate('/hotel-applications')
+          }).catch((err) => {
+            console.log(err);
+
+          })
+        }
+      }).catch((err) => {
+        console.log(err);
+      })
     },
   });
 
@@ -492,11 +627,56 @@ const PropertyForm = () => {
                   helperText={formik.touched.panNo && formik.errors.panNo}
                 />
               </Grid>
+              <Grid item xs={12} md={4}>
+                <CustomTextField
+                  fullWidth
+                  label="Bank Name"
+                  {...formik.getFieldProps("bankname")}
+                  error={
+                    formik.touched.bankname &&
+                    Boolean(formik.errors.bankname)
+                  }
+                  helperText={
+                    formik.touched.bankname && formik.errors.bankname
+                  }
+                />
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <CustomTextField
+                  fullWidth
+                  label="Bank Acc No."
+                  {...formik.getFieldProps("bankaccountNo")}
+                  error={
+                    formik.touched.bankaccountNo &&
+                    Boolean(formik.errors.bankaccountNo)
+                  }
+                  helperText={
+                    formik.touched.bankaccountNo && formik.errors.bankaccountNo
+                  }
+                />
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <CustomTextField
+                  fullWidth
+                  label="IFSC Code"
+                  {...formik.getFieldProps("ifsccode")}
+                  error={
+                    formik.touched.ifsccode &&
+                    Boolean(formik.errors.ifsccode)
+                  }
+                  helperText={
+                    formik.touched.ifsccode && formik.errors.ifsccode
+                  }
+                />
+              </Grid>
               <Grid item xs={12} md={6}>
                 <ImageUploader
                   label="GST Certificate"
                   onFileSelect={(file) =>
-                    formik.setFieldValue("gstCertificate", file)
+                    handleFileChange(
+                      file as any,
+                      (value) => formik.setFieldValue("gstCertificate", value)
+                    )
                   }
                 />
                 {formik.touched.gstCertificate &&
@@ -510,11 +690,33 @@ const PropertyForm = () => {
               <Grid item xs={12} md={6}>
                 <ImageUploader
                   label="PAN Card"
-                  onFileSelect={(file) => formik.setFieldValue("panCard", file)}
+                  onFileSelect={(file) =>
+                    handleFileChange(
+                      file as any,
+                      (value) => formik.setFieldValue("panCard", value)
+                    )
+                  }
                 />
                 {formik.touched.panCard && formik.errors.panCard && (
                   <Typography color="error" variant="caption">
                     {formik.errors.panCard}
+                  </Typography>
+                )}
+              </Grid>
+
+              <Grid item xs={12} md={12}>
+                <ImageUploader
+                  label="Bank Passbook"
+                  onFileSelect={(file) =>
+                    handleFileChange(
+                      file as any,
+                      (value) => formik.setFieldValue("bankpassbook", value)
+                    )
+                  }
+                />
+                {formik.touched.bankpassbook && formik.errors.bankpassbook && (
+                  <Typography color="error" variant="caption">
+                    {formik.errors.bankpassbook}
                   </Typography>
                 )}
               </Grid>
@@ -569,9 +771,13 @@ const PropertyForm = () => {
                   label="Property Images"
                   multiple
                   maxFiles={20}
-                  onFileSelect={(files) =>
-                    formik.setFieldValue("propertyImages", files)
+                  onFileSelect={(file) =>
+                    handleFileChange1(
+                      file as any,
+                      (value) => formik.setFieldValue("propertyImages", value)
+                    )
                   }
+
                 />
                 {formik.touched.propertyImages &&
                   formik.errors.propertyImages && (
@@ -643,7 +849,7 @@ const PropertyForm = () => {
                           fontSize={"18px"}
                           fontWeight={"bold"}
                           mb={-1}
-                          //   mt={1}
+                        //   mt={1}
                         >
                           {formik.values.rooms.length > 1 && (
                             <>Room {index + 1}</>
@@ -1183,8 +1389,12 @@ const PropertyForm = () => {
                         <Grid item xs={12} md={12}>
                           <ImageUploader
                             label="room Image"
+
                             onFileSelect={(file) =>
-                              formik.setFieldValue("roomImage", file)
+                              handleFileChange(
+                                file as any,
+                                (value) => formik.setFieldValue("roomImage", value)
+                              )
                             }
                           />
                           {formik.touched.rooms?.[index]?.roomImage &&
