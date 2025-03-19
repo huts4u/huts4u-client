@@ -22,7 +22,7 @@ import CustomDatePicker from "../../components/CustomDatePicker";
 import CustomSingleSelect from "../../components/CustomSingleSelect";
 import CustomTimePicker from "../../components/CustomTimePicker";
 import RoomGuestSelect from "../../components/RoomGuestSelect";
-
+import queryString from "query-string";
 const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
   padding: "4px 10px",
   textTransform: "none",
@@ -71,10 +71,7 @@ const options = ["Option 1", "Option 2", "Option 3", "Option 4"];
 // }
 
 const SearchSection = () => {
-  const [bookingType, setBookingType] = useState("hourly");
-  const handleBookingType = (event: any, newType: any) => {
-    if (newType !== null) setBookingType(newType);
-  };
+
 
   // const [locations, setLocations] = useState<{
   //   pickup: [number, number];
@@ -91,14 +88,33 @@ const SearchSection = () => {
   // };
   const isMobile = useMediaQuery("(max-width: 900px)");
 
-  const [location, setLocation] = useState<string | null>(null);
-  const [checkinDate, setCheckinDate] = useState<Dayjs | null>(dayjs());
-  const [checkOutDate, setCheckOutDate] = useState<Dayjs | null>(dayjs());
-  const [time, setTime] = useState<Dayjs | null>(dayjs());
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const queryParams = queryString.parse(location.search);
+
+  const [bookingType, setBookingType] = useState<string>(
+    (queryParams.bookingType as string) || "hourly"
+  );
+  const handleBookingType = (event: any, newType: any) => {
+    if (newType !== null) setBookingType(newType);
+  };
+  const [locationValue, setLocationValue] = useState<string | null>(
+    (queryParams.location as string) ?? null
+  );
+  const [checkinDate, setCheckinDate] = useState<Dayjs | null>(
+    queryParams.checkinDate ? dayjs(queryParams.checkinDate as string) : dayjs()
+  );
+  const [checkOutDate, setCheckOutDate] = useState<Dayjs | null>(
+    queryParams.checkOutDate ? dayjs(queryParams.checkOutDate as string) : dayjs()
+  );
+  const [time, setTime] = useState<Dayjs | null>(
+    queryParams.time ? dayjs(queryParams.time as string, "HH:mm") : dayjs()
+  );
   const [roomDetails, setRoomDetails] = useState({
-    rooms: 1,
-    adults: 2,
-    children: 0,
+    rooms: Number(queryParams.rooms) || 1,
+    adults: Number(queryParams.adults) || 2,
+    children: Number(queryParams.children) || 0,
   });
 
   const handleRoomDetailsChange = (
@@ -111,9 +127,10 @@ const SearchSection = () => {
   const handleSearch = () => {
     const searchData = {
       bookingType,
-      location,
+      location: locationValue,
+      time: time ? time.format("HH:mm") : undefined,
       checkinDate,
-      time,
+      checkOutDate,
       ...roomDetails,
     };
     const queryParams = new URLSearchParams();
@@ -130,7 +147,6 @@ const SearchSection = () => {
 
   const PageLocation = useLocation();
   const [showDetails, setShowDetails] = useState(false);
-  const navigate = useNavigate();
   return (
     <div>
       <Box
@@ -173,7 +189,7 @@ const SearchSection = () => {
           >
             <Typography sx={{ ...typoStyle, width: "100%" }}>
               {" "}
-              <LocationOn /> {location}
+              <LocationOn /> {locationValue}
             </Typography>
 
             <div
@@ -224,8 +240,8 @@ const SearchSection = () => {
             >
               <CustomSingleSelect
                 options={options}
-                value={location ?? options[0]}
-                setValue={setLocation}
+                value={locationValue ?? options[0]}
+                setValue={setLocationValue}
                 label="Select Location"
               />
 

@@ -93,19 +93,60 @@ const SearchResults = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
 
-  const searchData = {
-    bookingType: queryParams.get("bookingType"),
-    location: queryParams.get("location"),
-    checkinDate: queryParams.get("checkinDate"),
-    time: queryParams.get("time"),
-    roomType: queryParams.get("roomType"),
+  // Initial query params
+  const [budget, setBudget] = useState<number[]>([
+    Number(queryParams.get("minBudget")) || 1000,
+    Number(queryParams.get("maxBudget")) || 20000,
+  ]);
+  const [selected, setSelected] = useState<string | null>(
+    queryParams.get("bookingHours") || "3"
+  );
+  const [sortBy, setSortBy] = useState<string>(
+    queryParams.get("sortBy") || "lowToHigh"
+  );
+  const [payment, setPayment] = useState<string>(
+    queryParams.get("payment") || "prePayOnline"
+  );
+
+  // Function to update query params
+  const updateQueryParams = (
+    key: string,
+    value: string | number | number[]
+  ) => {
+    const newParams = new URLSearchParams(location.search);
+    if (Array.isArray(value)) {
+      newParams.set("minBudget", String(value[0]));
+      newParams.set("maxBudget", String(value[1]));
+    } else {
+      newParams.set(key, String(value));
+    }
+    navigate({ search: newParams.toString() }, { replace: true });
   };
 
-  const [budget, setBudget] = useState<number[]>([0, 2000000]);
-  const [selected, setSelected] = useState<string | null>("3");
+  const handleBudgetChange = (
+    event: Event,
+    newValue: number | number[],
+    activeThumb: number
+  ) => {
+    if (Array.isArray(newValue)) {
+      setBudget(newValue);
+      updateQueryParams("budget", newValue);
+    }
+  };
 
-  const handleChange = (value: string) => {
+  const handleBookingChange = (value: string) => {
     setSelected(value);
+    updateQueryParams("bookingHours", value);
+  };
+
+  const handleSortChange = (value: string) => {
+    setSortBy(value);
+    updateQueryParams("sortBy", value);
+  };
+
+  const handlePaymentChange = (value: string) => {
+    setPayment(value);
+    updateQueryParams("payment", value);
   };
 
   const sidebar = (
@@ -126,7 +167,7 @@ const SearchResults = () => {
         </Typography>
         <Slider
           value={budget}
-          onChange={(e, newValue) => setBudget(newValue as number[])}
+          onChange={handleBudgetChange}
           step={500}
           min={1000}
           max={20000}
@@ -158,7 +199,7 @@ const SearchResults = () => {
         </Typography>
       </Box>
 
-      {searchData.bookingType === "hourly" && (
+      {queryParams.get("bookingType") === "hourly" && (
         <Box
           sx={{
             ...BoxStyle,
@@ -180,46 +221,27 @@ const SearchResults = () => {
               gap: "6px",
             }}
           >
-            <StyledToggleButton
-              value="3"
-              selected={selected === "3"}
-              onClick={() => handleChange("3")}
-            >
-              3 Hours
-            </StyledToggleButton>
-            <StyledToggleButton
-              value="6"
-              selected={selected === "6"}
-              onClick={() => handleChange("6")}
-            >
-              6 Hours
-            </StyledToggleButton>
-
-            <StyledToggleButton
-              value="9"
-              selected={selected === "9"}
-              onClick={() => handleChange("9")}
-              style={{ marginTop: "6px" }}
-            >
-              9 Hours
-            </StyledToggleButton>
+            {["3", "6", "9"].map((hour) => (
+              <StyledToggleButton
+                key={hour}
+                value={hour}
+                selected={selected === hour}
+                onClick={() => handleBookingChange(hour)}
+              >
+                {hour} Hours
+              </StyledToggleButton>
+            ))}
           </div>
         </Box>
       )}
 
-      <Box
-        sx={{
-          ...BoxStyle,
-        }}
-      >
-        <Typography
-          sx={{
-            ...style,
-          }}
+      <Box sx={{ ...BoxStyle }}>
+        <Typography sx={{ ...style }}>Sort By</Typography>
+        <RadioGroup
+          sx={{ mt: -1 }}
+          value={sortBy}
+          onChange={(e) => handleSortChange(e.target.value)}
         >
-          Sort By
-        </Typography>
-        <RadioGroup sx={{ mt: -1 }}>
           <StyledFormControlLabel
             value="lowToHigh"
             control={<BpRadio />}
@@ -243,19 +265,13 @@ const SearchResults = () => {
         </RadioGroup>
       </Box>
 
-      <Box
-        sx={{
-          ...BoxStyle,
-        }}
-      >
-        <Typography
-          sx={{
-            ...style,
-          }}
+      <Box sx={{ ...BoxStyle }}>
+        <Typography sx={{ ...style }}>Payment</Typography>
+        <RadioGroup
+          sx={{ mt: -1 }}
+          value={payment}
+          onChange={(e) => handlePaymentChange(e.target.value)}
         >
-          Payment
-        </Typography>
-        <RadioGroup sx={{ mt: -1 }}>
           <StyledFormControlLabel
             value="prePayOnline"
             control={<BpRadio />}
