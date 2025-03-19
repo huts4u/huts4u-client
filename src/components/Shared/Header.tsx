@@ -72,7 +72,7 @@ const Header: React.FC = () => {
         zIndex: 100,
         // position: "relative",
         boxShadow: "none",
-        top: 0
+        top: 0,
       }}
     >
       <Toolbar
@@ -124,7 +124,7 @@ const Header: React.FC = () => {
 
         <div style={{ marginRight: "20px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            {isLoggedIn() && getUserRole() === 'Hotel' ? (
+            {isLoggedIn() && getUserRole() === "Hotel" ? (
               <>
                 {" "}
                 {!isMobile && (
@@ -140,7 +140,8 @@ const Header: React.FC = () => {
                   >
                     {" "}
                     Join as hotelier
-                  </CustomButton>)}
+                  </CustomButton>
+                )}
                 <IconButton
                   style={{
                     background: color.thirdColor,
@@ -155,7 +156,6 @@ const Header: React.FC = () => {
             ) : (
               <>
                 {" "}
-
                 <CustomButton
                   onClick={() => {
                     navigate("/login");
@@ -283,7 +283,10 @@ const Header: React.FC = () => {
               </MenuItem>
               <MenuItem
                 style={{ fontSize: "inherit", borderRadius: "52px" }}
-                onClick={handleClose}
+                onClick={() => {
+                  navigate("/my-bookings");
+                  handleClose();
+                }}
               >
                 {" "}
                 <CorporateFare
@@ -296,7 +299,7 @@ const Header: React.FC = () => {
                     p: 0.5,
                   }}
                 />{" "}
-                Your Bookings
+                My Bookings
               </MenuItem>
               <MenuItem
                 style={{ fontSize: "inherit", borderRadius: "52px" }}

@@ -22,6 +22,7 @@ import MyHotels from "./pages/Hotel/MyHotels";
 import MyHotelDetails from "./pages/Hotel/MyHotelDetails";
 import ApplicationPreview from "./pages/Hotel/ApplicationPreview";
 import PrivateRoute from "./components/PrivateRoute";
+import MyBookings from "./pages/MyBookings";
 
 const App: React.FC = () => {
   return (
@@ -40,6 +41,7 @@ const App: React.FC = () => {
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/property-registration" element={<PropertyForm />} />
+          <Route path="/my-bookings" element={<MyBookings />} />
 
 
           <Route element={<HotelLayout />}>
