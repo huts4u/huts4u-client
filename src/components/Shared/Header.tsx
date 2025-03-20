@@ -27,13 +27,23 @@ import {
   Toolbar,
   useMediaQuery,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserRole, isLoggedIn, logout } from "../../services/axiosClient";
+import { getUserName, getUserRole, isLoggedIn, logout } from "../../services/axiosClient";
 import color from "../color";
 import CustomButton from "../CustomButton";
+import { getProfile } from "../../services/services";
 
 const Header: React.FC = () => {
+
+  useEffect(() => {
+    if (isLoggedIn()) {
+      getProfile().then((res) => {
+        console.log(res);
+      })
+    }
+  }, [])
+
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -142,6 +152,15 @@ const Header: React.FC = () => {
                     Join as hotelier
                   </CustomButton>
                 )}
+
+              </>
+            ) : (
+              <></>
+            )}
+            {isLoggedIn() ? (
+              <>
+                {" "}
+
                 <IconButton
                   style={{
                     background: color.thirdColor,
@@ -167,7 +186,7 @@ const Header: React.FC = () => {
                   }}
                 >
                   {" "}
-                  Join As a Hotel With Us
+                  Join As a Hotel
                 </CustomButton>
               </>
             )}
@@ -260,7 +279,7 @@ const Header: React.FC = () => {
                   pb: 1,
                 }}
               >
-                Hi, User
+                Hi, {getUserName()}
               </MenuItem>
               <MenuItem
                 style={{ fontSize: "inherit", borderRadius: "52px" }}

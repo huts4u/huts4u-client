@@ -177,14 +177,14 @@ const Sidebar = () => {
                 padding: "17px",
               }}
             >
-              <Avatar
+              {/* <Avatar
                 sx={{
                   background: color.firstColor,
                   boxShadow: "5px -5px 15px rgba(0, 0, 0, 0.358) inset",
                 }}
               >
                 {/* {getUserName()[0]} */}
-              </Avatar>
+              {/* </Avatar> */}
               <Typography
                 style={{
                   fontWeight: "bold",

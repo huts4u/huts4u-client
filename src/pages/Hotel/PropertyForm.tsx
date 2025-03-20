@@ -105,10 +105,22 @@ const validationSchema = Yup.object().shape({
 
   panCard: Yup.mixed().required("PAN Card is required"),
 
-  // propertyImages: Yup.array()
-  //   .of(Yup.mixed().required("Each image is required"))
-  //   .min(3, "At least three property images are required")
-  //   .required("Property images are required"),
+  propertyImages: Yup.array()
+    .of(Yup.mixed().required("Each image is required"))
+    .min(7, "At least seven property images are required")
+    .required("Property images are required"),
+
+  bankaccountNo: Yup.string()
+    .matches(/^\d{9,18}$/, 'Bank account number must be 9 to 18 digits')
+    .required('Bank account number is required'),
+
+  bankname: Yup.string()
+    .matches(/^[a-zA-Z\s]+$/, 'Bank name should only contain letters and spaces')
+    .required('Bank name is required'),
+
+  ifsccode: Yup.string()
+    .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, 'Invalid IFSC code format')
+    .required('IFSC code is required'),
 
   propertyPolicies: Yup.string()
     .trim()

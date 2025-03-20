@@ -9,14 +9,17 @@ import {
 } from "@mui/material";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
 import CustomButton from "../components/CustomButton";
 import RenderRazorpay from "../components/Payments/RanderPayments";
 import color from "../components/color";
 import { BoxStyle, CustomTextField } from "../components/style";
-import { createOrder, getPortfolioDetails, Signup } from "../services/services";
+import { createOrder, getPortfolioDetails, getProfile, sendOTP, Signup, verifyOTP } from "../services/services";
+import PhoneInput from "react-phone-input-2";
+import { isLoggedIn } from "../services/axiosClient";
+import LoginOtpModal from "./Account/LoginOtpModal";
 
 const bookingData = {
   hotelName: "Best Western Ashoka",
@@ -44,20 +47,20 @@ const validationSchema = Yup.object({
 
 const BookingSummary = () => {
   const location = useLocation();
-  const phoneNumber = location.state?.phoneNumber;
+  // const phoneNumber = location.state?.phoneNumber;
 
-  const [user, setUser] = useState<any>({});
-  console.log(user);
+  // const [user, setUser] = useState<any>({});
+  // console.log(user);
 
-  useEffect(() => {
-    getPortfolioDetails(phoneNumber.slice(2))
-      .then((res) => {
-        setUser(res?.data?.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, [phoneNumber]);
+  // useEffect(() => {
+  //   getPortfolioDetails(phoneNumber.slice(2))
+  //     .then((res) => {
+  //       setUser(res?.data?.data);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // }, [phoneNumber]);
   const [orderDetails, setOrderDetails] = useState(null);
   // console.log(orderDetails)
   const handlePayment = async () => {
@@ -95,32 +98,49 @@ const BookingSummary = () => {
     }
   };
 
+
+  const navigate = useNavigate();
+  const openModal = (phoneNumber: any, name: any, email: any, token: any) => {
+    navigate(`${location.pathname}?login=true&phone=${phoneNumber}&name=${name}&email=${email}&token=${token}`, { replace: true, });
+  };
+
+
   const formik = useFormik({
     initialValues: {
-      name: user?.userName || "",
-      email: user?.email || "",
+      name: "",
+      email: "",
+      phoneNumber: "",
     },
     validationSchema,
     enableReinitialize: true,
     onSubmit: (values) => {
       // console.log("Form submitted with values:", values);
-      const payLoad = {
-        userName: values.name,
-        email: values.email,
-        phoneNumber: phoneNumber.slice(2),
-        isVerified: true,
-      };
-      if (user?.data === null) {
-        Signup(payLoad)
-          .then((res) => {
-            console.log(res);
-          })
-          .catch((err) => {
-            toast(err);
-          });
+      if (isLoggedIn()) {
         handlePayment();
       } else {
-        handlePayment();
+        // store the user details in db and if the user is not present in db and then verify the OTP ok dude
+
+        // handle to send the Opt 
+
+
+
+        const payLoad = {
+          name: values.name,
+          email: values.email,
+          phone: values.phoneNumber.slice(2)
+        }
+        console.log(payLoad)
+        sendOTP(payLoad).then((res) => {
+          console.log(res)
+          toast("Otp send Succesfully please verify the OTP");
+          openModal(values.phoneNumber.slice(2), values.name, values.email, res?.data?.data);
+        }).catch((err) => {
+          console.log(err);
+        })
+
+
+
+
       }
     },
   });
@@ -325,7 +345,7 @@ const BookingSummary = () => {
             <Typography
               variant="h6"
               mt={4}
-              sx={{ color: color.firstColor, fontWeight: "bold" }}
+              sx={{ color: "#1976d2", fontWeight: "bold" }}
             >
               Guest Information
             </Typography>
@@ -340,8 +360,50 @@ const BookingSummary = () => {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               error={formik.touched.name && Boolean(formik.errors.name)}
-              // helperText={formik.touched.name && formik.errors.name}
             />
+
+            {/* Phone Number Field */}
+            <Box mt={2}>
+              <PhoneInput
+                country={"in"}
+                value={formik.values.phoneNumber}
+                onChange={(value) => formik.setFieldValue("phoneNumber", value)}
+                onBlur={() => formik.setFieldTouched("phoneNumber", true)}
+                inputStyle={{
+                  width: "100%",
+                  height: "56px", // Same height as CustomTextField
+                  borderRadius: "8px", // Match border-radius of MUI input
+                  border: formik.touched.phoneNumber && formik.errors.phoneNumber
+                    ? "1px solid red"
+                    : "1px solid #ccc",
+                  paddingLeft: "48px", // Adjust for country code
+                  fontSize: "16px",
+                  boxShadow: "none", // Remove shadow
+                  backgroundColor: "#fafafa", // Background color similar to input
+                  transition: "border-color 0.2s ease",
+                }}
+                buttonStyle={{
+                  borderRadius: "8px 0 0 8px", // Match left side border-radius
+                  backgroundColor: "#f5f5f5",
+                  borderRight: "1px solid #ccc",
+                }}
+                containerStyle={{
+                  width: "100%",
+                }}
+              />
+              {formik.touched.phoneNumber && formik.errors.phoneNumber && (
+                <Typography
+                  sx={{
+                    color: "red",
+                    fontSize: "12px",
+                    mt: 0.5,
+                    ml: "14px", // Same margin as input error text
+                  }}
+                >
+                  {formik.errors.phoneNumber}
+                </Typography>
+              )}
+            </Box>
 
             {/* Email Field */}
             <CustomTextField
@@ -353,24 +415,40 @@ const BookingSummary = () => {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               error={formik.touched.email && Boolean(formik.errors.email)}
-              // helperText={formik.touched.email && formik.errors.email}
             />
 
-            <CustomButton
-              variant="contained"
-              color="primary"
-              fullWidth
-              sx={{ mt: 2 }}
-              type="submit"
-            >
-              Pay Now
-            </CustomButton>
+            {/* Submit Button */}
+            {
+              isLoggedIn() ? (<>
+                <CustomButton
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  sx={{ mt: 2 }}
+                  type="submit"
+                >
+                  Pay Now
+                </CustomButton>
+              </>) : (<>
+                <CustomButton
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  sx={{ mt: 2 }}
+                  type="submit"
+                >
+                  verify Phone & Pay
+                </CustomButton>
+              </>)
+            }
+
+            <LoginOtpModal></LoginOtpModal>
+
+            {/* Render Razorpay */}
             {orderDetails && (
               <RenderRazorpay
                 orderDetails={orderDetails}
                 amount={bookingData.roomPrice}
-                // courseId={cartItems[0].id}
-                // userId={getUserId()}
               />
             )}
           </form>
