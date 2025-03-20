@@ -21,13 +21,14 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import color from "../components/color";
 import CustomButton from "../components/CustomButton";
 import { amenityIcons } from "../components/data";
 import { BoxStyle, BpRadio } from "../components/style";
 import SearchSection from "./Home Section/SearchSection";
+import { getAllHotels } from "../services/services";
 
 const hotels = [
   {
@@ -93,6 +94,20 @@ const SearchResults = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
 
+  const [hotel, setHotel] = useState<any[]>([]);
+
+  useEffect(() => {
+    const payLoad = {
+      data: { filter: "", status: "Aproved" },
+      page: 0,
+      pageSize: 50,
+      order: [["createdAt", "ASC"]],
+    };
+
+    getAllHotels(payLoad).then((res) => {
+      setHotel(res?.data?.data?.rows);
+    });
+  }, [])
   // Initial query params
   const [budget, setBudget] = useState<number[]>([
     Number(queryParams.get("minBudget")) || 1000,

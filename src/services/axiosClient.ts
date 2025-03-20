@@ -43,7 +43,7 @@ export function getphoneNumber(): string {
     if (token) {
         let decoded: any = jwtDecode(token);
         // console.log("user Details bro!=",decoded)
-        return decoded.phoneNumber || '';
+        return decoded.phoneNumber.phoneNumber || '';
     }
     else {
         return '';

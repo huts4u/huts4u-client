@@ -53,3 +53,7 @@ export function getMyAllHotelswithBelongsTo(payLoad:any){
 export function getProfile(){
     return client.get('/auth/profile');
 }
+
+export function getAllHotels(payLoad:any){
+    return client.post('/Hotel/search-record', payLoad);
+}

@@ -118,9 +118,9 @@ const validationSchema = Yup.object().shape({
     .matches(/^[a-zA-Z\s]+$/, 'Bank name should only contain letters and spaces')
     .required('Bank name is required'),
 
-  ifsccode: Yup.string()
-    .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, 'Invalid IFSC code format')
-    .required('IFSC code is required'),
+  // ifsccode: Yup.string()
+  //   .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, 'Invalid IFSC code format')
+  //   .required('IFSC code is required'),
 
   propertyPolicies: Yup.string()
     .trim()
@@ -849,7 +849,7 @@ const PropertyForm = () => {
                           fontSize={"18px"}
                           fontWeight={"bold"}
                           mb={-1}
-                          //   mt={1}
+                        //   mt={1}
                         >
                           {formik.values.rooms.length > 1 && (
                             <>Room {index + 1}</>

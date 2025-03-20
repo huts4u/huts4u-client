@@ -62,7 +62,7 @@ const ToggleBookingType = ({ bookingType, handleBookingType }: any) => (
   </ToggleButtonGroup>
 );
 
-const options = ["Option 1", "Option 2", "Option 3", "Option 4"];
+const options = ["Patia", "Mancheswar", "Palasuni", "Rasulgarh"];
 
 // interface Location {
 //   display_name: string;
@@ -164,7 +164,7 @@ const SearchSection = () => {
           sx={{
             width: "100%",
             position: "absolute",
-            top: {xs:-35, md:-35},
+            top: { xs: -35, md: -35 },
             left: "50%",
             transform: "translateX(-50%)",
           }}

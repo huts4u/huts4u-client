@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import color from "./color";
 
 interface DatePickerProps {
@@ -40,24 +40,25 @@ const CustomDatePicker: React.FC<DatePickerProps> = ({
         <MobileDatePicker
           value={date}
           onChange={setDate}
+          shouldDisableDate={(date) => date.isBefore(dayjs(), "day")} // Disable past dates
           slotProps={{
             textField: {
               sx: {
                 bgcolor: color.thirdColor,
                 borderRadius: 2,
                 maxWidth: "200px",
-                border: "none", // Remove border
-                outline: "none", // Remove focus outline
+                border: "none",
+                outline: "none",
                 boxShadow: "none",
                 "& fieldset": {
                   border: "none",
                 },
                 "&:hover": {
-                  bgcolor: "#f5f5f5", // Change background on hover if needed
+                  bgcolor: "#f5f5f5",
                 },
                 "& .MuiInputBase-input": {
-                  padding: "0px 10px", // Adjust text padding
-                  color: color.firstColor, // Change text color
+                  padding: "0px 10px",
+                  color: color.firstColor,
                   fontFamily: "CustomFontB",
                   fontSize: { xs: "18px", md: "20px" },
                 },
