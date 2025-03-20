@@ -237,7 +237,7 @@ const PropertyForm = () => {
   ) => {
     if (file) {
       const formData = new FormData();
-      formData.append('files', file);
+      formData.append("files", file);
 
       setUploading(true);
       try {
@@ -249,7 +249,7 @@ const PropertyForm = () => {
           setFieldValue(uploadedUrl);
         }
       } catch (error) {
-        console.error('Error uploading file:', error);
+        console.error("Error uploading file:", error);
       } finally {
         setUploading(false);
       }
@@ -289,7 +289,6 @@ const PropertyForm = () => {
   };
 
   const navigate = useNavigate();
-
 
   const formik = useFormik({
     initialValues: {
@@ -368,44 +367,44 @@ const PropertyForm = () => {
         propertyImages: values.propertyImages,
         bankPassbook: values.bankpassbook,
         propertyPolicy: values.propertyPolicies,
-        status: "Pending"
-      }
+        status: "Pending",
+      };
 
-
-      hotelPost(payLoad).then((res) => {
-
-        if (res?.data?.data?.id) {
-
-          const roomPayload = values.rooms.map((room) => ({
-            hotelId: res?.data?.data?.id,
-            stayType: values.stayType,
-            roomCategory: room.roomCategory,
-            roomSize: room.roomSize,
-            availableRooms: room.numberOfRoomsAvailable,
-            rateFor1Night: room.rateFor1Night,
-            rateFor3Hour: room.rateFor3Hour,
-            rateFor6Hour: room.rateFor6Hour,
-            rateFor12Hour: room.rateFor12Hour,
-            additionalGuestRate: room.additionalGuestRate,
-            additionalChildRate: room.additionalChildRate,
-            standardRoomOccupancy: room.standardRoomOccupancy,
-            maxRoomOccupancy: room.maxRoomOccupancy,
-            numberOfFreeChildren: room.numberOfFreeChildren,
-            amenities: room.amenities,
-            roomImages: room.roomImage,
-          }));
-          console.log(roomPayload)
-          roomPost(roomPayload).then((res) => {
-            toast(res?.data?.msg);
-            navigate('/hotel-applications')
-          }).catch((err) => {
-            console.log(err);
-
-          })
-        }
-      }).catch((err) => {
-        console.log(err);
-      })
+      hotelPost(payLoad)
+        .then((res) => {
+          if (res?.data?.data?.id) {
+            const roomPayload = values.rooms.map((room) => ({
+              hotelId: res?.data?.data?.id,
+              stayType: values.stayType,
+              roomCategory: room.roomCategory,
+              roomSize: room.roomSize,
+              availableRooms: room.numberOfRoomsAvailable,
+              rateFor1Night: room.rateFor1Night,
+              rateFor3Hour: room.rateFor3Hour,
+              rateFor6Hour: room.rateFor6Hour,
+              rateFor12Hour: room.rateFor12Hour,
+              additionalGuestRate: room.additionalGuestRate,
+              additionalChildRate: room.additionalChildRate,
+              standardRoomOccupancy: room.standardRoomOccupancy,
+              maxRoomOccupancy: room.maxRoomOccupancy,
+              numberOfFreeChildren: room.numberOfFreeChildren,
+              amenities: room.amenities,
+              roomImages: room.roomImage,
+            }));
+            console.log(roomPayload);
+            roomPost(roomPayload)
+              .then((res) => {
+                toast(res?.data?.msg);
+                navigate("/hotel-applications");
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
   });
 
@@ -645,12 +644,9 @@ const PropertyForm = () => {
                   label="Bank Name"
                   {...formik.getFieldProps("bankname")}
                   error={
-                    formik.touched.bankname &&
-                    Boolean(formik.errors.bankname)
+                    formik.touched.bankname && Boolean(formik.errors.bankname)
                   }
-                  helperText={
-                    formik.touched.bankname && formik.errors.bankname
-                  }
+                  helperText={formik.touched.bankname && formik.errors.bankname}
                 />
               </Grid>
               <Grid item xs={12} md={4}>
@@ -673,21 +669,17 @@ const PropertyForm = () => {
                   label="IFSC Code"
                   {...formik.getFieldProps("ifsccode")}
                   error={
-                    formik.touched.ifsccode &&
-                    Boolean(formik.errors.ifsccode)
+                    formik.touched.ifsccode && Boolean(formik.errors.ifsccode)
                   }
-                  helperText={
-                    formik.touched.ifsccode && formik.errors.ifsccode
-                  }
+                  helperText={formik.touched.ifsccode && formik.errors.ifsccode}
                 />
               </Grid>
               <Grid item xs={12} md={6}>
                 <ImageUploader
                   label="GST Certificate"
                   onFileSelect={(file) =>
-                    handleFileChange(
-                      file as any,
-                      (value) => formik.setFieldValue("gstCertificate", value)
+                    handleFileChange(file as any, (value) =>
+                      formik.setFieldValue("gstCertificate", value)
                     )
                   }
                 />
@@ -703,9 +695,8 @@ const PropertyForm = () => {
                 <ImageUploader
                   label="PAN Card"
                   onFileSelect={(file) =>
-                    handleFileChange(
-                      file as any,
-                      (value) => formik.setFieldValue("panCard", value)
+                    handleFileChange(file as any, (value) =>
+                      formik.setFieldValue("panCard", value)
                     )
                   }
                 />
@@ -720,9 +711,8 @@ const PropertyForm = () => {
                 <ImageUploader
                   label="Bank Passbook"
                   onFileSelect={(file) =>
-                    handleFileChange(
-                      file as any,
-                      (value) => formik.setFieldValue("bankpassbook", value)
+                    handleFileChange(file as any, (value) =>
+                      formik.setFieldValue("bankpassbook", value)
                     )
                   }
                 />
@@ -784,12 +774,10 @@ const PropertyForm = () => {
                   multiple
                   maxFiles={20}
                   onFileSelect={(file) =>
-                    handleFileChange1(
-                      file as any,
-                      (value) => formik.setFieldValue("propertyImages", value)
+                    handleFileChange1(file as any, (value) =>
+                      formik.setFieldValue("propertyImages", value)
                     )
                   }
-
                 />
                 {formik.touched.propertyImages &&
                   formik.errors.propertyImages && (
@@ -861,7 +849,7 @@ const PropertyForm = () => {
                           fontSize={"18px"}
                           fontWeight={"bold"}
                           mb={-1}
-                        //   mt={1}
+                          //   mt={1}
                         >
                           {formik.values.rooms.length > 1 && (
                             <>Room {index + 1}</>
@@ -884,7 +872,7 @@ const PropertyForm = () => {
                             {...formik.getFieldProps(
                               `rooms.${index}.roomCategory`
                             )}
-                            {...formik.getFieldProps("propertyType")}
+                            {...formik.getFieldProps("roomCategory")}
                             error={
                               formik.touched.rooms?.[index]?.roomCategory &&
                               Array.isArray(formik.errors.rooms) &&
@@ -907,7 +895,9 @@ const PropertyForm = () => {
                             }
                             SelectProps={{
                               renderValue: (selected) => {
-                                const selectedRoom = roomTypes.find((room) => room.value === selected);
+                                const selectedRoom = roomTypes.find(
+                                  (room) => room.value === selected
+                                );
                                 return selectedRoom ? selectedRoom.label : "";
                               },
                             }}
@@ -960,9 +950,12 @@ const PropertyForm = () => {
                           <CustomTextField
                             fullWidth
                             label="Available Rooms"
-                            {...formik.getFieldProps(`rooms.${index}.numberOfRoomsAvailable`)}
+                            {...formik.getFieldProps(
+                              `rooms.${index}.numberOfRoomsAvailable`
+                            )}
                             error={
-                              formik.touched.rooms?.[index]?.numberOfRoomsAvailable &&
+                              formik.touched.rooms?.[index]
+                                ?.numberOfRoomsAvailable &&
                               Array.isArray(formik.errors.rooms) &&
                               Boolean(
                                 (
@@ -973,7 +966,8 @@ const PropertyForm = () => {
                               )
                             }
                             helperText={
-                              formik.touched.rooms?.[index]?.numberOfRoomsAvailable &&
+                              formik.touched.rooms?.[index]
+                                ?.numberOfRoomsAvailable &&
                               Array.isArray(formik.errors.rooms) &&
                               (
                                 formik.errors.rooms as FormikErrors<
@@ -1400,12 +1394,13 @@ const PropertyForm = () => {
                         </Grid>
                         <Grid item xs={12} md={12}>
                           <ImageUploader
-                            label="room Image"
-
+                            label="Room Image"
                             onFileSelect={(file) =>
-                              handleFileChange(
-                                file as any,
-                                (value) => formik.setFieldValue("roomImage", value)
+                              handleFileChange(file as File, (value) =>
+                                formik.setFieldValue(
+                                  `rooms.${index}.roomImage`,
+                                  value
+                                )
                               )
                             }
                           />
