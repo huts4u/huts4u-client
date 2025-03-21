@@ -57,3 +57,6 @@ export function getProfile(){
 export function getAllHotels(payLoad:any){
     return client.post('/Hotel/search-record', payLoad);
 }
+export function getAllRooms(payLoad:any){
+    return client.post('/Room/search-record', payLoad);
+}

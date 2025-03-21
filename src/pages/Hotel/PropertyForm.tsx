@@ -289,6 +289,7 @@ const PropertyForm = () => {
   };
 
   const navigate = useNavigate();
+  const sanitizeValue = (value: any) => (value === '' ? null : value);
 
   const formik = useFormik({
     initialValues: {
@@ -379,12 +380,12 @@ const PropertyForm = () => {
               roomCategory: room.roomCategory,
               roomSize: room.roomSize,
               availableRooms: room.numberOfRoomsAvailable,
-              rateFor1Night: room.rateFor1Night,
-              rateFor3Hour: room.rateFor3Hour,
-              rateFor6Hour: room.rateFor6Hour,
-              rateFor12Hour: room.rateFor12Hour,
-              additionalGuestRate: room.additionalGuestRate,
-              additionalChildRate: room.additionalChildRate,
+              rateFor1Night: sanitizeValue(room.rateFor1Night),
+              rateFor3Hour: sanitizeValue(room.rateFor3Hour),
+              rateFor6Hour: sanitizeValue(room.rateFor6Hour),
+              rateFor12Hour: sanitizeValue(room.rateFor12Hour),
+              additionalGuestRate: sanitizeValue(room.additionalGuestRate),
+              additionalChildRate: sanitizeValue(room.additionalChildRate),
               standardRoomOccupancy: room.standardRoomOccupancy,
               maxRoomOccupancy: room.maxRoomOccupancy,
               numberOfFreeChildren: room.numberOfFreeChildren,

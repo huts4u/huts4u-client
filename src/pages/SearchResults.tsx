@@ -28,7 +28,7 @@ import CustomButton from "../components/CustomButton";
 import { amenityIcons } from "../components/data";
 import { BoxStyle, BpRadio } from "../components/style";
 import SearchSection from "./Home Section/SearchSection";
-import { getAllHotels } from "../services/services";
+import { getAllHotels, getMyAllHotelswithBelongsTo } from "../services/services";
 
 const hotels = [
   {
@@ -94,21 +94,97 @@ const SearchResults = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
 
+  // const [aprovedhotel, setAprovedHotel] = useState<any[]>([]);
+  // // const [count, setCount] = useState<any>("");
+
+
+  // useEffect(() => {
+  //   getMyAllHotelswithBelongsTo({
+  //     userId: getUserId(),
+  //     // status: 'Aproved',
+  //     secondTable: 'Room'
+  //   }).then((res) => {
+  //     const data = res?.data?.data;
+  //     if (data) {
+  //       const pendingHotels = data.filter((hotel: any) => hotel.status === 'Pending');
+  //       const approvedHotels = data.filter((hotel: any) => hotel.status === 'Aproved');
+  //       const rejectedHotels = data.filter((hotel: any) => hotel.status === 'Reject');
+  //       setPendingHotel(pendingHotels);
+  //       setAprovedHotel(approvedHotels);
+  //       setRejectHotel(rejectedHotels);
+
+  //       // console.log('Pending:', pendingHotels);
+  //       // console.log('Approved:', approvedHotels);
+  //       // console.log('Rejected:', rejectedHotels);
+  //     }
+  //   })
+  // }, [])
+
   const [hotel, setHotel] = useState<any[]>([]);
+  const [mergedData, setMergedData] = useState<any[]>([]);
+
+  // useEffect(() => {
+  //   const payLoad = {
+  //     data: { filter: "", status: "Aproved" },
+  //     page: 0,
+  //     pageSize: 50,
+  //     order: [["createdAt", "ASC"]]
+  //   };
+
+  //   getAllHotels(payLoad).then((res) => {
+  //     console.log(res)
+  //     setHotel(res?.data?.data?.rows);
+  //   });
+  // }, [])
+  // Initial query params
 
   useEffect(() => {
-    const payLoad = {
-      data: { filter: "", status: "Aproved" },
-      page: 0,
-      pageSize: 50,
-      order: [["createdAt", "ASC"]],
+    const fetchHotelsWithRooms = async () => {
+      try {
+        // 1️⃣ Fetch Hotels
+        const hotelPayload = {
+          data: { filter: "", status: "Aproved" },
+          page: 0,
+          pageSize: 50,
+          order: [["createdAt", "ASC"]],
+        };
+        const hotelRes = await getAllHotels(hotelPayload);
+        const hotelData = hotelRes?.data?.data?.rows || [];
+        setHotel(hotelData);
+
+        // 2️⃣ Extract Hotel IDs
+        const hotelIds = hotelData.map((hotel: any) => hotel.id);
+
+        // 3️⃣ Fetch Rooms for Each Hotel One by One
+        let mergedData = [];
+        for (const hotelId of hotelIds) {
+          const belongsToPayload = {
+            id: hotelId,
+            secondTable: "Room",
+          };
+
+          const hotelWithRoomsRes = await getMyAllHotelswithBelongsTo(belongsToPayload);
+          const hotelWithRooms = hotelWithRoomsRes?.data || null;
+
+          if (hotelWithRooms) {
+            mergedData.push(hotelWithRooms?.data?.[0]);
+          }
+        }
+
+        // 4️⃣ Store Merged Data
+        setMergedData(mergedData);
+      } catch (error) {
+        console.error("Error fetching hotels with rooms:", error);
+      }
     };
 
-    getAllHotels(payLoad).then((res) => {
-      setHotel(res?.data?.data?.rows);
-    });
-  }, [])
-  // Initial query params
+    fetchHotelsWithRooms();
+  }, []);
+
+
+  console.log(mergedData)
+
+
   const [budget, setBudget] = useState<number[]>([
     Number(queryParams.get("minBudget")) || 1000,
     Number(queryParams.get("maxBudget")) || 20000,
@@ -364,7 +440,7 @@ const SearchResults = () => {
                 fontSize: { xs: "16px", md: "20px" },
               }}
             >
-              310 properties found
+              {mergedData.length} properties found
             </Typography>
             {isMobile && (
               <CustomButton
@@ -379,10 +455,11 @@ const SearchResults = () => {
               </CustomButton>
             )}
           </div>
-          {hotels.map((hotel) => {
+          {mergedData.length > 0 ? mergedData.map((hotel) => {
+            console.log(hotel)
             const maxAmenities = isMobile ? 2 : 5;
-            const visibleAmenities = hotel.amenities.slice(0, maxAmenities);
-            const remainingAmenities = hotel.amenities.length - maxAmenities;
+            const visibleAmenities = hotel?.rooms[0]?.amenities.slice(0, maxAmenities);
+            const remainingAmenities = hotel?.rooms[0]?.amenities.length - maxAmenities;
             return (
               <Card
                 onClick={() => {
@@ -410,8 +487,8 @@ const SearchResults = () => {
                 <CardMedia
                   component="img"
                   sx={{ width: { xs: "100%", md: 280 }, height: "100%" }}
-                  image={hotel.image}
-                  alt={hotel.propertyName}
+                  image={hotel?.propertyImages?.[0]}
+                  alt={hotel?.propertyName}
                 />
                 <CardContent
                   style={{
@@ -443,7 +520,7 @@ const SearchResults = () => {
                     >
                       Excellent <br />{" "}
                       <span style={{ fontSize: "10px" }}>
-                        ({hotel.reviews} reviews)
+                        ({hotel?.reviews} reviews)
                       </span>
                     </Typography>
 
@@ -458,7 +535,7 @@ const SearchResults = () => {
                         fontSize: { xs: "14px", md: "18px" },
                       }}
                     >
-                      {hotel.rating}
+                      {hotel?.rating}
                     </Typography>
                   </Box>
                   <Typography
@@ -496,7 +573,7 @@ const SearchResults = () => {
                       WebkitBoxOrient: "vertical",
                     }}
                   >
-                    {hotel.propertyName}
+                    {hotel?.propertyName}
                   </Typography>
                   <Typography
                     color="textSecondary"
@@ -510,7 +587,7 @@ const SearchResults = () => {
                       WebkitBoxOrient: "vertical",
                     }}
                   >
-                    {hotel.location}
+                    {hotel?.city}
                   </Typography>
 
                   <Box
@@ -553,7 +630,7 @@ const SearchResults = () => {
                       maxWidth: { xs: "50%", md: "60%" },
                     }}
                   >
-                    {visibleAmenities.map((amenity, index) => (
+                    {visibleAmenities.map((amenity: any, index: any) => (
                       <Chip
                         key={index}
                         label={amenity}
@@ -617,10 +694,10 @@ const SearchResults = () => {
                         fontSize: { xs: "10px", md: "12px" },
                       }}
                     >
-                      ₹{hotel.originalPrice}.00
+                      ₹{hotel?.rooms?.[0]?.rateFor1Night}.00
                     </Typography>
                     <Typography sx={{ fontSize: "18px" }}>
-                      ₹{hotel.price}.00
+                      ₹{hotel?.rooms?.[0]?.rateFor1Night}.00
                     </Typography>
                     <Typography
                       sx={{ fontSize: { xs: "10px", md: "12px" } }}
@@ -632,7 +709,7 @@ const SearchResults = () => {
                 </CardContent>
               </Card>
             );
-          })}
+          }) : <></>}
         </Grid>
       </Grid>
     </Box>
