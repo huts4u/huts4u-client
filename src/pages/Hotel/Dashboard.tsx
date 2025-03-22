@@ -1,32 +1,34 @@
 import {
-    CalendarMonth,
-    CurrencyRupeeRounded,
-    StarRateRounded,
-    TrendingDown,
-    TrendingUp
+  CalendarMonth,
+  CurrencyRupeeRounded,
+  StarRateRounded,
+  TrendingDown,
+  TrendingUp
 } from "@mui/icons-material";
 import {
-    Box,
-    Card,
-    CardContent,
-    FormControl,
-    Grid,
-    IconButton,
-    MenuItem,
-    Select,
-    Typography,
+  Box,
+  Card,
+  CardContent,
+  FormControl,
+  Grid,
+  IconButton,
+  MenuItem,
+  Select,
+  Typography,
 } from "@mui/material";
 import {
-    CartesianGrid,
-    Line,
-    LineChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from "recharts";
 import color from "../../components/color";
 import BookingTable from "./BookingTable";
+import { useEffect, useState } from "react";
+import { getAllBookingsofMyHotel } from "../../services/services";
 
 const Dashboard = () => {
   const data = [
@@ -34,6 +36,21 @@ const Dashboard = () => {
     { name: "Jan 28", revenue: 250000 },
     { name: "Feb 28", revenue: 215060 },
   ];
+
+  const [booking, setBooking] = useState<any[]>([])
+
+  useEffect(() => {
+    const payLoad = {
+      data: { filter: "" },
+      page: 0,
+      pageSize: 50,
+      order: [["createdAt", "ASC"]]
+    };
+    getAllBookingsofMyHotel(payLoad).then((res) => {
+      // console.log(res);
+      setBooking(res?.data?.data?.rows)
+    })
+  }, [])
 
   return (
     <Box p={3} sx={{ background: color.thirdColor }}>
@@ -126,7 +143,7 @@ const Dashboard = () => {
         <Grid item xs={12} md={6}>
           <Card
             sx={{
-                background: color.firstColor,
+              background: color.firstColor,
               color: "white",
               borderRadius: "10px",
               padding: "20px",
@@ -280,7 +297,7 @@ const Dashboard = () => {
 
       <Grid container spacing={3} mt={0}>
         <Grid item xs={12} md={12}>
-          <BookingTable></BookingTable>
+          <BookingTable booking={booking}></BookingTable>
         </Grid>
       </Grid>
     </Box>

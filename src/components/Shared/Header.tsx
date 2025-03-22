@@ -27,7 +27,7 @@ import {
   Toolbar,
   useMediaQuery,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserName, getUserRole, isLoggedIn, logout } from "../../services/axiosClient";
 import color from "../color";
@@ -36,13 +36,13 @@ import { getProfile } from "../../services/services";
 
 const Header: React.FC = () => {
 
-  useEffect(() => {
-    if (isLoggedIn()) {
-      getProfile().then((res) => {
-        console.log(res);
-      })
-    }
-  }, [])
+  // useEffect(() => {
+  //   if (isLoggedIn()) {
+  //     getProfile().then((res) => {
+  //       console.log(res);
+  //     })
+  //   }
+  // }, [])
 
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -65,14 +65,38 @@ const Header: React.FC = () => {
     setDrawerOpen(open);
   };
 
-  const navLinks = [
-    { label: "Home", icon: <Home />, path: "/" },
-    { label: "Hotels", icon: <Hotel />, path: "/search" },
-    { label: "Contact", icon: <ContactMail />, path: "/contact-us" },
-    // { label: "Help", icon: <Help />, path: "/help" },
-    { label: "About", icon: <Info />, path: "/about-us" },
-    { label: "Hotelier", icon: <Info />, path: "/dashboard" },
-  ];
+  const userRoll = getUserRole();
+  // const navLinks = [
+  //   { label: "Home", icon: <Home />, path: "/" },
+  //   { label: "Hotels", icon: <Hotel />, path: "/search" },
+  //   { label: "Contact", icon: <ContactMail />, path: "/contact-us" },
+  //   // { label: "Help", icon: <Help />, path: "/help" },
+  //   { label: "About", icon: <Info />, path: "/about-us" },
+  //   { label: "Hotelier", icon: <Info />, path: "/dashboard" },
+  // ];
+
+  const navLinks =
+    userRoll === "Hotel"
+      ? [
+        { label: "Home", icon: <CorporateFare />, path: "/my-hotels" },
+        // { label: "My Bookings", icon: <Hotel />, path: "/my-bookings" },
+        { label: "Manage Rooms", icon: <Hotel />, path: "/manage-rooms" },
+        { label: "Reviews", icon: <ContactMail />, path: "/reviews" },
+      ]
+      : userRoll === "Admin"
+        ? [
+          { label: "Admin Dashboard", icon: <PersonOutline />, path: "/admin-dashboard" },
+          { label: "Manage Users", icon: <AccountCircle />, path: "/manage-users" },
+          { label: "Manage Hotels", icon: <Hotel />, path: "/manage-hotels" },
+          { label: "Reports", icon: <Info />, path: "/reports" },
+        ] : [
+          { label: "Home", icon: <Home />, path: "/" },
+          { label: "Hotels", icon: <Hotel />, path: "/search" },
+          { label: "Contact", icon: <ContactMail />, path: "/contact-us" },
+          { label: "About", icon: <Info />, path: "/about-us" },
+          { label: "Join As a Hotel", icon: <Info />, path: "/dashboard" },
+        ]
+
   return (
     <AppBar
       position="sticky"

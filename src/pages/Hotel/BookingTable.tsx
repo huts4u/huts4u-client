@@ -1,18 +1,18 @@
 import {
-    Avatar,
-    Box,
-    Chip,
-    FormControl,
-    MenuItem,
-    Paper,
-    Select,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Typography
+  Avatar,
+  Box,
+  Chip,
+  FormControl,
+  MenuItem,
+  Paper,
+  Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography
 } from "@mui/material";
 import React from "react";
 import color from "../../components/color";
@@ -80,7 +80,11 @@ const bookings = [
   },
 ];
 
-const BookingTable: React.FC = () => {
+interface BookingTableProps {
+  booking: any[];
+}
+
+const BookingTable: React.FC<BookingTableProps> = ({ booking }) => {
   return (
     <Box
       sx={{
@@ -155,7 +159,7 @@ const BookingTable: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {bookings.map((booking) => (
+            {booking.map((booking) => (
               <TableRow
                 style={{ border: "solid 0px", boxShadow: "none" }}
                 key={booking.id}
@@ -163,14 +167,14 @@ const BookingTable: React.FC = () => {
                 <TableCell>{booking.id}</TableCell>
                 <TableCell>
                   <Box display="flex" alignItems="center" gap={1}>
-                    <Avatar src={booking.avatar} alt={booking.name} />
-                    <Typography>{booking.name}</Typography>
+                    <Avatar src={booking.avatar} alt={booking?.geustName} />
+                    <Typography>{booking?.geustName}</Typography>
                   </Box>
                 </TableCell>
                 <TableCell>{booking.email}</TableCell>
                 <TableCell>{booking.type}</TableCell>
-                <TableCell>{booking.checkIn}</TableCell>
-                <TableCell>{booking.checkOut}</TableCell>
+                <TableCell>{booking.checkInDate}</TableCell>
+                <TableCell>{booking.checkOutDate}</TableCell>
                 <TableCell>
                   <Chip
                     label={booking.status}

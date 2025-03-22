@@ -228,7 +228,7 @@ const MyHotelDetails = () => {
           </Typography>
 
           <Box py={2} sx={{ pr: { xs: 0, md: 2 }, mx: -1 }}>
-            <ImageGrid propertyImages={hotelData1.propertyImages}></ImageGrid>
+            <ImageGrid propertyImages={hotelData1.propertyImages || []}></ImageGrid>
           </Box>
 
           <Box

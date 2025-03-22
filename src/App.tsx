@@ -45,11 +45,12 @@ const App: React.FC = () => {
 
 
           <Route element={<HotelLayout />}>
-            <Route path="/dashboard" element={<PrivateRoute component={Dashboard} />} />
-            <Route path="/my-hotels" element={<PrivateRoute component={MyHotels} />} />
-            <Route path="/hotel-details/:id" element={<PrivateRoute component={MyHotelDetails} />} />
-            <Route path="/hotel-applications" element={<PrivateRoute component={MyHotels} />} />
-            <Route path="/hotel-application/:id" element={<PrivateRoute component={ApplicationPreview} />} />
+            <Route path="/dashboard" element={<PrivateRoute component={Dashboard} allowedRoles={["Hotel"]} />} />
+            <Route path="/my-hotels" element={<PrivateRoute component={MyHotels} allowedRoles={["Hotel"]} />} />
+            <Route path="/hotel-details/:id" element={<PrivateRoute component={MyHotelDetails} allowedRoles={["Hotel"]} />} />
+            <Route path="/hotel-applications" element={<PrivateRoute component={MyHotels} allowedRoles={["Hotel"]} />} />
+            <Route path="/hotel-application/:id" element={<PrivateRoute component={ApplicationPreview} allowedRoles={["Hotel"]} />} />
+
           </Route>
         </Routes>
         <Footer />

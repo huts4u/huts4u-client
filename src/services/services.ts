@@ -60,3 +60,7 @@ export function getAllHotels(payLoad:any){
 export function getAllRooms(payLoad:any){
     return client.post('/Room/search-record', payLoad);
 }
+
+export function getAllBookingsofMyHotel(payLoad:any){
+    return client.post('/Booking/search-record', payLoad);
+}
