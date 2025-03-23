@@ -232,50 +232,7 @@ const BookingSummary = () => {
                 {bookingData.location}
               </Typography>
 
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: 4,
-                  right: 6,
-                  //   display: { xs: "none", md: "flex" },
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
-              >
-                <Typography
-                  variant="body2"
-                  fontWeight={600}
-                  color={color.thirdColor}
-                  sx={{
-                    background: color.background,
-                    px: 1,
-                    borderRadius: "4px",
-                    fontSize: "18px",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  {bookingData.rating} <StarRounded></StarRounded>
-                </Typography>
-
-                <Typography
-                  variant="body2"
-                  fontWeight={600}
-                  color={color.firstColor}
-                  lineHeight={1}
-                  sx={{
-                    fontSize: "10px",
-                    background: "white",
-                    mt: 0.5,
-                    p: 0.5,
-                    borderRadius: "4px",
-                  }}
-                >
-                  ({bookingData.reviews} reviews)
-                </Typography>
-              </Box>
+         
               <div
                 style={{
                   marginTop: "10px",
@@ -350,7 +307,7 @@ const BookingSummary = () => {
             <Typography
               variant="h6"
               mt={4}
-              sx={{ color: "#1976d2", fontWeight: "bold" }}
+              sx={{ color: color.firstColor, fontWeight: "bold" }}
             >
               Guest Information
             </Typography>
@@ -367,8 +324,7 @@ const BookingSummary = () => {
               error={formik.touched.name && Boolean(formik.errors.name)}
             />
 
-            {/* Phone Number Field */}
-            <Box mt={2}>
+            <Box mt={1}>
               <PhoneInput
                 country={"in"}
                 value={formik.values.phoneNumber}
@@ -377,21 +333,19 @@ const BookingSummary = () => {
                 inputStyle={{
                   width: "100%",
                   height: "56px", // Same height as CustomTextField
-                  borderRadius: "8px", // Match border-radius of MUI input
-                  border:
-                    formik.touched.phoneNumber && formik.errors.phoneNumber
-                      ? "1px solid red"
-                      : "1px solid #ccc",
-                  paddingLeft: "48px", // Adjust for country code
+                  borderRadius: "52px",
+                  border:'none',
+                  boxShadow: "4px 4px 10px rgba(104, 39, 184, 0.17)",
+                  color: color.firstColor,
+                  paddingLeft: "58px", // Adjust for country code
                   fontSize: "16px",
-                  boxShadow: "none", // Remove shadow
-                  backgroundColor: "#fafafa", // Background color similar to input
+                  backgroundColor: "white",
                   transition: "border-color 0.2s ease",
                 }}
                 buttonStyle={{
-                  borderRadius: "8px 0 0 8px", // Match left side border-radius
-                  backgroundColor: "#f5f5f5",
-                  borderRight: "1px solid #ccc",
+                  borderRadius: "52px 0 0 52px",
+                  margin:'5px', // Match left side border-radius
+                  backgroundColor: "white",
                 }}
                 containerStyle={{
                   width: "100%",

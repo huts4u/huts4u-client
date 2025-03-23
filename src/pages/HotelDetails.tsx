@@ -5,6 +5,7 @@ import {
   ExpandLess,
   ExpandMore,
   Star,
+  StarRounded,
 } from "@mui/icons-material";
 import {
   Box,
@@ -24,20 +25,22 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
+import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import color from "../components/color";
 import CustomButton from "../components/CustomButton";
 import { amenityIcons } from "../components/data";
 import {
   BoxStyle,
   CustomRadio,
+  getRatingColor,
+  getRatingText,
   ImageGrid,
   RoomAmenities,
   StyledLabel,
 } from "../components/style";
 import LoginOtpModal from "./Account/LoginOtpModal";
-import SearchSection from "./Home Section/SearchSection";
 
 const hotelData = {
   propertyName: "Hotel Metropol by Maier Private hotels",
@@ -127,16 +130,19 @@ const hotelData = {
 };
 
 const HotelDetails = () => {
-  const [selectedRoom, setSelectedRoom] = useState(hotelData.rooms[0]); // Store the full room object
+  const location = useLocation();
+  const hotel = location.state?.hotelData;
+  console.log(hotel);
+  const [selectedRoom, setSelectedRoom] = useState(hotel?.rooms[0]);
   const [selectedSlot, setSelectedSlot] = useState<{
     roomId: number | null;
     slot: string | null;
   }>({
-    roomId: null,
-    slot: null,
+    roomId: hotel?.rooms[0].id,
+    slot: "rateFor3Hour",
   });
   const handleSlotSelection = (roomId: number, slot: string) => {
-    setSelectedSlot({ roomId, slot }); // Ensure only one slot is selected at a time
+    setSelectedSlot({ roomId, slot });
   };
 
   const [expanded, setExpanded] = useState(false);
@@ -200,18 +206,30 @@ const HotelDetails = () => {
   const isMobile = useMediaQuery("(max-width: 900px)");
 
   const navigate = useNavigate();
+
+  const queryParams = new URLSearchParams(location.search);
+
+  const bookingType = queryParams.get("bookingType");
+  const bookingHours = queryParams.get("bookingHours");
+  const checkinTime = queryParams.get("time");
+  const checkinDate = queryParams.get("checkinDate");
+  const checkOutDate = queryParams.get("checkOutDate");
+  const rooms = queryParams.get("rooms");
+  const adults = queryParams.get("adults");
+  const children = queryParams.get("children");
   // const location = useLocation();
 
   // const openModal = () => {
   //   navigate(`${location.pathname}?login=true`, { replace: true });
   // };
+
   return (
     <Box
       id="boxA"
       sx={{
         background: color.thirdColor,
         px: { xs: 2, md: 4 },
-        pt:1,
+        py: 1,
         position: "relative",
         // minHeight: "2000px",
       }}
@@ -248,25 +266,34 @@ const HotelDetails = () => {
               fontWeight={600}
               color={color.firstColor}
               lineHeight={1}
+              sx={{
+                fontSize: { xs: "12px", md: "14px" },
+                textAlign: "center",
+              }}
             >
-              Excellent <br />{" "}
+              {getRatingText(hotel?.ratings?.rating)}
+              <br />{" "}
               <span style={{ fontSize: "10px" }}>
-                ({hotelData.reviews} reviews)
+                ({hotel?.reviews} 0 reviews)
               </span>
             </Typography>
 
             <Typography
               variant="body2"
               fontWeight={600}
-              color={color.thirdColor}
+              color="#fff"
               sx={{
-                background: color.background,
+                background: getRatingColor(hotel?.ratings?.rating),
                 px: 1,
                 borderRadius: "4px",
-                fontSize: "18px",
+                fontSize: { xs: "14px", md: "16px" },
+                boxShadow: "0px -10px 10px rgba(0, 0, 0, 0.12) inset",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
               }}
             >
-              {hotelData.rating}
+              {hotel?.ratings?.rating} <StarRounded></StarRounded>
             </Typography>
           </Box>
 
@@ -278,7 +305,7 @@ const HotelDetails = () => {
               color: color.firstColor,
             }}
           >
-            {hotelData.propertyName}
+            {hotel.propertyName}
           </Typography>
           <Typography
             color="textSecondary"
@@ -289,11 +316,11 @@ const HotelDetails = () => {
               mt: { xs: 1, md: 0 },
             }}
           >
-            {hotelData.address}
+            {hotel.address}
           </Typography>
 
           <Box py={2} sx={{ pr: { xs: 0, md: 2 }, mx: -1 }}>
-            <ImageGrid propertyImages={hotelData.propertyImages}></ImageGrid>
+            <ImageGrid propertyImages={hotel.propertyImages}></ImageGrid>
           </Box>
 
           <Box
@@ -340,10 +367,10 @@ const HotelDetails = () => {
                 // textAlign:'justify'
               }}
             >
-              {expanded || hotelData.description.length <= maxLength
-                ? hotelData.description
-                : `${hotelData.description.substring(0, maxLength)}...`}
-              {hotelData.description.length > maxLength && (
+              {expanded || hotel.propertyDesc.length <= maxLength
+                ? hotel.propertyDesc
+                : `${hotel.propertyDesc.substring(0, maxLength)}...`}
+              {hotel.propertyDesc.length > maxLength && (
                 <Button
                   sx={{
                     textTransform: "none",
@@ -384,42 +411,44 @@ const HotelDetails = () => {
                 width: "fit-content",
               }}
             >
-              {hotelData.amenities.slice(0, 5).map((amenity, index) => (
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Chip
-                    key={index}
-                    icon={
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
-                        {React.cloneElement(
-                          amenityIcons[amenity] || <AddCircleOutline />,
-                          {
-                            sx: {
-                              fontSize: { xs: 26, md: 34 },
-                              color: color.paperColor,
-                            },
-                          }
-                        )}
-                      </Box>
-                    }
-                    size="small"
-                    sx={{ bgcolor: "transparent" }}
-                  />
-
-                  <Typography
-                    sx={{ fontSize: { xs: "10px", md: "14px" } }}
-                    mt={1.5}
+              {hotel?.rooms[0]?.amenities
+                .slice(0, 5)
+                .map((amenity: any, index: any) => (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
                   >
-                    {amenity}
-                  </Typography>
-                </div>
-              ))}
+                    <Chip
+                      key={index}
+                      icon={
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          {React.cloneElement(
+                            amenityIcons[amenity] || <AddCircleOutline />,
+                            {
+                              sx: {
+                                fontSize: { xs: 26, md: 34 },
+                                color: color.paperColor,
+                              },
+                            }
+                          )}
+                        </Box>
+                      }
+                      size="small"
+                      sx={{ bgcolor: "transparent" }}
+                    />
+
+                    <Typography
+                      sx={{ fontSize: { xs: "10px", md: "14px" } }}
+                      mt={1.5}
+                    >
+                      {amenity}
+                    </Typography>
+                  </div>
+                ))}
             </Box>
           </Box>
 
@@ -561,7 +590,11 @@ const HotelDetails = () => {
                       Check In Date
                     </Typography>
 
-                    <Typography fontWeight={600}>28 Feb 2025</Typography>
+                    <Typography fontWeight={600}>
+                      {checkinDate
+                        ? dayjs(checkinDate).format("DD MMM YYYY")
+                        : ""}
+                    </Typography>
                   </Box>
                   <Divider
                     sx={{
@@ -578,11 +611,31 @@ const HotelDetails = () => {
                       width: "50%",
                     }}
                   >
-                    <Typography fontSize={"14px"} color={color.forthColor}>
-                      Check In Time
-                    </Typography>
+                    {bookingType === "hourly" ? (
+                      <>
+                        <Typography fontSize={"14px"} color={color.forthColor}>
+                          Check In Time
+                        </Typography>
 
-                    <Typography fontWeight={600}>05:00 PM</Typography>
+                        <Typography fontWeight={600}>
+                          {checkinTime
+                            ? dayjs(checkinTime, "HH:mm").format("hh:mm A")
+                            : ""}
+                        </Typography>
+                      </>
+                    ) : (
+                      <>
+                        <Typography fontSize={"14px"} color={color.forthColor}>
+                          Check Out Date
+                        </Typography>
+
+                        <Typography fontWeight={600}>
+                          {checkOutDate
+                            ? dayjs(checkOutDate).format("DD MMM YYYY")
+                            : ""}
+                        </Typography>
+                      </>
+                    )}
                   </Box>
                 </Box>
 
@@ -602,7 +655,9 @@ const HotelDetails = () => {
                     Rooms & Guest Details
                   </Typography>
 
-                  <Typography fontWeight={600}>1 Room, 2 Guests</Typography>
+                  <Typography fontWeight={600}>
+                    {rooms} Room, {adults} Adults, {children} Children
+                  </Typography>
                 </Box>
 
                 <Box
@@ -626,8 +681,8 @@ const HotelDetails = () => {
                     <RadioGroup
                       value={selectedRoom.id}
                       onChange={(e) => {
-                        const room = hotelData.rooms.find(
-                          (r) => r.id === Number(e.target.value)
+                        const room = hotel.rooms.find(
+                          (r: { id: number }) => r.id === Number(e.target.value)
                         );
                         if (room) setSelectedRoom(room);
                       }}
@@ -640,7 +695,7 @@ const HotelDetails = () => {
                           control={<CustomRadio />}
                           label={
                             <Typography sx={{ fontWeight: "bold" }}>
-                              {selectedRoom.propertyName}
+                              {selectedRoom?.roomCategory}
                             </Typography>
                           }
                         />
@@ -649,48 +704,60 @@ const HotelDetails = () => {
                   </FormControl>
                 </Box>
 
-                <div
-                  style={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    alignItems: "center",
-                    justifyContent: "space-around",
-                    gap: "6px",
-                    marginTop: "20px",
-                  }}
-                >
-                  {Object.keys(selectedRoom.price).map((slot) => (
-                    <StyledToggleButton
-                      key={slot}
-                      value={slot}
-                      selected={
-                        selectedSlot.roomId === selectedRoom.id &&
-                        selectedSlot.slot === slot
+                {bookingType === "hourly" && (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      alignItems: "center",
+                      justifyContent: "space-around",
+                      gap: "6px",
+                      marginTop: "20px",
+                    }}
+                  >
+                    {["rateFor3Hour", "rateFor6Hour", "rateFor12Hour"].map(
+                      (slotKey) => {
+                        const slotLabel =
+                          slotKey.replace("rateFor", "").replace("Hour", "") +
+                          "hrs";
+                        const price =
+                          selectedRoom[slotKey as keyof typeof selectedRoom];
+
+                        return (
+                          <StyledToggleButton
+                            key={slotKey}
+                            value={slotLabel}
+                            selected={
+                              selectedSlot.roomId === selectedRoom.id &&
+                              selectedSlot.slot === slotKey
+                            }
+                            onClick={() =>
+                              handleSlotSelection(selectedRoom.id, slotKey)
+                            }
+                            style={{ borderColor: color.forthColor }}
+                          >
+                            <Typography
+                              px={1}
+                              py={0.5}
+                              style={{
+                                fontSize: "14px",
+                                fontWeight: 600,
+                                lineHeight: 1,
+                              }}
+                            >
+                              ₹ {price}
+                              <br />
+                              <span style={{ fontSize: "10px" }}>
+                                {slotLabel}
+                              </span>
+                            </Typography>
+                          </StyledToggleButton>
+                        );
                       }
-                      onClick={() => handleSlotSelection(selectedRoom.id, slot)}
-                      style={{ borderColor: color.forthColor }}
-                    >
-                      <Typography
-                        px={1}
-                        py={0.5}
-                        style={{
-                          fontSize: "14px",
-                          fontWeight: 600,
-                          lineHeight: 1,
-                        }}
-                      >
-                        ₹
-                        {
-                          selectedRoom.price[
-                            slot as keyof typeof selectedRoom.price
-                          ]
-                        }
-                        <br />
-                        <span style={{ fontSize: "10px" }}>{slot}</span>
-                      </Typography>
-                    </StyledToggleButton>
-                  ))}
-                </div>
+                    )}
+                  </div>
+                )}
+
                 <Divider
                   sx={{ mt: 3, mb: 1, borderColor: color.forthColor }}
                 ></Divider>
@@ -718,16 +785,11 @@ const HotelDetails = () => {
                 >
                   ₹
                   {selectedSlot.roomId && selectedSlot.slot
-                    ? hotelData.rooms.find(
-                        (room) => room.id === selectedSlot.roomId
-                      )?.price[
-                        selectedSlot.slot as keyof typeof selectedRoom.price
-                      ]
+                    ? selectedRoom?.[selectedSlot.slot] ?? 0
                     : 0}
-                  .00
                 </Typography>
                 <Typography fontSize={"14px"} color={color.forthColor}>
-                  + ₹ 827 taxes & fees
+                  + ₹ 827 taxes & fees
                 </Typography>
               </div>
 
@@ -737,19 +799,22 @@ const HotelDetails = () => {
                   fontSize: "14px",
                   marginTop: "4px",
                 }}
-                // onClick={handleSearch}
                 onClick={() => navigate("/booking-summary")}
                 variant="contained"
               >
                 Book Now
               </CustomButton>
 
-              <LoginOtpModal></LoginOtpModal>
+              <LoginOtpModal />
             </Box>
           </Box>
         </Box>
 
-        <Box sx={{ ...BoxStyle, px: { xs: 1, md: 4 } }}>
+        <Box sx={{ ...BoxStyle, px: { xs: 1, md: 4 },
+                pb:3,
+
+        //  minHeight:'1000px' 
+         }}>
           <Tabs
             variant="scrollable"
             value={value}
@@ -784,7 +849,7 @@ const HotelDetails = () => {
 
           <TabPanel value={value} index={0}>
             <Grid container spacing={2}>
-              {hotelData.rooms.map((room) => (
+              {hotel.rooms.map((room: any) => (
                 <Grid item xs={12} md={7} key={room.id}>
                   <Card
                     onClick={() => setSelectedRoom(room)}
@@ -826,8 +891,8 @@ const HotelDetails = () => {
                           borderRadius: "12px",
                           width: { xs: "100%", md: "250px" },
                         }}
-                        image={room.image}
-                        alt={room.propertyName}
+                        image={room.roomImages}
+                        alt={room.roomCategory}
                       />
 
                       <Typography
@@ -853,9 +918,11 @@ const HotelDetails = () => {
                           transition: "all 0.3s",
                         }}
                       >
-                        {room.propertyName}
+                        {room.roomCategory}
                       </Typography>
-                      <Typography variant="body2">{room.size}</Typography>
+                      <Typography variant="body2">
+                        {room.roomSize} sqft
+                      </Typography>
                     </Box>
 
                     <List
@@ -884,35 +951,47 @@ const HotelDetails = () => {
                         marginTop: "20px",
                       }}
                     >
-                      {Object.keys(room.price).map((slot) => (
-                        <StyledToggleButton
-                          key={slot}
-                          value={slot}
-                          selected={
-                            selectedSlot.roomId === room.id &&
-                            selectedSlot.slot === slot
-                          } // Ensures only one selection globally
-                          onClick={() => handleSlotSelection(room.id, slot)}
-                          style={{ borderColor: color.forthColor }}
-                        >
-                          <Typography
-                            px={1}
-                            py={0.5}
-                            sx={{
-                              fontSize: { xs: "8px", md: "12px" },
-                              lineHeight: 1.4,
-                            }}
-                          >
-                            <span style={{ fontSize: "18px", fontWeight: 600 }}>
-                              {slot}
-                            </span>
-                            <br />₹{" "}
-                            {room.price[slot as keyof typeof room.price]}
-                            <br />
-                            Incl. Taxes
-                          </Typography>
-                        </StyledToggleButton>
-                      ))}
+                      {["rateFor3Hour", "rateFor6Hour", "rateFor12Hour"].map(
+                        (slotKey) => {
+                          const slotLabel =
+                            slotKey.replace("rateFor", "").replace("Hour", "") +
+                            "hrs";
+                          const price = room[slotKey as keyof typeof room];
+
+                          return (
+                            <StyledToggleButton
+                              key={slotKey}
+                              value={slotLabel}
+                              selected={
+                                selectedSlot.roomId === room.id &&
+                                selectedSlot.slot === slotKey
+                              }
+                              onClick={() =>
+                                handleSlotSelection(room.id, slotKey)
+                              }
+                              style={{ borderColor: color.forthColor }}
+                            >
+                              <Typography
+                                px={1}
+                                py={0.5}
+                                sx={{
+                                  fontSize: { xs: "8px", md: "12px" },
+                                  lineHeight: 1.4,
+                                }}
+                              >
+                                <span
+                                  style={{ fontSize: "18px", fontWeight: 600 }}
+                                >
+                                  {slotLabel}
+                                </span>
+                                <br />₹ {price}
+                                <br />
+                                Incl. Taxes
+                              </Typography>
+                            </StyledToggleButton>
+                          );
+                        }
+                      )}
                     </Box>
                   </Card>
                 </Grid>
@@ -920,10 +999,88 @@ const HotelDetails = () => {
             </Grid>
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <Typography>Services and amenities provided.</Typography>
+            <Box>
+              {hotel.extraService && (
+                <>
+                  <Typography
+                    sx={{
+                      fontFamily: "CustomFontB",
+                      fontSize: "16px",
+                      color: color.paperColor,
+                    }}
+                  >
+                    Extra Services
+                  </Typography>
+                  <Typography mb={2}>{hotel.extraService}</Typography>
+                </>
+              )}
+
+              <Typography
+                sx={{
+                  fontFamily: "CustomFontB",
+                  fontSize: "16px",
+                  color: color.paperColor,
+                }}
+              >
+                Amenities
+              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 2,
+                  mt: 2,
+                  p: 2,
+                  px: 4,
+                  pt: 3,
+                  backgroundColor: "rgba(93, 93, 93, 0.14)",
+                  justifyContent: "space-around",
+                  borderRadius: "12px",
+                  width: "fit-content",
+                }}
+              >
+                {Array.from(
+                  new Set<string>(
+                    hotel?.rooms?.flatMap((room: any) => room.amenities) || []
+                  )
+                )
+                  .slice(0, 5)
+                  .map((amenity: string, index: number) => (
+                    <div
+                      key={index}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "flex-start",
+                      }}
+                    >
+                      <Chip
+                        icon={
+                          <Box sx={{ display: "flex", alignItems: "center" }}>
+                            {React.cloneElement(
+                              amenityIcons[amenity] || <AddCircleOutline />,
+                              {
+                                sx: {
+                                  fontSize: { xs: 26, md: 30 },
+                                  color: color.paperColor,
+                                },
+                              }
+                            )}
+                          </Box>
+                        }
+                        size="small"
+                        sx={{ bgcolor: "transparent" }}
+                      />
+                      <Typography sx={{ fontSize: { xs: "10px", md: "14px" } }}>
+                        {amenity}
+                      </Typography>
+                    </div>
+                  ))}
+              </Box>
+            </Box>
           </TabPanel>
           <TabPanel value={value} index={2}>
-            <Typography>Customer reviews and ratings.</Typography>
+            <Typography mb={2}>{hotel.propertyPolicy}</Typography>
           </TabPanel>
           {/* <TabPanel value={value} index={3}>
         <Typography>Hotel policies and guidelines.</Typography>

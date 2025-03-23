@@ -108,8 +108,12 @@ const SearchSection = () => {
       : dayjs()
   );
   const [time, setTime] = useState<Dayjs | null>(
-    queryParams.time ? dayjs(queryParams.time as string, "HH:mm") : dayjs()
+    queryParams.time 
+      ? dayjs(`2024-01-01T${queryParams.time as string}`)
+      : dayjs()
   );
+  
+  
   const [roomDetails, setRoomDetails] = useState({
     rooms: Number(queryParams.rooms) || 1,
     adults: Number(queryParams.adults) || 2,
