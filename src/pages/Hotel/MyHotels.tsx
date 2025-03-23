@@ -17,72 +17,74 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import color from "../../components/color";
 import CustomButton from "../../components/CustomButton";
 import { amenityIcons } from "../../components/data";
-import { useEffect, useState } from "react";
-import { getMyAllHotels, getMyAllHotelswithBelongsTo } from "../../services/services";
 import { getUserId } from "../../services/axiosClient";
+import {
+  getMyAllHotelswithBelongsTo
+} from "../../services/services";
 
-const hotels = [
-  {
-    id: 1,
-    status: "Approved",
-    propertyName: "Hotel Metropol by Maier Private hotels",
-    location: "Mancheswar, Bhubaneswar",
-    rating: 4.7,
-    reviews: 354,
-    price: 1340.0,
-    originalPrice: 3240.0,
-    taxnfees: 827,
-    amenities: [
-      "Gym",
-      "Swimming Pool",
-      "Free WiFi",
-      "Private Beach",
-      "Breakfast",
-      "Breakfast",
-    ],
-    image: "/assets/hotel 1.jpg",
-  },
-  {
-    id: 2,
-    propertyName: "Hotel Metropol by Maier Private hotels",
-    location: "Mancheswar, Bhubaneswar",
-    rating: 4.7,
-    reviews: 354,
-    price: 1340.0,
-    taxnfees: 827,
-    originalPrice: 3240.0,
-    amenities: [
-      "Gym",
-      "Swimming Pool",
-      "Free WiFi",
-      "Private Beach",
-      "Breakfast",
-    ],
-    image: "/assets/hotel 2.jpg",
-  },
-  {
-    id: 3,
-    propertyName: "Hotel Metropol by Maier Private hotels",
-    location: "Mancheswar, Bhubaneswar",
-    rating: 4.7,
-    reviews: 354,
-    price: 1340.0,
-    taxnfees: 827,
-    originalPrice: 3240.0,
-    amenities: [
-      "Gym",
-      "Swimming Pool",
-      "Free WiFi",
-      "Private Beach",
-      "Breakfast",
-    ],
-    image: "/assets/room-image 2.jpg",
-  },
-];
+// const hotels = [
+//   {
+//     id: 1,
+//     status: "Approved",
+//     propertyName: "Hotel Metropol by Maier Private hotels",
+//     location: "Mancheswar, Bhubaneswar",
+//     rating: 4.7,
+//     reviews: 354,
+//     price: 1340.0,
+//     originalPrice: 3240.0,
+//     taxnfees: 827,
+//     amenities: [
+//       "Gym",
+//       "Swimming Pool",
+//       "Free WiFi",
+//       "Private Beach",
+//       "Breakfast",
+//       "Breakfast",
+//     ],
+//     image: "/assets/hotel 1.jpg",
+//   },
+//   {
+//     id: 2,
+//     propertyName: "Hotel Metropol by Maier Private hotels",
+//     location: "Mancheswar, Bhubaneswar",
+//     rating: 4.7,
+//     reviews: 354,
+//     price: 1340.0,
+//     taxnfees: 827,
+//     originalPrice: 3240.0,
+//     amenities: [
+//       "Gym",
+//       "Swimming Pool",
+//       "Free WiFi",
+//       "Private Beach",
+//       "Breakfast",
+//     ],
+//     image: "/assets/hotel 2.jpg",
+//   },
+//   {
+//     id: 3,
+//     propertyName: "Hotel Metropol by Maier Private hotels",
+//     location: "Mancheswar, Bhubaneswar",
+//     rating: 4.7,
+//     reviews: 354,
+//     price: 1340.0,
+//     taxnfees: 827,
+//     originalPrice: 3240.0,
+//     amenities: [
+//       "Gym",
+//       "Swimming Pool",
+//       "Free WiFi",
+//       "Private Beach",
+//       "Breakfast",
+//     ],
+//     image: "/assets/room-image 2.jpg",
+//   },
+// ];
 
 const MyHotels = () => {
   const navigate = useNavigate();
@@ -96,18 +98,23 @@ const MyHotels = () => {
   const [aprovedhotel, setAprovedHotel] = useState<any[]>([]);
   // const [count, setCount] = useState<any>("");
 
-
   useEffect(() => {
     getMyAllHotelswithBelongsTo({
       userId: getUserId(),
       // status: 'Aproved',
-      secondTable: 'Room'
+      secondTable: "Room",
     }).then((res) => {
       const data = res?.data?.data;
       if (data) {
-        const pendingHotels = data.filter((hotel: any) => hotel.status === 'Pending');
-        const approvedHotels = data.filter((hotel: any) => hotel.status === 'Aproved');
-        const rejectedHotels = data.filter((hotel: any) => hotel.status === 'Reject');
+        const pendingHotels = data.filter(
+          (hotel: any) => hotel.status === "Pending"
+        );
+        const approvedHotels = data.filter(
+          (hotel: any) => hotel.status === "Aproved"
+        );
+        const rejectedHotels = data.filter(
+          (hotel: any) => hotel.status === "Reject"
+        );
         setPendingHotel(pendingHotels);
         setAprovedHotel(approvedHotels);
         setRejectHotel(rejectedHotels);
@@ -116,8 +123,8 @@ const MyHotels = () => {
         // console.log('Approved:', approvedHotels);
         // console.log('Rejected:', rejectedHotels);
       }
-    })
-  }, [])
+    });
+  }, []);
 
   const renderUrl = () => {
     switch (location.pathname) {
@@ -136,7 +143,7 @@ const MyHotels = () => {
     renderUrl() === "application"
       ? [...aprovedhotel, ...pendinghotel, ...rejecthotel]
       : aprovedhotel;
-  console.log(displayHotels)
+  console.log(displayHotels);
   return (
     <Box
       sx={{
@@ -162,7 +169,8 @@ const MyHotels = () => {
               fontSize: { xs: "16px", md: "20px" },
             }}
           >
-            {aprovedhotel.length}{" "}{renderUrl() === "hotel" ? "Properties" : "Applications"}
+            {aprovedhotel.length}{" "}
+            {renderUrl() === "hotel" ? "Properties" : "Applications"}
           </Typography>
 
           <CustomButton
@@ -182,8 +190,12 @@ const MyHotels = () => {
         <Grid item xs={12} md={12}>
           {displayHotels.map((hotel) => {
             const maxAmenities = isMobile ? 2 : 5;
-            const visibleAmenities = hotel?.rooms[0]?.amenities?.slice(0, maxAmenities);
-            const remainingAmenities = hotel?.rooms[0]?.amenities?.length - maxAmenities;
+            const visibleAmenities = hotel?.rooms[0]?.amenities?.slice(
+              0,
+              maxAmenities
+            );
+            const remainingAmenities =
+              hotel?.rooms[0]?.amenities?.length - maxAmenities;
             return (
               <Card
                 onClick={() => {
@@ -203,7 +215,10 @@ const MyHotels = () => {
                   transition: "all 0.3s ease",
                   cursor: "pointer",
                   border: "solid 1px transparent",
-                  height: { xs: "fit-content", md: renderUrl() === "hotel" ? 180 : 200 },
+                  height: {
+                    xs: "fit-content",
+                    md: renderUrl() === "hotel" ? 180 : 200,
+                  },
                   "&:hover": {
                     transform: "scale(1.02)",
                     borderColor: color.firstColor,
@@ -275,11 +290,11 @@ const MyHotels = () => {
                           hotel.status === "Approved"
                             ? "Green"
                             : hotel.status === "Pending"
-                              ? "Yellow"
-                              : "Red",
+                            ? "Yellow"
+                            : "Red",
                         color: "white",
                         px: 2,
-                        borderRadius: { xs: '4px', md: "0 4px 0 4px" },
+                        borderRadius: { xs: "4px", md: "0 4px 0 4px" },
                         py: 0.5,
                         display: "flex",
                         justifyContent: "center",
@@ -363,7 +378,11 @@ const MyHotels = () => {
                   </Typography>
 
                   <Box
-                    sx={{ display: { xs: "none", md: "flex" }, gap: 2, mt: 1.5 }}
+                    sx={{
+                      display: { xs: "none", md: "flex" },
+                      gap: 2,
+                      mt: 1.5,
+                    }}
                   >
                     <Typography
                       color="textSecondary"
@@ -397,7 +416,8 @@ const MyHotels = () => {
                     </Typography>
                   </Box>
 
-                  {renderUrl() === "hotel" && hotel?.rooms[0]?.amenities?.length ? (
+                  {renderUrl() === "hotel" &&
+                  hotel?.rooms[0]?.amenities?.length ? (
                     <Box
                       sx={{
                         display: "flex",
@@ -407,18 +427,15 @@ const MyHotels = () => {
                         maxWidth: { xs: "50%", md: "80%" },
                       }}
                     >
-                      {
-                        visibleAmenities.map((amenity: any, index: any) => (
-                          <Chip
-                            key={index}
-                            label={amenity}
-                            icon={amenityIcons[amenity] || <AddCircleOutline />}
-                            size="small"
-                            sx={{ bgcolor: "transparent", fontSize: "10px" }}
-                          />
-                        ))
-                      }
-
+                      {visibleAmenities.map((amenity: any, index: any) => (
+                        <Chip
+                          key={index}
+                          label={amenity}
+                          icon={amenityIcons[amenity] || <AddCircleOutline />}
+                          size="small"
+                          sx={{ bgcolor: "transparent", fontSize: "10px" }}
+                        />
+                      ))}
 
                       {/* {remainingAmenities > 0 && (
                         <Chip

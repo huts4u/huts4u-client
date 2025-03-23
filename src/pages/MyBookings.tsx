@@ -1,6 +1,4 @@
-import {
-    HourglassBottom
-} from "@mui/icons-material";
+import { HourglassBottom } from "@mui/icons-material";
 import {
     Box,
     Button,
@@ -12,8 +10,7 @@ import {
     Divider,
     Grid,
     Rating,
-    TextField,
-    Typography,
+    Typography
 } from "@mui/material";
 import { useState } from "react";
 import color from "../components/color";
@@ -75,16 +72,16 @@ const ReviewPopup = ({ open, handleClose, selectedCard, onSubmit }: any) => {
             onChange={(e, newValue) => setRating(newValue || 0)}
           />
           <CustomTextField
-           sx={{
-            "& .MuiInputBase-input": { resize: "vertical" },
-            "& textarea": { resize: "vertical" },
-            "& .MuiOutlinedInput-root": {
-              "& fieldset": {
-                border: "none",
-                borderRadius: "12px",
+            sx={{
+              "& .MuiInputBase-input": { resize: "vertical" },
+              "& textarea": { resize: "vertical" },
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  border: "none",
+                  borderRadius: "12px",
+                },
               },
-            },
-          }}
+            }}
             label="Write your review"
             multiline
             rows={4}
@@ -92,14 +89,18 @@ const ReviewPopup = ({ open, handleClose, selectedCard, onSubmit }: any) => {
             value={review}
             onChange={(e) => setReview(e.target.value)}
           />
-          <Button sx={{
+          <Button
+            sx={{
               background: "transparent",
               border: "solid 2px",
               color: color.firstColor,
               borderColor: color.firstColor,
               borderRadius: "44px",
               textTransform: "none",
-          }} variant="contained" onClick={handleSubmit}>
+            }}
+            variant="contained"
+            onClick={handleSubmit}
+          >
             Submit Review
           </Button>
         </Box>
@@ -172,7 +173,8 @@ const MyBookings = () => {
                     top: { xs: 5, md: 0 },
                     right: { xs: 25, md: 0 },
                     background:
-                      card.status === "checked in" || card.status === "checked out"
+                      card.status === "checked in" ||
+                      card.status === "checked out"
                         ? "Green"
                         : card.status === "pending"
                         ? "#faaf00"

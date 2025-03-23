@@ -492,3 +492,19 @@ export const RoomAmenities = ({
     </>
   );
 };
+
+export const getRatingText = (rating: number) => {
+  if (rating >= 4.5) return "Excellent";
+  if (rating >= 3.5) return "Good";
+  if (rating >= 2.5) return "Average";
+  if (rating >= 1.5) return "Poor";
+  return "Very Poor";
+};
+
+export const getRatingColor = (rating: number) => {
+  if (rating >= 4.5) return "#46b648";
+  if (rating >= 3.5) return "#b4d137"; 
+  if (rating >= 2.5) return "#fed018"; 
+  if (rating >= 1.5) return "#f7921e"; 
+  return "#e91d26"; 
+};

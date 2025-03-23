@@ -14,10 +14,10 @@ export function createAxiosClient({
             config.headers.Authorization = token;
         }
         if(config.data instanceof FormData) {
-            console.log(config.data)
+            // console.log(config.data)
         }
         else {
-            console.log(config.data)
+            // console.log(config.data)
             config.data = { cypher: CryptoJS.AES.encrypt(JSON.stringify(config.data), CYS).toString() }
         }
         return config;

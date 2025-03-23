@@ -28,14 +28,17 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { getUserName, getUserRole, isLoggedIn, logout } from "../../services/axiosClient";
+import { matchPath, useLocation, useNavigate } from "react-router-dom";
+import {
+  getUserName,
+  getUserRole,
+  isLoggedIn,
+  logout,
+} from "../../services/axiosClient";
 import color from "../color";
 import CustomButton from "../CustomButton";
-import { getProfile } from "../../services/services";
 
 const Header: React.FC = () => {
-
   // useEffect(() => {
   //   if (isLoggedIn()) {
   //     getProfile().then((res) => {
@@ -78,33 +81,45 @@ const Header: React.FC = () => {
   const navLinks =
     userRoll === "Hotel"
       ? [
-        { label: "Home", icon: <CorporateFare />, path: "/my-hotels" },
-        // { label: "My Bookings", icon: <Hotel />, path: "/my-bookings" },
-        { label: "Manage Rooms", icon: <Hotel />, path: "/manage-rooms" },
-        { label: "Reviews", icon: <ContactMail />, path: "/reviews" },
-      ]
+          { label: "Home", icon: <CorporateFare />, path: "/my-hotels" },
+          // { label: "My Bookings", icon: <Hotel />, path: "/my-bookings" },
+          { label: "Manage Rooms", icon: <Hotel />, path: "/manage-rooms" },
+          { label: "Reviews", icon: <ContactMail />, path: "/reviews" },
+        ]
       : userRoll === "Admin"
-        ? [
-          { label: "Admin Dashboard", icon: <PersonOutline />, path: "/admin-dashboard" },
-          { label: "Manage Users", icon: <AccountCircle />, path: "/manage-users" },
+      ? [
+          {
+            label: "Admin Dashboard",
+            icon: <PersonOutline />,
+            path: "/admin-dashboard",
+          },
+          {
+            label: "Manage Users",
+            icon: <AccountCircle />,
+            path: "/manage-users",
+          },
           { label: "Manage Hotels", icon: <Hotel />, path: "/manage-hotels" },
           { label: "Reports", icon: <Info />, path: "/reports" },
-        ] : [
+        ]
+      : [
           { label: "Home", icon: <Home />, path: "/" },
           { label: "Hotels", icon: <Hotel />, path: "/search" },
           { label: "Contact", icon: <ContactMail />, path: "/contact-us" },
           { label: "About", icon: <Info />, path: "/about-us" },
           { label: "Join As a Hotel", icon: <Info />, path: "/dashboard" },
-        ]
+        ];
+
+  const location = useLocation();
+
+  const isHotelDetailPage = matchPath("/hotel/:id", location.pathname);
 
   return (
     <AppBar
-      position="sticky"
       sx={{
         background: color.background,
         p: 0,
         zIndex: 100,
-        // position: "relative",
+        position: isHotelDetailPage ? "relative" : "sticky",
         boxShadow: "none",
         top: 0,
       }}
@@ -176,7 +191,6 @@ const Header: React.FC = () => {
                     Join as hotelier
                   </CustomButton>
                 )}
-
               </>
             ) : (
               <></>
@@ -184,7 +198,6 @@ const Header: React.FC = () => {
             {isLoggedIn() ? (
               <>
                 {" "}
-
                 <IconButton
                   style={{
                     background: color.thirdColor,

@@ -21,6 +21,9 @@ import {
   Typography,
 } from "@mui/material";
 import { FieldArray, FormikErrors, FormikProvider, useFormik } from "formik";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import * as Yup from "yup";
 import color from "../../components/color";
 import CustomButton from "../../components/CustomButton";
@@ -31,11 +34,8 @@ import {
 } from "../../components/data";
 import ImageUploader from "../../components/ImageUploader";
 import { BpRadio, CustomTextField, inputSx } from "../../components/style";
-import { docsUpload, hotelPost, roomPost } from "../../services/services";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import { getUserId } from "../../services/axiosClient";
+import { docsUpload, hotelPost, roomPost } from "../../services/services";
 
 const validationSchema = Yup.object().shape({
   propertyName: Yup.string()
@@ -111,12 +111,15 @@ const validationSchema = Yup.object().shape({
     .required("Property images are required"),
 
   bankaccountNo: Yup.string()
-    .matches(/^\d{9,18}$/, 'Bank account number must be 9 to 18 digits')
-    .required('Bank account number is required'),
+    .matches(/^\d{9,18}$/, "Bank account number must be 9 to 18 digits")
+    .required("Bank account number is required"),
 
   bankname: Yup.string()
-    .matches(/^[a-zA-Z\s]+$/, 'Bank name should only contain letters and spaces')
-    .required('Bank name is required'),
+    .matches(
+      /^[a-zA-Z\s]+$/,
+      "Bank name should only contain letters and spaces"
+    )
+    .required("Bank name is required"),
 
   // ifsccode: Yup.string()
   //   .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, 'Invalid IFSC code format')
@@ -140,7 +143,7 @@ const validationSchema = Yup.object().shape({
           then: (schema) =>
             schema
               .required("Rate for 1 night is required")
-              .min(0, "Rate cannot be negative"),
+              .min(100, "Minimum Rate is ₹100"),
           otherwise: (schema) => schema.notRequired(),
         }),
       rateFor3Hour: Yup.number()
@@ -150,7 +153,7 @@ const validationSchema = Yup.object().shape({
           then: (schema) =>
             schema
               .required("Rate for 3 hours is required")
-              .min(0, "Rate cannot be negative"),
+              .min(100, "Minimum Rate is ₹100 "),
           otherwise: (schema) => schema.notRequired(),
         }),
       rateFor6Hour: Yup.number()
@@ -160,7 +163,7 @@ const validationSchema = Yup.object().shape({
           then: (schema) =>
             schema
               .required("Rate for 6 hours is required")
-              .min(0, "Rate cannot be negative"),
+              .min(100, "Minimum Rate is ₹100 "),
           otherwise: (schema) => schema.notRequired(),
         }),
       rateFor9Hour: Yup.number()
@@ -170,7 +173,7 @@ const validationSchema = Yup.object().shape({
           then: (schema) =>
             schema
               .required("Rate for 9 hours is required")
-              .min(0, "Rate cannot be negative"),
+              .min(100, "Minimum Rate is ₹100 "),
           otherwise: (schema) => schema.notRequired(),
         }),
       rateFor12Hour: Yup.number()
@@ -180,7 +183,7 @@ const validationSchema = Yup.object().shape({
           then: (schema) =>
             schema
               .required("Rate for 12 hours is required")
-              .min(0, "Rate cannot be negative"),
+              .min(100, "Minimum Rate is ₹100 "),
           otherwise: (schema) => schema.notRequired(),
         }),
       rateFor24Hour: Yup.number()
@@ -190,7 +193,8 @@ const validationSchema = Yup.object().shape({
           then: (schema) =>
             schema
               .required("Rate for 24 hours is required")
-              .min(0, "Rate cannot be negative"),
+              .min(100, "Minimum Rate is ₹100 "),
+
           otherwise: (schema) => schema.notRequired(),
         }),
       additionalGuestRate: Yup.number()
@@ -219,6 +223,14 @@ const validationSchema = Yup.object().shape({
       numberOfRoomsAvailable: Yup.number()
         .typeError("No. of Available Rooms must be a number")
         .required("No. of available rooms are required")
+        .min(0, "Cannot be negative"),
+      tax: Yup.number()
+        .typeError("Tax must be a number")
+        .required("Tax of room is required")
+        .min(0, "Cannot be negative"),
+      extraFees: Yup.number()
+        .typeError("Extra fees must be a number")
+        .required("Extra fees is required")
         .min(0, "Cannot be negative"),
       amenities: Yup.array()
         .of(Yup.string().required("Amenity cannot be empty"))
@@ -289,7 +301,7 @@ const PropertyForm = () => {
   };
 
   const navigate = useNavigate();
-  const sanitizeValue = (value: any) => (value === '' ? null : value);
+  const sanitizeValue = (value: any) => (value === "" ? null : value);
 
   const formik = useFormik({
     initialValues: {
@@ -318,6 +330,10 @@ const PropertyForm = () => {
       propertyServices: "",
       propertyPolicies: "",
       stayType: "overnight",
+      coupleFriendly: "yes", //new
+      businessFriendly: "yes", //new
+      familyFriendly: "yes", //new
+      petFriendly: "yes", //new
       rooms: [
         {
           roomCategory: "",
@@ -334,6 +350,8 @@ const PropertyForm = () => {
           maxRoomOccupancy: "",
           numberOfFreeChildren: "",
           numberOfRoomsAvailable: "",
+          extraFees: "", //new
+          tax: "", //new
           amenities: [] as string[],
           roomImage: null,
         },
@@ -408,6 +426,13 @@ const PropertyForm = () => {
         });
     },
   });
+
+  const hotelFeatures = [
+    { label: "Couple Friendly", name: "coupleFriendly" },
+    { label: "Pet Friendly", name: "petFriendly" },
+    { label: "Family Friendly", name: "familyFriendly" },
+    { label: "Business Friendly", name: "businessFriendly" },
+  ];
 
   return (
     <Box
@@ -557,6 +582,7 @@ const PropertyForm = () => {
               </Grid>
               <Grid item xs={12} md={4}>
                 <CustomTextField
+                  placeholder="Enter the complete property address to enable accurate user searches"
                   fullWidth
                   label="Address"
                   {...formik.getFieldProps("address")}
@@ -564,6 +590,21 @@ const PropertyForm = () => {
                     formik.touched.address && Boolean(formik.errors.address)
                   }
                   helperText={formik.touched.address && formik.errors.address}
+                  sx={{
+                    "& .MuiInputBase-input": { resize: "vertical" },
+                    "& textarea": { resize: "vertical" },
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        border: "none",
+                      },
+                    },
+                  }}
+                  multiline
+                  rows={1}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/,\s*/g, ", ");
+                    formik.setFieldValue("address", value);
+                  }}
                 />
               </Grid>
               <Grid item xs={12} md={4}>
@@ -769,6 +810,45 @@ const PropertyForm = () => {
                   }
                 />
               </Grid>
+
+              <Grid container spacing={2}>
+                {hotelFeatures.map((feature) => (
+                  <Grid
+                    item
+                    xs={12}
+                    md={3}
+                    my={3}
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="center"
+                    justifyContent="center"
+                    key={feature.name}
+                  >
+                    <Typography variant="h6" fontWeight="bold" mb={1}>
+                      {feature.label}
+                    </Typography>
+                    <RadioGroup row {...formik.getFieldProps(feature.name)}>
+                      {["yes", "no"].map((option) => (
+                        <FormControlLabel
+                          key={option}
+                          sx={{
+                            "& .MuiFormControlLabel-label": {
+                              fontSize: "14px",
+                            },
+                            ...(option === "yes" && { mr: 4 }),
+                          }}
+                          value={option}
+                          control={<BpRadio />}
+                          label={
+                            option.charAt(0).toUpperCase() + option.slice(1)
+                          }
+                        />
+                      ))}
+                    </RadioGroup>
+                  </Grid>
+                ))}
+              </Grid>
+
               <Grid item xs={12} md={12}>
                 <ImageUploader
                   label="Property Images"
@@ -850,7 +930,7 @@ const PropertyForm = () => {
                           fontSize={"18px"}
                           fontWeight={"bold"}
                           mb={-1}
-                        //   mt={1}
+                          //   mt={1}
                         >
                           {formik.values.rooms.length > 1 && (
                             <>Room {index + 1}</>
@@ -873,7 +953,6 @@ const PropertyForm = () => {
                             {...formik.getFieldProps(
                               `rooms.${index}.roomCategory`
                             )}
-                            {...formik.getFieldProps("roomCategory")}
                             error={
                               formik.touched.rooms?.[index]?.roomCategory &&
                               Array.isArray(formik.errors.rooms) &&
@@ -1320,6 +1399,64 @@ const PropertyForm = () => {
                                   typeof formik.values.rooms
                                 >
                               )[index]?.numberOfFreeChildren
+                            }
+                          />
+                        </Grid>
+
+                        <Grid item xs={12} md={3}>
+                          <CustomTextField
+                            fullWidth
+                            label="Tax Rate"
+                            {...formik.getFieldProps(`rooms.${index}.tax`)}
+                            error={
+                              formik.touched.rooms?.[index]?.tax &&
+                              Array.isArray(formik.errors.rooms) &&
+                              Boolean(
+                                (
+                                  formik.errors.rooms as FormikErrors<
+                                    typeof formik.values.rooms
+                                  >
+                                )[index]?.tax
+                              )
+                            }
+                            helperText={
+                              formik.touched.rooms?.[index]?.tax &&
+                              Array.isArray(formik.errors.rooms) &&
+                              (
+                                formik.errors.rooms as FormikErrors<
+                                  typeof formik.values.rooms
+                                >
+                              )[index]?.tax
+                            }
+                          />
+                        </Grid>
+
+                        <Grid item xs={12} md={3}>
+                          <CustomTextField
+                            fullWidth
+                            label="Extra Fees"
+                            {...formik.getFieldProps(
+                              `rooms.${index}.extraFees`
+                            )}
+                            error={
+                              formik.touched.rooms?.[index]?.extraFees &&
+                              Array.isArray(formik.errors.rooms) &&
+                              Boolean(
+                                (
+                                  formik.errors.rooms as FormikErrors<
+                                    typeof formik.values.rooms
+                                  >
+                                )[index]?.extraFees
+                              )
+                            }
+                            helperText={
+                              formik.touched.rooms?.[index]?.extraFees &&
+                              Array.isArray(formik.errors.rooms) &&
+                              (
+                                formik.errors.rooms as FormikErrors<
+                                  typeof formik.values.rooms
+                                >
+                              )[index]?.extraFees
                             }
                           />
                         </Grid>

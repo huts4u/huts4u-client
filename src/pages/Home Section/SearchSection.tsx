@@ -23,6 +23,7 @@ import CustomSingleSelect from "../../components/CustomSingleSelect";
 import CustomTimePicker from "../../components/CustomTimePicker";
 import RoomGuestSelect from "../../components/RoomGuestSelect";
 import queryString from "query-string";
+import LocationPicker from "../../components/LocationPicker";
 const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
   padding: "4px 10px",
   textTransform: "none",
@@ -62,30 +63,25 @@ const ToggleBookingType = ({ bookingType, handleBookingType }: any) => (
   </ToggleButtonGroup>
 );
 
-const options = ["Patia", "Mancheswar", "Palasuni", "Rasulgarh"];
+// const options = ["Patia", "Mancheswar", "Palasuni", "Rasulgarh"];
 
-// interface Location {
-//   display_name: string;
-//   lat: number;
-//   lon: number;
-// }
+interface Location {
+  display_name: string;
+  lat: number;
+  lon: number;
+}
 
 const SearchSection = () => {
 
+  const [pickupLocation, setPickupLocation] = useState<Location | any>(null);
 
-  // const [locations, setLocations] = useState<{
-  //   pickup: [number, number];
-  //   dropoff: [number, number];
-  // } | null>(null);
-  // const [pickupLocation, setPickupLocation] = useState<Location | any>(null);
-
-  // const handlePickupSelect = (place: Location) => {
-  //   setPickupLocation({
-  //     display_name: place.display_name,
-  //     lat: place.lat,
-  //     lon: place.lon,
-  //   });
-  // };
+  const handlePickupSelect = (place: Location) => {
+    setPickupLocation({
+      display_name: place.display_name,
+      lat: place.lat,
+      lon: place.lon,
+    });
+  };
   const isMobile = useMediaQuery("(max-width: 900px)");
 
   const navigate = useNavigate();
@@ -102,11 +98,14 @@ const SearchSection = () => {
   const [locationValue, setLocationValue] = useState<string | null>(
     (queryParams.location as string) ?? null
   );
+  // console.log(locationValue)
   const [checkinDate, setCheckinDate] = useState<Dayjs | null>(
     queryParams.checkinDate ? dayjs(queryParams.checkinDate as string) : dayjs()
   );
   const [checkOutDate, setCheckOutDate] = useState<Dayjs | null>(
-    queryParams.checkOutDate ? dayjs(queryParams.checkOutDate as string) : dayjs()
+    queryParams.checkOutDate
+      ? dayjs(queryParams.checkOutDate as string)
+      : dayjs()
   );
   const [time, setTime] = useState<Dayjs | null>(
     queryParams.time ? dayjs(queryParams.time as string, "HH:mm") : dayjs()
@@ -141,7 +140,7 @@ const SearchSection = () => {
       }
     });
 
-    navigate(`/search?${queryParams.toString()}`);
+    window.location.href = `/search?${queryParams.toString()}`;
     setShowDetails(false);
   };
 
@@ -157,7 +156,7 @@ const SearchSection = () => {
           borderRadius: 3,
           textAlign: "center",
           position: "relative",
-          mt: 1,
+          mt: {xs:PageLocation.pathname !== "/" ? 3:1, md:1},
         }}
       >
         <Box
@@ -209,7 +208,7 @@ const SearchSection = () => {
               {bookingType === "hourly" ? (
                 <Typography sx={typoStyle}>
                   {" "}
-                  <Schedule /> {time ? time.format("HH:mm") : ""}
+                  <Schedule /> {time ? time.format("hh:mm") : ""}
                 </Typography>
               ) : (
                 <Typography sx={typoStyle}>
@@ -238,18 +237,19 @@ const SearchSection = () => {
                 gap: 1,
               }}
             >
-              <CustomSingleSelect
+              {/* <CustomSingleSelect
                 options={options}
                 value={locationValue ?? options[0]}
                 setValue={setLocationValue}
                 label="Select Location"
-              />
+              /> */}
 
-              {/* <LocationPicker
-            label="Pickup Location"
-            onSelect={handlePickupSelect}
-            value={pickupLocation?.display_name}
-          /> */}
+              <LocationPicker
+                label="Select Location"
+                onSelect={handlePickupSelect}
+                value={locationValue ?? pickupLocation?.display_name}
+                setValue={setLocationValue}
+              />
 
               <CustomDatePicker
                 date={checkinDate}
@@ -292,7 +292,7 @@ const SearchSection = () => {
                   onClick={handleSearch}
                   variant="contained"
                 >
-                  <Search sx={{ color: color.firstColor, fontSize: "28px" }} />
+                  <Search sx={{ color: color.firstColor, fontSize: "28px" ,}} />
                 </CustomButton>
               )}
             </Box>

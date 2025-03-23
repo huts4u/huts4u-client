@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import { LocalizationProvider, MobileTimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 import color from "./color";
 
 interface TimePickerProps {
@@ -40,13 +40,13 @@ const CustomTimePicker: React.FC<TimePickerProps> = ({
         <MobileTimePicker
           value={time}
           onChange={(newValue) => {
-            // ✅ Force minutes to always be 00
             if (newValue) {
               const fixedTime = newValue.minute(0);
               setTime(fixedTime);
             }
           }}
-          views={['hours']} // ✅ Only show hours, hide minutes
+          views={["hours"]}
+          format="hh.mm A"
           slotProps={{
             textField: {
               sx: {

@@ -8,7 +8,8 @@ import {
   Typography,
 } from "@mui/material";
 import { useFormik } from "formik";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import PhoneInput from "react-phone-input-2";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
@@ -16,9 +17,11 @@ import CustomButton from "../components/CustomButton";
 import RenderRazorpay from "../components/Payments/RanderPayments";
 import color from "../components/color";
 import { BoxStyle, CustomTextField } from "../components/style";
-import { createOrder, getPortfolioDetails, getProfile, sendOTP, Signup, verifyOTP } from "../services/services";
-import PhoneInput from "react-phone-input-2";
 import { isLoggedIn } from "../services/axiosClient";
+import {
+  createOrder,
+  sendOTP
+} from "../services/services";
 import LoginOtpModal from "./Account/LoginOtpModal";
 
 const bookingData = {
@@ -98,12 +101,13 @@ const BookingSummary = () => {
     }
   };
 
-
   const navigate = useNavigate();
   const openModal = (phoneNumber: any, name: any, email: any, token: any) => {
-    navigate(`${location.pathname}?login=true&phone=${phoneNumber}&name=${name}&email=${email}&token=${token}`, { replace: true, });
+    navigate(
+      `${location.pathname}?login=true&phone=${phoneNumber}&name=${name}&email=${email}&token=${token}`,
+      { replace: true }
+    );
   };
-
 
   const formik = useFormik({
     initialValues: {
@@ -120,27 +124,28 @@ const BookingSummary = () => {
       } else {
         // store the user details in db and if the user is not present in db and then verify the OTP ok dude
 
-        // handle to send the Opt 
-
-
+        // handle to send the Opt
 
         const payLoad = {
           name: values.name,
           email: values.email,
-          phone: values.phoneNumber.slice(2)
-        }
-        console.log(payLoad)
-        sendOTP(payLoad).then((res) => {
-          console.log(res)
-          toast("Otp send Succesfully please verify the OTP");
-          openModal(values.phoneNumber.slice(2), values.name, values.email, res?.data?.data);
-        }).catch((err) => {
-          console.log(err);
-        })
-
-
-
-
+          phone: values.phoneNumber.slice(2),
+        };
+        console.log(payLoad);
+        sendOTP(payLoad)
+          .then((res) => {
+            console.log(res);
+            toast("Otp send Succesfully please verify the OTP");
+            openModal(
+              values.phoneNumber.slice(2),
+              values.name,
+              values.email,
+              res?.data?.data
+            );
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       }
     },
   });
@@ -373,9 +378,10 @@ const BookingSummary = () => {
                   width: "100%",
                   height: "56px", // Same height as CustomTextField
                   borderRadius: "8px", // Match border-radius of MUI input
-                  border: formik.touched.phoneNumber && formik.errors.phoneNumber
-                    ? "1px solid red"
-                    : "1px solid #ccc",
+                  border:
+                    formik.touched.phoneNumber && formik.errors.phoneNumber
+                      ? "1px solid red"
+                      : "1px solid #ccc",
                   paddingLeft: "48px", // Adjust for country code
                   fontSize: "16px",
                   boxShadow: "none", // Remove shadow
@@ -418,8 +424,8 @@ const BookingSummary = () => {
             />
 
             {/* Submit Button */}
-            {
-              isLoggedIn() ? (<>
+            {isLoggedIn() ? (
+              <>
                 <CustomButton
                   variant="contained"
                   color="primary"
@@ -429,7 +435,9 @@ const BookingSummary = () => {
                 >
                   Pay Now
                 </CustomButton>
-              </>) : (<>
+              </>
+            ) : (
+              <>
                 <CustomButton
                   variant="contained"
                   color="primary"
@@ -439,8 +447,8 @@ const BookingSummary = () => {
                 >
                   verify Phone & Pay
                 </CustomButton>
-              </>)
-            }
+              </>
+            )}
 
             <LoginOtpModal></LoginOtpModal>
 
