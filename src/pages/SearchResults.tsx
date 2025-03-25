@@ -592,8 +592,6 @@ const SearchResults = () => {
                     state: { hotelData: hotel },
                   });
                 }}
-                
-                
                   key={hotel.id}
                   sx={{
                     display: "flex",

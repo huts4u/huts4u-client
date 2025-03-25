@@ -1,4 +1,3 @@
-import { StarRounded } from "@mui/icons-material";
 import {
   Box,
   Card,
@@ -7,8 +6,9 @@ import {
   Divider,
   Typography,
 } from "@mui/material";
+import dayjs from "dayjs";
 import { useFormik } from "formik";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PhoneInput from "react-phone-input-2";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -18,10 +18,7 @@ import RenderRazorpay from "../components/Payments/RanderPayments";
 import color from "../components/color";
 import { BoxStyle, CustomTextField } from "../components/style";
 import { isLoggedIn } from "../services/axiosClient";
-import {
-  createOrder,
-  sendOTP
-} from "../services/services";
+import { createOrder, sendOTP } from "../services/services";
 import LoginOtpModal from "./Account/LoginOtpModal";
 
 const bookingData = {
@@ -50,6 +47,24 @@ const validationSchema = Yup.object({
 
 const BookingSummary = () => {
   const location = useLocation();
+  const hotel = location.state?.hotelData;
+  const room = location.state?.selectedRoom;
+  const selectedSlot = location.state?.selectedSlot;
+  const queryParams = new URLSearchParams(location.search);
+
+  const bookingType = queryParams.get("bookingType");
+  // const bookingHours = queryParams.get("bookingHours");
+  const checkinTime = queryParams.get("time");
+  const checkinDate = queryParams.get("checkinDate");
+  const checkOutDate = queryParams.get("checkOutDate");
+  const rooms = queryParams.get("rooms");
+  const adults = queryParams.get("adults");
+  const children = queryParams.get("children");
+
+  const value = selectedSlot.slot;
+  const number = value.match(/\d+/)?.[0];
+  const extractedNumber = number ? parseInt(number, 10) : null;
+
   // const phoneNumber = location.state?.phoneNumber;
 
   // const [user, setUser] = useState<any>({});
@@ -65,14 +80,14 @@ const BookingSummary = () => {
   //     });
   // }, [phoneNumber]);
   const [orderDetails, setOrderDetails] = useState(null);
-  // console.log(orderDetails)
+
+  const totalAmount =
+    Number(room[selectedSlot.slot]) +
+    Number(room?.tax) +
+    Number(room?.extraFees);
   const handlePayment = async () => {
     try {
-      const roomPrice = parseFloat(bookingData.roomPrice) || 0;
-      const serviceCharges = 200;
-      const totalAmount = roomPrice + serviceCharges;
-
-      console.log("Total Amount before payment:", totalAmount);
+      // console.log("Total Amount before payment:", totalAmount);
 
       if (totalAmount === 0) {
         alert("Booking amount cannot be zero.");
@@ -84,10 +99,10 @@ const BookingSummary = () => {
         currency: "INR",
       };
 
-      console.log("Payload sent to createOrder:", payLoad);
+      // console.log("Payload sent to createOrder:", payLoad);
       const response = await createOrder(payLoad);
 
-      console.log("Payment Response:", response);
+      // console.log("Payment Response:", response);
 
       if (response?.data) {
         // alert("Payment successful!");
@@ -122,16 +137,12 @@ const BookingSummary = () => {
       if (isLoggedIn()) {
         handlePayment();
       } else {
-        // store the user details in db and if the user is not present in db and then verify the OTP ok dude
-
-        // handle to send the Opt
-
         const payLoad = {
           name: values.name,
           email: values.email,
           phone: values.phoneNumber.slice(2),
         };
-        console.log(payLoad);
+        // console.log(payLoad);
         sendOTP(payLoad)
           .then((res) => {
             console.log(res);
@@ -149,6 +160,15 @@ const BookingSummary = () => {
       }
     },
   });
+
+  const textContainerRef = useRef<HTMLDivElement>(null);
+  const [imageHeight, setImageHeight] = useState("auto");
+
+  useEffect(() => {
+    if (textContainerRef.current) {
+      setImageHeight(`${textContainerRef.current.clientHeight}px`);
+    }
+  }, [hotel]);
   return (
     <Box
       sx={{
@@ -159,8 +179,6 @@ const BookingSummary = () => {
         px: { xs: 1, md: 3 },
         display: "flex",
         flexDirection: { xs: "column", md: "row" },
-
-        // alignItems:'center',
         justifyContent: "center",
         gap: "20px",
       }}
@@ -192,6 +210,8 @@ const BookingSummary = () => {
               gap: { xs: 0, md: 2 },
               position: "relative",
               mt: 2,
+              height: "fit-content",
+              alignItems: "stretch",
             }}
           >
             <CardMedia
@@ -199,10 +219,13 @@ const BookingSummary = () => {
               sx={{
                 width: { xs: "100%", md: "250px" },
                 borderRadius: "12px",
+                objectFit: "cover",
+                height: imageHeight,
+                transition: "height 0.3s ease",
               }}
-              image="/assets/room-image 1.jpg"
+              image={hotel.propertyImages[0]}
             />
-            <div>
+            <div style={{ height: "fit-content" }} ref={textContainerRef}>
               <Typography
                 sx={{
                   fontSize: "20px",
@@ -216,7 +239,7 @@ const BookingSummary = () => {
                   WebkitBoxOrient: "vertical",
                 }}
               >
-                {bookingData.hotelName}
+                {hotel.propertyName}
               </Typography>
               <Typography
                 sx={{
@@ -229,10 +252,9 @@ const BookingSummary = () => {
                   WebkitBoxOrient: "vertical",
                 }}
               >
-                {bookingData.location}
+                {hotel.address}
               </Typography>
 
-         
               <div
                 style={{
                   marginTop: "10px",
@@ -242,24 +264,47 @@ const BookingSummary = () => {
                   gap: "4px",
                 }}
               >
+                {bookingType === "hourly" ? (
+                  <>
+                    <Typography sx={typoStyle}>
+                      <strong>Check-In:</strong>{" "}
+                      {dayjs(checkinDate).format("DD MMM YYYY")},{" "}
+                      {checkinTime
+                        ? dayjs(checkinTime, "HH:mm").format("hh:mm A")
+                        : ""}
+                    </Typography>
+                    {/* <Typography sx={typoStyle}>
+                      <strong>Check-Out:</strong>{" "}
+                      {checkinTime
+                        ? dayjs(checkinTime, "HH:mm")
+                            .add(Number(bookingHours), "hour")
+                            .format("hh:mm A")
+                        : ""}
+                    </Typography> */}
+                    <Typography sx={typoStyle}>
+                      <strong>Duration: </strong>
+                      {extractedNumber} hrs
+                    </Typography>
+                  </>
+                ) : (
+                  <>
+                    <Typography sx={typoStyle}>
+                      <strong>Check-In:</strong>{" "}
+                      {dayjs(checkinDate).format("DD MMM YYYY")}
+                    </Typography>
+                    <Typography sx={typoStyle}>
+                      <strong>Check-Out:</strong>{" "}
+                      {dayjs(checkOutDate).format("DD MMM YYYY")}
+                    </Typography>
+                  </>
+                )}
+
                 <Typography sx={typoStyle}>
-                  <strong>Check-In:</strong> {bookingData.checkInDate},{" "}
-                  {bookingData.checkInTime}
-                </Typography>
-                <Typography sx={typoStyle}>
-                  <strong>Check-Out:</strong> {bookingData.checkOutDate},{" "}
-                  {bookingData.checkOutTime}
-                </Typography>
-                <Typography sx={typoStyle}>
-                  <strong>Duration: </strong>
-                  {bookingData.duration}
-                </Typography>
-                <Typography sx={typoStyle}>
-                  <strong>Room Type:</strong> {bookingData.roomName}
+                  <strong>Room Type:</strong> {room.roomCategory}
                 </Typography>
                 <Typography sx={typoStyle}>
                   <strong>Room Info: </strong>
-                  {bookingData.roomInfo}
+                  {rooms} Room, {adults} Adults, {children} Children
                 </Typography>
               </div>
             </div>
@@ -334,7 +379,7 @@ const BookingSummary = () => {
                   width: "100%",
                   height: "56px", // Same height as CustomTextField
                   borderRadius: "52px",
-                  border:'none',
+                  border: "none",
                   boxShadow: "4px 4px 10px rgba(104, 39, 184, 0.17)",
                   color: color.firstColor,
                   paddingLeft: "58px", // Adjust for country code
@@ -344,7 +389,7 @@ const BookingSummary = () => {
                 }}
                 buttonStyle={{
                   borderRadius: "52px 0 0 52px",
-                  margin:'5px', // Match left side border-radius
+                  margin: "5px", // Match left side border-radius
                   backgroundColor: "white",
                 }}
                 containerStyle={{
@@ -357,7 +402,7 @@ const BookingSummary = () => {
                     color: "red",
                     fontSize: "12px",
                     mt: 0.5,
-                    ml: "14px", // Same margin as input error text
+                    ml: "14px",
                   }}
                 >
                   {formik.errors.phoneNumber}
@@ -365,7 +410,6 @@ const BookingSummary = () => {
               )}
             </Box>
 
-            {/* Email Field */}
             <CustomTextField
               label="Email Address (Optional)"
               name="email"
@@ -377,7 +421,6 @@ const BookingSummary = () => {
               error={formik.touched.email && Boolean(formik.errors.email)}
             />
 
-            {/* Submit Button */}
             {isLoggedIn() ? (
               <>
                 <CustomButton
@@ -446,10 +489,13 @@ const BookingSummary = () => {
             }}
           >
             <Typography sx={typoStyle}>
-              <strong>Room price: </strong>₹{bookingData.roomPrice}
+              <strong>Room price: </strong>₹{room[selectedSlot.slot]}
             </Typography>
             <Typography sx={typoStyle}>
-              <strong>Service Charges: </strong>₹200.00
+              <strong>Tax: </strong>₹{room?.tax}
+            </Typography>
+            <Typography sx={typoStyle}>
+              <strong>Extra fees: </strong>₹{room?.extraFees}
             </Typography>
 
             <Divider sx={{ my: 2 }}></Divider>
@@ -462,7 +508,7 @@ const BookingSummary = () => {
                 lineHeight: 1,
               }}
             >
-              Total price: ₹{Number(bookingData.roomPrice) + 200}.00 <br />
+              Total price: ₹{totalAmount}.00 <br />
               <span style={{ fontSize: "12px", fontWeight: "normal" }}>
                 incl. of all taxes
               </span>

@@ -131,6 +131,17 @@ const hotelData = {
 
 const HotelDetails = () => {
   const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+
+  const bookingType = queryParams.get("bookingType");
+  // const bookingHours = queryParams.get("bookingHours");
+  const checkinTime = queryParams.get("time");
+  const checkinDate = queryParams.get("checkinDate");
+  const checkOutDate = queryParams.get("checkOutDate");
+  const rooms = queryParams.get("rooms");
+  const adults = queryParams.get("adults");
+  const children = queryParams.get("children");
+
   const hotel = location.state?.hotelData;
   console.log(hotel);
   const [selectedRoom, setSelectedRoom] = useState(hotel?.rooms[0]);
@@ -139,12 +150,13 @@ const HotelDetails = () => {
     slot: string | null;
   }>({
     roomId: hotel?.rooms[0].id,
-    slot: "rateFor3Hour",
+    slot: bookingType === "hourly" ? "rateFor3Hour" : "rateFor1Night",
   });
   const handleSlotSelection = (roomId: number, slot: string) => {
     setSelectedSlot({ roomId, slot });
   };
 
+  const [showRoomDetails, setShowRoomDetails] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const maxLength = 150;
 
@@ -206,22 +218,6 @@ const HotelDetails = () => {
   const isMobile = useMediaQuery("(max-width: 900px)");
 
   const navigate = useNavigate();
-
-  const queryParams = new URLSearchParams(location.search);
-
-  const bookingType = queryParams.get("bookingType");
-  const bookingHours = queryParams.get("bookingHours");
-  const checkinTime = queryParams.get("time");
-  const checkinDate = queryParams.get("checkinDate");
-  const checkOutDate = queryParams.get("checkOutDate");
-  const rooms = queryParams.get("rooms");
-  const adults = queryParams.get("adults");
-  const children = queryParams.get("children");
-  // const location = useLocation();
-
-  // const openModal = () => {
-  //   navigate(`${location.pathname}?login=true`, { replace: true });
-  // };
 
   return (
     <Box
@@ -789,7 +785,7 @@ const HotelDetails = () => {
                     : 0}
                 </Typography>
                 <Typography fontSize={"14px"} color={color.forthColor}>
-                  + ₹ 827 taxes & fees
+                  + ₹ {Number(selectedRoom?.tax) + Number(selectedRoom?.extraFees)} taxes & fees
                 </Typography>
               </div>
 
@@ -799,7 +795,20 @@ const HotelDetails = () => {
                   fontSize: "14px",
                   marginTop: "4px",
                 }}
-                onClick={() => navigate("/booking-summary")}
+                // onClick={() => navigate("/booking-summary")}
+                onClick={() => {
+                  const queryString = new URLSearchParams(
+                    queryParams
+                  ).toString();
+                  navigate(
+                    `/booking-summary/${hotel.id}${
+                      queryString ? `?${queryString}` : ""
+                    }`,
+                    {
+                      state: { hotelData: hotel, selectedRoom: selectedRoom, selectedSlot:selectedSlot },
+                    }
+                  );
+                }}
                 variant="contained"
               >
                 Book Now
@@ -810,11 +819,15 @@ const HotelDetails = () => {
           </Box>
         </Box>
 
-        <Box sx={{ ...BoxStyle, px: { xs: 1, md: 4 },
-                pb:3,
+        <Box
+          sx={{
+            ...BoxStyle,
+            px: { xs: 1, md: 4 },
+            pb: 3,
 
-        //  minHeight:'1000px' 
-         }}>
+            //  minHeight:'1000px'
+          }}
+        >
           <Tabs
             variant="scrollable"
             value={value}
@@ -920,9 +933,60 @@ const HotelDetails = () => {
                       >
                         {room.roomCategory}
                       </Typography>
-                      <Typography variant="body2">
-                        {room.roomSize} sqft
-                      </Typography>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "flex-start",
+                          // flexDirection: showRoomDetails ? "column" : "row",
+                          flexWrap: "wrap",
+                          justifyContent: "flex-start",
+                          gap: "4px",
+                        }}
+                      >
+                        <Typography variant="body2">
+                          Room Size : {room.roomSize} sqft
+                        </Typography>
+
+                        {showRoomDetails && (
+                          <>
+                            <Typography variant="body2">
+                              Standard Room Occupancy :{" "}
+                              {room.standardRoomOccupancy} head(s)
+                            </Typography>
+                            <Typography variant="body2">
+                              No. Of Free Children Allowed :{" "}
+                              {room.numberOfFreeChildren}
+                            </Typography>
+
+                            <Typography variant="body2">
+                              Max Room Occupancy : {room.maxRoomOccupancy}{" "}
+                              head(s)
+                            </Typography>
+
+                            <Typography variant="body2">
+                              Price per Additional Adult : ₹
+                              {room.additionalGuestRate}
+                            </Typography>
+                            <Typography variant="body2">
+                              Price per Additional Child : ₹
+                              {room.additionalChildRate}
+                            </Typography>
+                          </>
+                        )}
+                        <Button
+                          sx={{
+                            textTransform: "none",
+                            fontSize: "12px",
+                            p: 0,
+                            minWidth: 0,
+                            ml: 0.2,
+                            color: color.firstColor,
+                          }}
+                          onClick={() => setShowRoomDetails(!showRoomDetails)}
+                        >
+                          {showRoomDetails ? "Show less" : "...More"}
+                        </Button>
+                      </div>
                     </Box>
 
                     <List
@@ -951,47 +1015,94 @@ const HotelDetails = () => {
                         marginTop: "20px",
                       }}
                     >
-                      {["rateFor3Hour", "rateFor6Hour", "rateFor12Hour"].map(
-                        (slotKey) => {
-                          const slotLabel =
-                            slotKey.replace("rateFor", "").replace("Hour", "") +
-                            "hrs";
-                          const price = room[slotKey as keyof typeof room];
+                      {bookingType === "hourly"
+                        ? ["rateFor3Hour", "rateFor6Hour", "rateFor12Hour"].map(
+                            (slotKey) => {
+                              const slotLabel =
+                                slotKey
+                                  .replace("rateFor", "")
+                                  .replace("Hour", "") + "hrs";
+                              const price = room[slotKey as keyof typeof room];
 
-                          return (
-                            <StyledToggleButton
-                              key={slotKey}
-                              value={slotLabel}
-                              selected={
-                                selectedSlot.roomId === room.id &&
-                                selectedSlot.slot === slotKey
-                              }
-                              onClick={() =>
-                                handleSlotSelection(room.id, slotKey)
-                              }
-                              style={{ borderColor: color.forthColor }}
-                            >
-                              <Typography
-                                px={1}
-                                py={0.5}
-                                sx={{
-                                  fontSize: { xs: "8px", md: "12px" },
-                                  lineHeight: 1.4,
-                                }}
-                              >
-                                <span
-                                  style={{ fontSize: "18px", fontWeight: 600 }}
+                              return (
+                                <StyledToggleButton
+                                  key={slotKey}
+                                  value={slotLabel}
+                                  selected={
+                                    selectedSlot.roomId === room.id &&
+                                    selectedSlot.slot === slotKey
+                                  }
+                                  onClick={() =>
+                                    handleSlotSelection(room.id, slotKey)
+                                  }
+                                  style={{ borderColor: color.forthColor }}
                                 >
-                                  {slotLabel}
-                                </span>
-                                <br />₹ {price}
-                                <br />
-                                Incl. Taxes
-                              </Typography>
-                            </StyledToggleButton>
-                          );
-                        }
-                      )}
+                                  <Typography
+                                    px={1}
+                                    py={0.5}
+                                    sx={{
+                                      fontSize: { xs: "8px", md: "12px" },
+                                      lineHeight: 1.4,
+                                    }}
+                                  >
+                                    <span
+                                      style={{
+                                        fontSize: "18px",
+                                        fontWeight: 600,
+                                      }}
+                                    >
+                                      {slotLabel}
+                                    </span>
+                                    <br />₹ {price}
+                                    <br />
+                                    Incl. Taxes
+                                  </Typography>
+                                </StyledToggleButton>
+                              );
+                            }
+                          )
+                        : ["rateFor1Night"].map((slotKey) => {
+                            const slotLabel =
+                              slotKey.replace("rateFor1Night", "Per Night") +
+                              "";
+                            const price = room[slotKey as keyof typeof room];
+
+                            return (
+                              <StyledToggleButton
+                                key={slotKey}
+                                value={slotLabel}
+                                selected={
+                                  selectedSlot.roomId === room.id &&
+                                  selectedSlot.slot === slotKey
+                                }
+                                onClick={() =>
+                                  handleSlotSelection(room.id, slotKey)
+                                }
+                                style={{ borderColor: color.forthColor }}
+                              >
+                                <Typography
+                                  px={1}
+                                  py={0.5}
+                                  sx={{
+                                    fontSize: { xs: "8px", md: "12px" },
+                                    lineHeight: 1.4,
+                                  }}
+                                >
+                                  <span
+                                    style={{
+                                      fontSize: "18px",
+                                      fontWeight: 600,
+                                    }}
+                                  >
+                                    {slotLabel}
+                                  </span>
+                                  <br />₹ {price}
+                                  <br />
+                                  Incl. Taxes
+                                </Typography>
+                              </StyledToggleButton>
+                            );
+                          })}
                     </Box>
                   </Card>
                 </Grid>

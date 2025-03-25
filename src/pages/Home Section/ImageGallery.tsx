@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
+import dayjs from "dayjs";
 
 const images = [
   { src: "/assets/khandagiri.jpg", name: "khandagiri" },
@@ -11,11 +12,40 @@ const images = [
 ];
 
 const ImageGallery = () => {
-  const navigate = useNavigate();
 
-  const handleClick = (name: string) => {
-    navigate(`/search/${name}`);
+  const locationsMap: Record<string, string> = {
+    khandagiri: "Khandagiri, Khordha, Odisha, 751015, India",
+    puri: "Puri, Puri (M), Puri, Odisha, 752001, India",
+    dhauli: "Dhauli, Uttara P.S, Khordha, Odisha, 752104, India",
+    konark: "Konark, Puri, Odisha, 752111, India",
+    chilika: "Chilika Bypass, Belapada, Balugaon, Khordha, Odisha, 752030, India",
   };
+  
+  const handleClick = (name: string) => {
+    const location = locationsMap[name] || "Unknown Location";
+  
+    const searchData = {
+      bookingType: "hourly",
+      location,
+      time: dayjs().format("HH:mm") ,
+      checkinDate: dayjs(),
+      checkOutDate: dayjs(),
+      rooms: 1,
+      adults: 2,
+      children: 0,
+    };
+    const queryParams = new URLSearchParams();
+  
+    Object.entries(searchData).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        queryParams.append(key, String(value));
+      }
+    });
+  
+    window.location.href = `/search?${queryParams.toString()}`;
+  };
+
+
 
   return (
     <Box
@@ -39,7 +69,7 @@ const ImageGallery = () => {
             minWidth: { xs: 100, md: images.length > 4 ? 200 : "25%" },
             width: "100px",
             textAlign: "center",
-            height:  { xs: 100, md: 200 },
+            height: { xs: 100, md: 200 },
             position: "relative",
             overflow: "hidden",
             borderRadius: "12px",
