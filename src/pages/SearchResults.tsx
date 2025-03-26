@@ -171,7 +171,7 @@ const SearchResults = () => {
     fetchHotelsWithRooms();
   }, []);
 
-  console.log(mergedData);
+  // console.log(mergedData);
 
   const queryParams = new URLSearchParams(location.search);
 
@@ -586,9 +586,12 @@ const SearchResults = () => {
                 hotel?.rooms[0]?.amenities.length - maxAmenities;
               return (
                 <Card
-                  onClick={() => {
-                    navigate(`/hotel/${hotel.id}`);
-                  }}
+                onClick={() => {
+                  const queryString = new URLSearchParams(queryParams).toString();
+                  navigate(`/hotel/${hotel.id}${queryString ? `?${queryString}` : ''}`, {
+                    state: { hotelData: hotel },
+                  });
+                }}
                   key={hotel.id}
                   sx={{
                     display: "flex",

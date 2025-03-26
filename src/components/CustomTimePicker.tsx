@@ -46,7 +46,7 @@ const CustomTimePicker: React.FC<TimePickerProps> = ({
             }
           }}
           views={["hours"]}
-          format="hh.mm A"
+          // format="hh.mm A"
           slotProps={{
             textField: {
               sx: {

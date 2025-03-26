@@ -97,7 +97,7 @@ export const StyledLabel = styled(FormControlLabel)(
   ({ theme, checked }: { theme?: any; checked?: boolean }) => ({
     color: checked ? color.thirdColor : color.firstColor,
     background: checked
-      ? "linear-gradient(90deg, #614385, #516395)"
+      ? color.firstColor
       : "transparent",
     borderRadius: " 2px 8px 8px 2px",
     display: "flex",
@@ -288,7 +288,7 @@ export const ImageGrid: React.FC<ImageGridProps> = ({ propertyImages }) => {
           display: { xs: "block", md: "grid" },
         }}
       >
-        <img src={displayImages[0]} alt="Main" />
+        <img style={{height:'300px'}} src={displayImages[0]} alt="Main" />
       </Box>
 
       {!isMobile &&

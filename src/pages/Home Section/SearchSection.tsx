@@ -14,16 +14,15 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
+import queryString from "query-string";
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import color from "../../components/color";
 import CustomButton from "../../components/CustomButton";
 import CustomDatePicker from "../../components/CustomDatePicker";
-import CustomSingleSelect from "../../components/CustomSingleSelect";
 import CustomTimePicker from "../../components/CustomTimePicker";
-import RoomGuestSelect from "../../components/RoomGuestSelect";
-import queryString from "query-string";
 import LocationPicker from "../../components/LocationPicker";
+import RoomGuestSelect from "../../components/RoomGuestSelect";
 const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
   padding: "4px 10px",
   textTransform: "none",
@@ -72,7 +71,6 @@ interface Location {
 }
 
 const SearchSection = () => {
-
   const [pickupLocation, setPickupLocation] = useState<Location | any>(null);
 
   const handlePickupSelect = (place: Location) => {
@@ -84,7 +82,7 @@ const SearchSection = () => {
   };
   const isMobile = useMediaQuery("(max-width: 900px)");
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const location = useLocation();
 
   const queryParams = queryString.parse(location.search);
@@ -108,8 +106,11 @@ const SearchSection = () => {
       : dayjs()
   );
   const [time, setTime] = useState<Dayjs | null>(
-    queryParams.time ? dayjs(queryParams.time as string, "HH:mm") : dayjs()
+    queryParams.time
+      ? dayjs(`2024-01-01T${queryParams.time as string}`)
+      : dayjs()
   );
+
   const [roomDetails, setRoomDetails] = useState({
     rooms: Number(queryParams.rooms) || 1,
     adults: Number(queryParams.adults) || 2,
@@ -156,7 +157,7 @@ const SearchSection = () => {
           borderRadius: 3,
           textAlign: "center",
           position: "relative",
-          mt: {xs:PageLocation.pathname !== "/" ? 3:1, md:1},
+          mt: { xs: PageLocation.pathname !== "/" ? 3 : 1, md: 1 },
         }}
       >
         <Box
@@ -292,7 +293,7 @@ const SearchSection = () => {
                   onClick={handleSearch}
                   variant="contained"
                 >
-                  <Search sx={{ color: color.firstColor, fontSize: "28px" ,}} />
+                  <Search sx={{ color: color.firstColor, fontSize: "28px" }} />
                 </CustomButton>
               )}
             </Box>

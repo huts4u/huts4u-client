@@ -71,20 +71,23 @@ const LocationPicker: React.FC<AutocompleteProps> = ({
 
   const fetchSuggestions = async (location: string) => {
     try {
-      // const query = `${location}, ${state}, ${country}`;
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
           location
         )}&format=json&limit=15`
-        // `https://www.waze.com/live-map/api/autocomplete/?q=${encodeURIComponent(location)}&exp=8%2C10%2C12&geo-env=row&v=20.2700073%2C85.78288078%3B20.32217239%2C85.86613655&lang=en-GB`
       );
       const data: any[] = await response.json();
-      setSuggestions(data);
-      // console.log(data);
+  
+      const filteredData = data.filter((place) =>
+        place.display_name.includes("Odisha")
+      );
+  
+      setSuggestions(filteredData);
     } catch (error) {
       console.error("Error fetching suggestions:", error);
     }
   };
+  
 
   const handleSuggestionClick = (place: any) => {
     setInput(place.name);
