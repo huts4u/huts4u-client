@@ -35,15 +35,13 @@ export function setCurrentUser(user: any) {
     return localStorage.setItem('user', user)
 }
 
-export function getCurrentUser() {
-    return localStorage.getItem('user')
-}
+
 export function getphoneNumber(): string {
     let token: any = localStorage.getItem('accessToken');
     if (token) {
         let decoded: any = jwtDecode(token);
         // console.log("user Details bro!=",decoded)
-        return decoded.phoneNumber.phoneNumber || '';
+        return decoded.phoneNumber || '';
     }
     else {
         return '';

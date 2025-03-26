@@ -46,7 +46,7 @@ const Login = () => {
         if (res?.data?.data?.role === "Hotel") {
           window.location.href = "/dashboard"
         } else {
-          window.location.href = "/admin-dashboard"
+          window.location.href = "/admin-homepage"
         }
         toast(res?.data?.msg);
       })

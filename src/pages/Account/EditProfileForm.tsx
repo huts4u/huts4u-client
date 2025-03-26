@@ -14,24 +14,25 @@ import dayjs from "dayjs";
 import CustomButton from "../../components/CustomButton";
 import color from "../../components/color";
 import { BpRadio, CustomTextField } from "../../components/style";
+import ImageUploader from "../../components/ImageUploader";
 
 interface FormValues {
   name: string;
-  bio: string;
-  dob: string | null;
-  gender: string;
+  // bio: string;
+  // dob: string | null;
+  // gender: string;
   email: string;
   phone: string;
 }
 
 const validationSchema = Yup.object({
   name: Yup.string().required("Name is required"),
-  bio: Yup.string().max(200, "Bio must be less than 200 characters"),
-  dob: Yup.string().required("Date of birth is required"),
-  gender: Yup.string().required("Please select a gender"),
-  email: Yup.string()
-    .email("Invalid email address")
-    .required("Email is required"),
+  // bio: Yup.string().max(200, "Bio must be less than 200 characters"),
+  // dob: Yup.string().required("Date of birth is required"),
+  // gender: Yup.string().required("Please select a gender"),
+  // email: Yup.string()
+  //   .email("Invalid email address")
+  //   .required("Email is required"),
   phone: Yup.string()
     .matches(/^[0-9]{10}$/, "Phone number must be exactly 10 digits")
     .required("Phone number is required"),
@@ -75,6 +76,16 @@ const EditProfileForm = ({
               Edit Profile
             </Typography>
 
+
+            {/* <ImageUploader
+              label="Profile Image"
+              onFileSelect={(file) =>
+                                // handleFileChange(file as any, (value) =>
+                                //   formik.setFieldValue("gstCertificate", value)
+                                )
+                              }
+            /> */}
+
             <CustomTextField
               label="Name"
               name="name"
@@ -106,7 +117,7 @@ const EditProfileForm = ({
             />
 
             {/* MUI Date Picker */}
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
+            {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="Date of Birth"
                 value={values.dob ? dayjs(values.dob) : null}
@@ -180,7 +191,7 @@ const EditProfileForm = ({
                 control={<BpRadio />}
                 label="Undisclosed (U)"
               />
-            </RadioGroup>
+            </RadioGroup> */}
 
             <Box
               sx={{

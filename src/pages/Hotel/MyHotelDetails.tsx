@@ -138,7 +138,7 @@ const MyHotelDetails = () => {
   const [hotelData1, setHotelData1] = useState<any>([]);
 
   const [roomData, setRoomData] = useState<any>([]);
-  console.log(id);
+  // console.log(id);
 
   useEffect(() => {
     getMyAllHotelswithBelongsTo({
@@ -198,7 +198,7 @@ const MyHotelDetails = () => {
               variant="contained"
               startIcon={<Edit />}
               onClick={() => {
-                navigate("/property-registration");
+                navigate("/property-registration", { state: id });
               }}
             >
               Edit Hotel

@@ -27,7 +27,7 @@ import {
   Toolbar,
   useMediaQuery,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { matchPath, useLocation, useNavigate } from "react-router-dom";
 import {
   getUserName,
@@ -37,6 +37,7 @@ import {
 } from "../../services/axiosClient";
 import color from "../color";
 import CustomButton from "../CustomButton";
+import { getProfile } from "../../services/services";
 
 const Header: React.FC = () => {
   // useEffect(() => {
@@ -81,13 +82,13 @@ const Header: React.FC = () => {
   const navLinks =
     userRoll === "Hotel"
       ? [
-          { label: "Home", icon: <CorporateFare />, path: "/my-hotels" },
-          // { label: "My Bookings", icon: <Hotel />, path: "/my-bookings" },
-          { label: "Manage Rooms", icon: <Hotel />, path: "/manage-rooms" },
-          { label: "Reviews", icon: <ContactMail />, path: "/reviews" },
-        ]
+        { label: "Home", icon: <CorporateFare />, path: "/my-hotels" },
+        // { label: "My Bookings", icon: <Hotel />, path: "/my-bookings" },
+        { label: "Manage Rooms", icon: <Hotel />, path: "/manage-rooms" },
+        { label: "Reviews", icon: <ContactMail />, path: "/reviews" },
+      ]
       : userRoll === "Admin"
-      ? [
+        ? [
           {
             label: "Admin Dashboard",
             icon: <PersonOutline />,
@@ -101,7 +102,7 @@ const Header: React.FC = () => {
           { label: "Manage Hotels", icon: <Hotel />, path: "/manage-hotels" },
           { label: "Reports", icon: <Info />, path: "/reports" },
         ]
-      : [
+        : [
           { label: "Home", icon: <Home />, path: "/" },
           { label: "Hotels", icon: <Hotel />, path: "/search" },
           { label: "Contact", icon: <ContactMail />, path: "/contact-us" },
@@ -113,6 +114,16 @@ const Header: React.FC = () => {
 
   const isHotelDetailPage = matchPath("/hotel/:id", location.pathname);
 
+  const [user, setUser] = useState<any>({})
+  useEffect(() => {
+    if (isLoggedIn()) {
+      getProfile().then((res) => {
+        setUser(res?.data?.data)
+      }).catch((err) => {
+        console.log(err)
+      })
+    }
+  }, [])
   return (
     <AppBar
       sx={{
@@ -197,18 +208,22 @@ const Header: React.FC = () => {
             )}
             {isLoggedIn() ? (
               <>
-                {" "}
                 <IconButton
                   style={{
                     background: color.thirdColor,
                     color: color.firstColor,
+                    borderRadius: '50%',
+                    height: '40px',
+                    width: '40px'
                   }}
                   color="inherit"
                   onClick={handleClick}
                 >
-                  <PersonOutline />
+                  {getUserName() ? getUserName().charAt(0).toUpperCase() : <PersonOutline />}
+                  {/* <PersonOutline /> */}
                 </IconButton>
               </>
+
             ) : (
               <>
                 {" "}
@@ -316,7 +331,7 @@ const Header: React.FC = () => {
                   pb: 1,
                 }}
               >
-                Hi, {getUserName()}
+                Hi, {user.userName}
               </MenuItem>
               <MenuItem
                 style={{ fontSize: "inherit", borderRadius: "52px" }}
@@ -337,26 +352,31 @@ const Header: React.FC = () => {
                 />{" "}
                 Your Profile
               </MenuItem>
-              <MenuItem
-                style={{ fontSize: "inherit", borderRadius: "52px" }}
-                onClick={() => {
-                  navigate("/my-bookings");
-                  handleClose();
-                }}
-              >
-                {" "}
-                <CorporateFare
-                  sx={{
-                    mr: 1,
-                    background: color.background,
+              {
+                getUserRole() === 'User' ? (<>
+                  <MenuItem
+                    style={{ fontSize: "inherit", borderRadius: "52px" }}
+                    onClick={() => {
+                      navigate("/my-bookings");
+                      handleClose();
+                    }}
+                  >
+                    {" "}
+                    <CorporateFare
+                      sx={{
+                        mr: 1,
+                        background: color.background,
 
-                    borderRadius: "50%",
-                    color: "white",
-                    p: 0.5,
-                  }}
-                />{" "}
-                My Bookings
-              </MenuItem>
+                        borderRadius: "50%",
+                        color: "white",
+                        p: 0.5,
+                      }}
+                    />{" "}
+                    My Bookings
+                  </MenuItem>
+                </>) : (<></>)
+              }
+
               <MenuItem
                 style={{ fontSize: "inherit", borderRadius: "52px" }}
                 onClick={() => logout()}

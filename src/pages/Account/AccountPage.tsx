@@ -1,20 +1,42 @@
 import { Edit } from "@mui/icons-material";
 import { Avatar, Box, Button, Typography } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import color from "../../components/color";
 import EditProfileForm from "./EditProfileForm";
+import { editUser, getProfile } from "../../services/services";
+import { getUserName } from "../../services/axiosClient";
+import { toast } from "react-toastify";
 
 const AccountPage = () => {
   const [isEditing, setIsEditing] = useState(false);
-
-  const [profile, setProfile] = useState({
+  const [user, setUser] = useState<any>({});
+  const [profile, setProfile] = useState<any>({
     name: "",
-    bio: "",
-    dob: "",
-    gender: "",
     email: "",
     phone: "",
   });
+
+  // Fetch user data
+  useEffect(() => {
+    getProfile().then((res) => {
+      setUser(res?.data?.data);
+    });
+  }, []);
+
+  // Update profile state when user data changes
+  useEffect(() => {
+    if (user.userName || user.email || user.phoneNumber) {
+      setProfile({
+        name: user.userName || "",
+        email: user.email || "",
+        phone: user.phoneNumber || "",
+      });
+    }
+  }, [user]); // Dependency on `user`
+
+
+
+
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -22,6 +44,21 @@ const AccountPage = () => {
 
   const handleFormSubmit = (values: any) => {
     setProfile(values);
+    const payLoad = {
+      userName: values.name,
+      email: values.email,
+      phoneNumber: values.phone
+    }
+    console.log(values)
+    console.log(payLoad)
+    editUser(payLoad)
+      .then((res) => {
+        console.log(res)
+        toast(res?.data?.msg)
+      })
+      .catch((err) => {
+        console.error("Error updating profile:", err);
+      });
     setIsEditing(false);
   };
 
@@ -60,7 +97,6 @@ const AccountPage = () => {
           style={{
             display: "flex",
             flexDirection: "column",
-            // gap: "20px",
             maxWidth: 600,
             margin: "auto",
             zIndex: 2,
@@ -100,7 +136,7 @@ const AccountPage = () => {
               >
                 <Avatar sx={{ height: "64px", width: "64px" }}></Avatar>
                 <Typography variant="h5" fontWeight="bold" my={2}>
-                  Hi, User
+                  Hi, {user.userName}
                 </Typography>
               </Box>
 
@@ -109,10 +145,10 @@ const AccountPage = () => {
                   mt: "150px",
                   width: "100%",
                   borderRadius: "8px",
-                  color:color.firstColor
+                  color: color.firstColor,
                 }}
               >
-                <Typography variant="h5" fontWeight="bold" >
+                <Typography variant="h5" fontWeight="bold">
                   Your Basic Information
                 </Typography>
                 <Typography fontSize={"12px"} mt={0.5}>
@@ -126,26 +162,16 @@ const AccountPage = () => {
                     display: "flex",
                     flexDirection: "column",
                     gap: 0.5,
-                    // justifyContent:'space-between'
                   }}
                 >
                   <Typography variant="body1" sx={typoStyle}>
-                    <strong>Name:</strong> {profile.name || "Not Set"}{" "}
+                    <strong>Name:</strong> {profile.name}{" "}
                   </Typography>
                   <Typography variant="body1" sx={typoStyle}>
-                    <strong>Bio:</strong> {profile.bio || "Not Set"}
+                    <strong>Phone No:</strong> {profile.phone}{" "}
                   </Typography>
                   <Typography variant="body1" sx={typoStyle}>
-                    <strong>Date of Birth:</strong> {profile.dob || "Not Set"}
-                  </Typography>
-                  <Typography variant="body1" sx={typoStyle}>
-                    <strong>Gender:</strong> {profile.gender || "Not Set"}
-                  </Typography>
-                  <Typography variant="body1" sx={typoStyle}>
-                    <strong>Phone No:</strong> {profile.phone || "Not Set"}{" "}
-                  </Typography>
-                  <Typography variant="body1" sx={typoStyle}>
-                    <strong>Email:</strong> {profile.email || "Not Set"}
+                    <strong>Email:</strong> {profile.email}
                   </Typography>
                 </Box>
 
@@ -170,24 +196,6 @@ const AccountPage = () => {
                 </Button>
               </Box>
             </div>
-
-            {/* <Button
-              sx={{
-                marginTop: 4,
-                background: "transparent",
-                border: "solid 2px",
-                color: "red",
-                borderRadius: "44px",
-                textTransform: "none",
-                marginLeft: "auto",
-                width: "100%",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <DeleteForever sx={{ mr: 1 }}></DeleteForever>
-              Delete Account
-            </Button> */}
           </Box>
         </div>
       )}

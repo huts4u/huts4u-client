@@ -23,6 +23,7 @@ import MyHotelDetails from "./pages/Hotel/MyHotelDetails";
 import ApplicationPreview from "./pages/Hotel/ApplicationPreview";
 import PrivateRoute from "./components/PrivateRoute";
 import MyBookings from "./pages/MyBookings";
+import AdminHomepage from "./pages/Admin/AdminHomepage";
 
 const App: React.FC = () => {
   return (
@@ -42,7 +43,7 @@ const App: React.FC = () => {
           <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/property-registration" element={<PropertyForm />} />
           <Route path="/my-bookings" element={<MyBookings />} />
-
+          <Route path="/admin-homepage" element={<PrivateRoute component={AdminHomepage} allowedRoles={["Admin"]} />} />
 
           <Route element={<HotelLayout />}>
             <Route path="/dashboard" element={<PrivateRoute component={Dashboard} allowedRoles={["Hotel"]} />} />
@@ -50,6 +51,9 @@ const App: React.FC = () => {
             <Route path="/hotel-details/:id" element={<PrivateRoute component={MyHotelDetails} allowedRoles={["Hotel"]} />} />
             <Route path="/hotel-applications" element={<PrivateRoute component={MyHotels} allowedRoles={["Hotel"]} />} />
             <Route path="/hotel-application/:id" element={<PrivateRoute component={ApplicationPreview} allowedRoles={["Hotel"]} />} />
+
+
+
 
           </Route>
         </Routes>

@@ -64,3 +64,15 @@ export function getAllRooms(payLoad:any){
 export function getAllBookingsofMyHotel(payLoad:any){
     return client.post('/Booking/search-record', payLoad);
 }
+
+export function getAllUser(payLoad:any){
+    return client.post('/User/search-record', payLoad);
+}
+
+export function deleteUser(id:any){
+    return client.delete(`/User/delete-record/${id}`);
+}
+
+export function editUser(payLoad:any){
+    return client.patch('/auth/update-profile', payLoad);
+}

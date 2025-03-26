@@ -25,7 +25,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import color from "../components/color";
 import CustomButton from "../components/CustomButton";
 import { amenityIcons } from "../components/data";
@@ -145,6 +145,8 @@ const HotelDetails = () => {
   const [isSticky, setIsSticky] = useState(false);
   const [stopPosition, setStopPosition] = useState(0);
 
+  const { id } = useParams();
+
   useEffect(() => {
     const handleScroll = () => {
       const boxA = document.getElementById("boxA");
@@ -205,13 +207,15 @@ const HotelDetails = () => {
   // const openModal = () => {
   //   navigate(`${location.pathname}?login=true`, { replace: true });
   // };
+
+
   return (
     <Box
       id="boxA"
       sx={{
         background: color.thirdColor,
         px: { xs: 2, md: 4 },
-        pt:1,
+        pt: 1,
         position: "relative",
         // minHeight: "2000px",
       }}
@@ -443,9 +447,9 @@ const HotelDetails = () => {
 
               ...(isSticky &&
                 window.scrollY >= stopPosition && {
-                  position: "absolute",
-                  bottom: "85px",
-                }),
+                position: "absolute",
+                bottom: "85px",
+              }),
 
               // Stick to the bottom for screen sizes below 900px
               "@media (max-width: 900px)": {
@@ -682,7 +686,7 @@ const HotelDetails = () => {
                         ₹
                         {
                           selectedRoom.price[
-                            slot as keyof typeof selectedRoom.price
+                          slot as keyof typeof selectedRoom.price
                           ]
                         }
                         <br />
@@ -719,10 +723,10 @@ const HotelDetails = () => {
                   ₹
                   {selectedSlot.roomId && selectedSlot.slot
                     ? hotelData.rooms.find(
-                        (room) => room.id === selectedSlot.roomId
-                      )?.price[
-                        selectedSlot.slot as keyof typeof selectedRoom.price
-                      ]
+                      (room) => room.id === selectedSlot.roomId
+                    )?.price[
+                    selectedSlot.slot as keyof typeof selectedRoom.price
+                    ]
                     : 0}
                   .00
                 </Typography>
