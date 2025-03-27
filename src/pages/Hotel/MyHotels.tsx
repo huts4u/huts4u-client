@@ -110,7 +110,7 @@ const MyHotels = () => {
           (hotel: any) => hotel.status === "Pending"
         );
         const approvedHotels = data.filter(
-          (hotel: any) => hotel.status === "Aproved"
+          (hotel: any) => hotel.status === "Approved"
         );
         const rejectedHotels = data.filter(
           (hotel: any) => hotel.status === "Reject"
@@ -143,7 +143,12 @@ const MyHotels = () => {
     renderUrl() === "application"
       ? [...aprovedhotel, ...pendinghotel, ...rejecthotel]
       : aprovedhotel;
-  console.log(displayHotels);
+
+  const displayHotelsLength =
+    renderUrl() === "application"
+      ? [...aprovedhotel, ...pendinghotel, ...rejecthotel].length
+      : aprovedhotel.length;
+  // console.log(displayHotels);
   return (
     <Box
       sx={{
@@ -169,7 +174,7 @@ const MyHotels = () => {
               fontSize: { xs: "16px", md: "20px" },
             }}
           >
-            {aprovedhotel.length}{" "}
+            {displayHotelsLength}{" "}
             {renderUrl() === "hotel" ? "Properties" : "Applications"}
           </Typography>
 
@@ -290,8 +295,8 @@ const MyHotels = () => {
                           hotel.status === "Approved"
                             ? "Green"
                             : hotel.status === "Pending"
-                            ? "Yellow"
-                            : "Red",
+                              ? "Yellow"
+                              : "Red",
                         color: "white",
                         px: 2,
                         borderRadius: { xs: "4px", md: "0 4px 0 4px" },
@@ -304,7 +309,7 @@ const MyHotels = () => {
                       }}
                     >
                       {hotel.status}{" "}
-                      {hotel.status === "Aproved" ? (
+                      {hotel.status === "Approved" ? (
                         <CheckCircle
                           sx={{
                             fontSize: "18px",
@@ -417,7 +422,7 @@ const MyHotels = () => {
                   </Box>
 
                   {renderUrl() === "hotel" &&
-                  hotel?.rooms[0]?.amenities?.length ? (
+                    hotel?.rooms[0]?.amenities?.length ? (
                     <Box
                       sx={{
                         display: "flex",
@@ -521,7 +526,7 @@ const MyHotels = () => {
                           width: "fit-content",
                         }}
                       >
-                        Applied on :
+                        Applied on :{new Date(hotel.createdAt).toLocaleDateString()}
                       </Typography>
                     </Box>
                   )}

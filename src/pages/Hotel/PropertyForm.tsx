@@ -386,7 +386,12 @@ const PropertyForm = () => {
         propertyImages: values.propertyImages,
         bankPassbook: values.bankpassbook,
         propertyPolicy: values.propertyPolicies,
+        coupleFriendly: values.coupleFriendly,
+        petFriendly: values.petFriendly,
+        familyFriendly: values.familyFriendly,
+        businessFriendly: values.businessFriendly,
         status: "Pending",
+
       };
 
       hotelPost(payLoad)
@@ -407,6 +412,8 @@ const PropertyForm = () => {
               standardRoomOccupancy: room.standardRoomOccupancy,
               maxRoomOccupancy: room.maxRoomOccupancy,
               numberOfFreeChildren: room.numberOfFreeChildren,
+              taxRate: room.tax,
+              extrafees: room.extraFees,
               amenities: room.amenities,
               roomImages: room.roomImage,
             }));
@@ -930,7 +937,7 @@ const PropertyForm = () => {
                           fontSize={"18px"}
                           fontWeight={"bold"}
                           mb={-1}
-                          //   mt={1}
+                        //   mt={1}
                         >
                           {formik.values.rooms.length > 1 && (
                             <>Room {index + 1}</>

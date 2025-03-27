@@ -18,7 +18,7 @@ import RenderRazorpay from "../components/Payments/RanderPayments";
 import color from "../components/color";
 import { BoxStyle, CustomTextField } from "../components/style";
 import { isLoggedIn } from "../services/axiosClient";
-import { createOrder, sendOTP } from "../services/services";
+import { createOrder, getProfile, sendOTP } from "../services/services";
 import LoginOtpModal from "./Account/LoginOtpModal";
 
 const bookingData = {
@@ -64,6 +64,17 @@ const BookingSummary = () => {
   const value = selectedSlot.slot;
   const number = value.match(/\d+/)?.[0];
   const extractedNumber = number ? parseInt(number, 10) : null;
+  const [user, setUser] = useState<any>({});
+  useEffect(() => {
+    if (isLoggedIn()) {
+      getProfile().then((res) => {
+        setUser(res?.data?.data)
+      }).catch((err) => {
+        console.log(err)
+      })
+    }
+  }, [])
+
 
   // const phoneNumber = location.state?.phoneNumber;
 
@@ -126,9 +137,9 @@ const BookingSummary = () => {
 
   const formik = useFormik({
     initialValues: {
-      name: "",
-      email: "",
-      phoneNumber: "",
+      name: user.userName || "",
+      email: user.email || "",
+      phoneNumber: `91${user.phoneNumber}` || "",
     },
     validationSchema,
     enableReinitialize: true,
