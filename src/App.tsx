@@ -27,20 +27,20 @@ import AdminHomepage from "./pages/Admin/AdminHomepage";
 
 const App: React.FC = () => {
 
-    const ScrollToTop = () => {
-      const { pathname } = useLocation();
-    
-      useEffect(() => {
-        window.scrollTo(0, 0);
-      }, [pathname]);
-    
-      return null;
-    };
+  const ScrollToTop = () => {
+    const { pathname } = useLocation();
+
+    useEffect(() => {
+      window.scrollTo(0, 0);
+    }, [pathname]);
+
+    return null;
+  };
 
   return (
     <ThemeProvider theme={theme}>
       <Router>
-      <ScrollToTop/>
+        <ScrollToTop />
 
         <Header />
         <Routes>
@@ -60,10 +60,10 @@ const App: React.FC = () => {
 
           <Route element={<HotelLayout />}>
             <Route path="/dashboard" element={<PrivateRoute component={Dashboard} allowedRoles={["Hotel"]} />} />
-            <Route path="/my-hotels" element={<PrivateRoute component={MyHotels} allowedRoles={["Hotel"]} />} />
-            <Route path="/hotel-details/:id" element={<PrivateRoute component={MyHotelDetails} allowedRoles={["Hotel"]} />} />
-            <Route path="/hotel-applications" element={<PrivateRoute component={MyHotels} allowedRoles={["Hotel"]} />} />
-            <Route path="/hotel-application/:id" element={<PrivateRoute component={ApplicationPreview} allowedRoles={["Hotel"]} />} />
+            <Route path="/my-hotels" element={<PrivateRoute component={MyHotels} allowedRoles={["Hotel", "Admin"]} />} />
+            <Route path="/hotel-details/:id" element={<PrivateRoute component={MyHotelDetails} allowedRoles={["Hotel", "Admin"]} />} />
+            <Route path="/hotel-applications" element={<PrivateRoute component={MyHotels} allowedRoles={["Hotel", "Admin"]} />} />
+            <Route path="/hotel-application/:id" element={<PrivateRoute component={ApplicationPreview} allowedRoles={["Hotel", "Admin"]} />} />
 
 
 

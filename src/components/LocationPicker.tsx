@@ -25,12 +25,11 @@ const LocationPicker: React.FC<AutocompleteProps> = ({
   value,
   setValue,
 }) => {
-  //   const [country, setCountry] = useState<string>("");
-  //   const [state, setState] = useState<string>("");
   const [input, setInput] = useState<string>("");
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const mapboxToken = "pk.eyJ1IjoiYW1pdGF2MTgzMCIsImEiOiJjbHc2bGM0cW8xcXp2MnFsODNyemQ0Y3VvIn0.0LkDbvkAgh-6PuWSVzOYLQ"; // Replace with your Mapbox token
 
   useEffect(() => {
     if (!value) {
@@ -38,12 +37,13 @@ const LocationPicker: React.FC<AutocompleteProps> = ({
         if (loc.latitude && loc.longitude) {
           try {
             const response = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?lat=${loc.latitude}&lon=${loc.longitude}&format=json`
+              `https://api.mapbox.com/geocoding/v5/mapbox.places/${loc.longitude},${loc.latitude}.json?access_token=${mapboxToken}`
             );
             const data = await response.json();
-            if (data.display_name) {
-              setInput(data.display_name);
-              setValue(data.display_name);
+            if (data.features && data.features.length > 0) {
+              const currentLocation = data.features[0].place_name;
+              setInput(currentLocation);
+              setValue(currentLocation);
             }
           } catch (error) {
             console.error("Error fetching current location:", error);
@@ -62,38 +62,36 @@ const LocationPicker: React.FC<AutocompleteProps> = ({
     setInput(value);
     setAnchorEl(event.currentTarget);
 
-    if (value) {
+    if (value.length > 1) { // Start suggesting after 2 characters
       fetchSuggestions(value);
     } else {
       setSuggestions([]);
     }
   };
 
-  const fetchSuggestions = async (location: string) => {
+  const fetchSuggestions = async (query: string) => {
     try {
+      // Bhubaneswar bounding box (approximate coordinates)
+      const bbox = "85.74,20.21,85.9,20.32"; // min Long, min Lat, max Long, max Lat
+
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-          location
-        )}&format=json&limit=15`
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+          query
+        )}.json?access_token=${mapboxToken}&autocomplete=true&bbox=${bbox}&limit=5&proximity=85.8245,20.2961` // Bhubaneswar coordinates
       );
-      const data: any[] = await response.json();
-  
-      const filteredData = data.filter((place) =>
-        place.display_name.includes("Odisha")
-      );
-  
-      setSuggestions(filteredData);
+      const data = await response.json();
+      setSuggestions(data.features || []);
     } catch (error) {
       console.error("Error fetching suggestions:", error);
+      setSuggestions([]);
     }
   };
-  
 
   const handleSuggestionClick = (place: any) => {
-    setInput(place.name);
+    setInput(place.place_name);
     setSuggestions([]);
     onSelect(place);
-    setValue(place.display_name);
+    setValue(place.place_name);
   };
 
   return (
@@ -124,7 +122,6 @@ const LocationPicker: React.FC<AutocompleteProps> = ({
           alignItems: "center",
           color: color.firstColor,
           borderRadius: 2,
-          // height:'100%'
         }}
       >
         <TextField
@@ -133,7 +130,7 @@ const LocationPicker: React.FC<AutocompleteProps> = ({
           type="text"
           value={input}
           onChange={handleInputChange}
-          placeholder="location"
+          placeholder="Search in Bhubaneswar..."
           inputRef={inputRef}
           fullWidth
           inputProps={{
@@ -176,15 +173,21 @@ const LocationPicker: React.FC<AutocompleteProps> = ({
           }}
         >
           <List>
-            {suggestions.map((place, index: number) => (
+            {suggestions.map((place, index) => (
               <ListItem
-                // button
+                component="li"
                 key={index}
                 onClick={() => handleSuggestionClick(place)}
               >
-                <ListItemText primary={place.display_name} />
-                {/* <ListItemText primary={place.lat} /> */}
-                {/* <ListItemText primary={place.lon} /> */}
+                <ListItemText
+                  primary={place.place_name}
+                  sx={{
+                    '& .MuiTypography-root': {
+                      fontSize: '14px',
+                      fontFamily: 'CustomFontM',
+                    }
+                  }}
+                />
               </ListItem>
             ))}
           </List>

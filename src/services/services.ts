@@ -76,3 +76,7 @@ export function deleteUser(id:any){
 export function editUser(payLoad:any){
     return client.patch('/auth/update-profile', payLoad);
 }
+
+export function editHotel(id:any,payLoad:any){
+    return client.patch(`/Hotel/update-record/${id}`, payLoad);
+}

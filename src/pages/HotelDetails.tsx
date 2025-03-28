@@ -785,7 +785,7 @@ const HotelDetails = () => {
                     : 0}
                 </Typography>
                 <Typography fontSize={"14px"} color={color.forthColor}>
-                  + ₹ {Number(selectedRoom?.tax) + Number(selectedRoom?.extraFees)} taxes & fees
+                  + ₹ {Number(selectedRoom?.taxRate) + Number(selectedRoom?.extrafees)} taxes & fees
                 </Typography>
               </div>
 
@@ -797,6 +797,11 @@ const HotelDetails = () => {
                 }}
                 // onClick={() => navigate("/booking-summary")}
                 onClick={() => {
+                  const basePrice = selectedSlot.roomId && selectedSlot.slot
+                    ? selectedRoom?.[selectedSlot.slot] ?? 0
+                    : 0;
+                  const taxesAndFees = Number(selectedRoom?.taxRate) + Number(selectedRoom?.extrafees);
+                  const totalPrice = Number(basePrice) + taxesAndFees;
                   const queryString = new URLSearchParams(
                     queryParams
                   ).toString();
@@ -804,7 +809,14 @@ const HotelDetails = () => {
                     `/booking-summary/${hotel.id}${queryString ? `?${queryString}` : ""
                     }`,
                     {
-                      state: { hotelData: hotel, selectedRoom: selectedRoom, selectedSlot: selectedSlot },
+                      state: {
+                        hotelData: hotel, selectedRoom: selectedRoom, selectedSlot: selectedSlot, pricingDetails: {
+                          basePrice: basePrice,
+                          tax: selectedRoom?.taxRate,
+                          extraFees: selectedRoom?.extrafees,
+                          totalPrice: totalPrice
+                        }
+                      },
                     }
                   );
                 }}

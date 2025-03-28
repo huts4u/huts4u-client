@@ -90,16 +90,21 @@ const Header: React.FC = () => {
       : userRoll === "Admin"
         ? [
           {
+            label: "Home",
+            icon: <CorporateFare />,
+            path: "/admin-homepage",
+          },
+          {
             label: "Admin Dashboard",
             icon: <PersonOutline />,
             path: "/admin-dashboard",
           },
           {
-            label: "Manage Users",
-            icon: <AccountCircle />,
-            path: "/manage-users",
+            label: "Booking Hotels",
+            icon: <Hotel />,
+            path: "/search",
           },
-          { label: "Manage Hotels", icon: <Hotel />, path: "/manage-hotels" },
+          { label: "Hotel Applications", icon: <Hotel />, path: "/hotel-applications" },
           { label: "Reports", icon: <Info />, path: "/reports" },
         ]
         : [

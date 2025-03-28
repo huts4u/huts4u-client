@@ -18,7 +18,7 @@ import {
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 
-const HotelCardCarousel = ({ hotels }: any) => {
+const HotelCardCarousel = () => {
   const { isBelow400px } = useScreenSize();
 
   const settings = {
@@ -51,7 +51,7 @@ const HotelCardCarousel = ({ hotels }: any) => {
     const fetchHotelsWithRooms = async () => {
       try {
         const hotelPayload = {
-          data: { filter: "", status: "Aproved" },
+          data: { filter: "", status: "Approved" },
           page: 0,
           pageSize: 50,
           order: [["createdAt", "ASC"]],

@@ -22,7 +22,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import color from "../../components/color";
 import CustomButton from "../../components/CustomButton";
 import { amenityIcons } from "../../components/data";
-import { getUserId } from "../../services/axiosClient";
+import { getUserId, getUserRole } from "../../services/axiosClient";
 import {
   getMyAllHotelswithBelongsTo
 } from "../../services/services";
@@ -97,33 +97,62 @@ const MyHotels = () => {
   const [rejecthotel, setRejectHotel] = useState<any[]>([]);
   const [aprovedhotel, setAprovedHotel] = useState<any[]>([]);
   // const [count, setCount] = useState<any>("");
-
   useEffect(() => {
-    getMyAllHotelswithBelongsTo({
-      userId: getUserId(),
-      // status: 'Aproved',
-      secondTable: "Room",
-    }).then((res) => {
-      const data = res?.data?.data;
-      if (data) {
-        const pendingHotels = data.filter(
-          (hotel: any) => hotel.status === "Pending"
-        );
-        const approvedHotels = data.filter(
-          (hotel: any) => hotel.status === "Approved"
-        );
-        const rejectedHotels = data.filter(
-          (hotel: any) => hotel.status === "Reject"
-        );
-        setPendingHotel(pendingHotels);
-        setAprovedHotel(approvedHotels);
-        setRejectHotel(rejectedHotels);
+    if (getUserRole() === "Hotel") {
 
-        // console.log('Pending:', pendingHotels);
-        // console.log('Approved:', approvedHotels);
-        // console.log('Rejected:', rejectedHotels);
-      }
-    });
+
+      getMyAllHotelswithBelongsTo({
+        userId: getUserId(),
+        // status: 'Aproved',
+        secondTable: "Room",
+      }).then((res) => {
+        const data = res?.data?.data;
+        if (data) {
+          const pendingHotels = data.filter(
+            (hotel: any) => hotel.status === "Pending"
+          );
+          const approvedHotels = data.filter(
+            (hotel: any) => hotel.status === "Approved"
+          );
+          const rejectedHotels = data.filter(
+            (hotel: any) => hotel.status === "Reject"
+          );
+          setPendingHotel(pendingHotels);
+          setAprovedHotel(approvedHotels);
+          setRejectHotel(rejectedHotels);
+
+          // console.log('Pending:', pendingHotels);
+          // console.log('Approved:', approvedHotels);
+          // console.log('Rejected:', rejectedHotels);
+        }
+      });
+    } else {
+      getMyAllHotelswithBelongsTo({
+        // userId: getUserId(),
+        // status: 'Aproved',
+        secondTable: "Room",
+      }).then((res) => {
+        const data = res?.data?.data;
+        if (data) {
+          const pendingHotels = data.filter(
+            (hotel: any) => hotel.status === "Pending"
+          );
+          const approvedHotels = data.filter(
+            (hotel: any) => hotel.status === "Approved"
+          );
+          const rejectedHotels = data.filter(
+            (hotel: any) => hotel.status === "Reject"
+          );
+          setPendingHotel(pendingHotels);
+          setAprovedHotel(approvedHotels);
+          setRejectHotel(rejectedHotels);
+
+          // console.log('Pending:', pendingHotels);
+          // console.log('Approved:', approvedHotels);
+          // console.log('Rejected:', rejectedHotels);
+        }
+      });
+    }
   }, []);
 
   const renderUrl = () => {
@@ -144,6 +173,7 @@ const MyHotels = () => {
       ? [...aprovedhotel, ...pendinghotel, ...rejecthotel]
       : aprovedhotel;
 
+  console.log(displayHotels)
   const displayHotelsLength =
     renderUrl() === "application"
       ? [...aprovedhotel, ...pendinghotel, ...rejecthotel].length
@@ -282,7 +312,7 @@ const MyHotels = () => {
                           fontSize: { xs: "14px", md: "18px" },
                         }}
                       >
-                        {hotel.rating}
+                        {hotel?.ratings?.rating}
                       </Typography>
                     </Box>
                   ) : (
@@ -292,9 +322,9 @@ const MyHotels = () => {
                         top: { xs: 5, md: 0 },
                         right: { xs: 25, md: 0 },
                         background:
-                          hotel.status === "Approved"
+                          hotel?.status === "Approved"
                             ? "Green"
-                            : hotel.status === "Pending"
+                            : hotel?.status === "Pending"
                               ? "Yellow"
                               : "Red",
                         color: "white",
@@ -308,14 +338,14 @@ const MyHotels = () => {
                         fontSize: "12px",
                       }}
                     >
-                      {hotel.status}{" "}
-                      {hotel.status === "Approved" ? (
+                      {hotel?.status}{" "}
+                      {hotel?.status === "Approved" ? (
                         <CheckCircle
                           sx={{
                             fontSize: "18px",
                           }}
                         />
-                      ) : hotel.status === "Pending" ? (
+                      ) : hotel?.status === "Pending" ? (
                         <HourglassBottomRounded
                           sx={{
                             fontSize: "18px",
@@ -365,7 +395,7 @@ const MyHotels = () => {
                       WebkitBoxOrient: "vertical",
                     }}
                   >
-                    {hotel.propertyName}
+                    {hotel?.propertyName}
                   </Typography>
                   <Typography
                     color="textSecondary"

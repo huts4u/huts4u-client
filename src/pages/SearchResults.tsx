@@ -136,7 +136,7 @@ const SearchResults = () => {
     const fetchHotelsWithRooms = async () => {
       try {
         const hotelPayload = {
-          data: { filter: "", status: "Aproved" },
+          data: { filter: "", status: "Approved" },
           page: 0,
           pageSize: 50,
           order: [["createdAt", "ASC"]],
@@ -223,13 +223,13 @@ const SearchResults = () => {
       const getLowestRate = (hotel: any) => {
         return hotel?.rooms?.[0]
           ? [
-              hotel.rooms[0].rateFor3Hour,
-              hotel.rooms[0].rateFor6Hour,
-              hotel.rooms[0].rateFor12Hour,
-              hotel.rooms[0].rateFor1Night,
-            ]
-              .map(Number)
-              .find((rate) => rate > 0) || Infinity
+            hotel.rooms[0].rateFor3Hour,
+            hotel.rooms[0].rateFor6Hour,
+            hotel.rooms[0].rateFor12Hour,
+            hotel.rooms[0].rateFor1Night,
+          ]
+            .map(Number)
+            .find((rate) => rate > 0) || Infinity
           : Infinity;
       };
 
@@ -586,12 +586,12 @@ const SearchResults = () => {
                 hotel?.rooms[0]?.amenities.length - maxAmenities;
               return (
                 <Card
-                onClick={() => {
-                  const queryString = new URLSearchParams(queryParams).toString();
-                  navigate(`/hotel/${hotel.id}${queryString ? `?${queryString}` : ''}`, {
-                    state: { hotelData: hotel },
-                  });
-                }}
+                  onClick={() => {
+                    const queryString = new URLSearchParams(queryParams).toString();
+                    navigate(`/hotel/${hotel.id}${queryString ? `?${queryString}` : ''}`, {
+                      state: { hotelData: hotel },
+                    });
+                  }}
                   key={hotel.id}
                   sx={{
                     display: "flex",

@@ -8,29 +8,6 @@ import ImageGallery from "./Home Section/ImageGallery";
 import TestimonialsCarousel from "./Home Section/TestimonialsCarousel";
 
 const HomePage = () => {
-  const hotelData = [
-    {
-      id: 1,
-      image: "/assets/room-image 1.jpg",
-      title: "Deluxe Room",
-      price: "₹3500.00 / night",
-      rating: 4.5,
-    },
-    {
-      id: 2,
-      image: "/assets/room-image 2.jpg",
-      title: "Luxury Suite",
-      price: "₹5000.00 / night",
-      rating: 4.8,
-    },
-    {
-      id: 3,
-      image: "/assets/room-image 3.jpg",
-      title: "Standard Room",
-      price: "₹2200.00 / night",
-      rating: 4.2,
-    },
-  ];
 
   return (
     <Box>
@@ -43,7 +20,7 @@ const HomePage = () => {
           primaryText={"Discover Top Rooms"}
           subText={"Raising Comfort To The Highest Level"}
         ></SectionHeader>
-        <HotelCardCarousel hotels={hotelData} />
+        <HotelCardCarousel />
 
         <ImageGridLayout></ImageGridLayout>
 
