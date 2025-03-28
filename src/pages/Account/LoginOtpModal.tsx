@@ -1,13 +1,10 @@
 import { Edit } from "@mui/icons-material";
 import { Box, Button, Grid, Modal, TextField, Typography } from "@mui/material";
-import { useFormik } from "formik";
 import { useRef, useState } from "react";
-import PhoneInput, { CountryData } from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
 import { useLocation, useNavigate } from "react-router-dom";
-import * as Yup from "yup";
 import color from "../../components/color";
-import { createOrder, sendOTP, verifyOTP } from "../../services/services";
+import { verifyOTP } from "../../services/services";
 import "./Login.css";
 
 import { toast } from "react-toastify";
@@ -26,13 +23,10 @@ const LoginOtpModal = () => {
   const location = useLocation();
   const state = location.state;
   const queryParams = new URLSearchParams(location.search);
-  const phone = queryParams.get('phone');
-  const name = queryParams.get('name');
-  const session = queryParams.get('token');
-  const email = queryParams.get('email');
-
-
-
+  const phone = queryParams.get("phone");
+  const name = queryParams.get("name");
+  const session = queryParams.get("token");
+  const email = queryParams.get("email");
 
   const [otp, setOtp] = useState(Array(4).fill(""));
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -41,13 +35,22 @@ const LoginOtpModal = () => {
     useRef<HTMLInputElement>(null)
   );
 
-
-
   const isModalOpen =
     new URLSearchParams(location.search).get("login") === "true";
 
   const handleClose = () => {
-    navigate(location.pathname, { replace: true });
+    const searchParams = new URLSearchParams(location.search);
+
+    searchParams.delete("login");
+    searchParams.delete("phone");
+    searchParams.delete("name");
+    searchParams.delete("email");
+    searchParams.delete("token");
+
+    navigate(`${location.pathname}?${searchParams.toString()}`, {
+      replace: true,
+      state: { ...location.state },
+    });
   };
 
   // const phoneFormik = useFormik({
@@ -61,8 +64,6 @@ const LoginOtpModal = () => {
 
   //   },
   // });
-
-
 
   const handleOtpChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
@@ -82,8 +83,7 @@ const LoginOtpModal = () => {
         sessionId: session,
         phone: phone,
         name: name,
-        email: email
-
+        email: email,
       };
       verifyOTP(payLoad)
         .then((res) => {
@@ -96,7 +96,6 @@ const LoginOtpModal = () => {
           if (location.state?.onPaymentSuccess) {
             location.state.onPaymentSuccess(); // 🔥 Call handlePayment from the previous page
           }
-
         })
         .catch((err) => {
           toast(err);
@@ -231,7 +230,7 @@ const LoginOtpModal = () => {
               Sent to: +{phone}{" "}
               <Button
                 size="small"
-                onClick={() => setStep(1)}
+                onClick={() => handleClose()}
                 sx={{
                   color: color.firstColor,
                   background: color.thirdColor,

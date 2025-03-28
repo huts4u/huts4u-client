@@ -61,20 +61,21 @@ const BookingSummary = () => {
   const adults = queryParams.get("adults");
   const children = queryParams.get("children");
 
-  const value = selectedSlot.slot;
-  const number = value.match(/\d+/)?.[0];
+  const value = selectedSlot?.slot;
+  const number = value?.match(/\d+/)?.[0];
   const extractedNumber = number ? parseInt(number, 10) : null;
   const [user, setUser] = useState<any>({});
   useEffect(() => {
     if (isLoggedIn()) {
-      getProfile().then((res) => {
-        setUser(res?.data?.data)
-      }).catch((err) => {
-        console.log(err)
-      })
+      getProfile()
+        .then((res) => {
+          setUser(res?.data?.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
-  }, [])
-
+  }, []);
 
   // const phoneNumber = location.state?.phoneNumber;
 
@@ -93,7 +94,7 @@ const BookingSummary = () => {
   const [orderDetails, setOrderDetails] = useState(null);
 
   const totalAmount =
-    Number(room[selectedSlot.slot]) +
+    Number(room?.[selectedSlot?.slot] ?? 0) +
     Number(room?.tax) +
     Number(room?.extraFees);
   const handlePayment = async () => {
@@ -128,11 +129,24 @@ const BookingSummary = () => {
   };
 
   const navigate = useNavigate();
-  const openModal = (phoneNumber: any, name: any, email: any, token: any) => {
-    navigate(
-      `${location.pathname}?login=true&phone=${phoneNumber}&name=${name}&email=${email}&token=${token}`,
-      { replace: true }
-    );
+  const openModal = (
+    phoneNumber: string,
+    name: string,
+    email: string,
+    token: string
+  ) => {
+    const searchParams = new URLSearchParams(location.search);
+
+    searchParams.set("login", "true");
+    searchParams.set("phone", phoneNumber);
+    searchParams.set("name", name);
+    searchParams.set("email", email);
+    searchParams.set("token", token);
+
+    navigate(`${location.pathname}?${searchParams.toString()}`, {
+      replace: true,
+      state: { ...location.state },
+    });
   };
 
   const formik = useFormik({
@@ -234,7 +248,7 @@ const BookingSummary = () => {
                 height: imageHeight,
                 transition: "height 0.3s ease",
               }}
-              image={hotel.propertyImages[0]}
+              image={hotel?.propertyImages[0]}
             />
             <div style={{ height: "fit-content" }} ref={textContainerRef}>
               <Typography
@@ -250,7 +264,7 @@ const BookingSummary = () => {
                   WebkitBoxOrient: "vertical",
                 }}
               >
-                {hotel.propertyName}
+                {hotel?.propertyName}
               </Typography>
               <Typography
                 sx={{
@@ -263,7 +277,7 @@ const BookingSummary = () => {
                   WebkitBoxOrient: "vertical",
                 }}
               >
-                {hotel.address}
+                {hotel?.address}
               </Typography>
 
               <div
@@ -311,7 +325,7 @@ const BookingSummary = () => {
                 )}
 
                 <Typography sx={typoStyle}>
-                  <strong>Room Type:</strong> {room.roomCategory}
+                  <strong>Room Type:</strong> {room?.roomCategory}
                 </Typography>
                 <Typography sx={typoStyle}>
                   <strong>Room Info: </strong>
@@ -321,44 +335,6 @@ const BookingSummary = () => {
             </div>
           </Box>
 
-          {/* <Typography variant="subtitle1" sx={{ mt: 2 }}>
-            {bookingData.bookingType}
-          </Typography> */}
-          {/* <Divider sx={{ my: 2 }} /> */}
-
-          {/* <Typography
-            variant="h6"
-            mt={4}
-            sx={{ color: color.firstColor, fontWeight: "bold" }}
-          >
-            Guest Information
-          </Typography> */}
-          {/* <CustomTextField
-            label="Guest Name"
-            value={bookingData.guest.name}
-            fullWidth
-            margin="normal"
-          />
-          <CustomTextField
-            label="Email Address (Optional)"
-            value={bookingData.guest.email}
-            fullWidth
-            margin="normal"
-          /> */}
-          {/* <CustomTextField
-            label="Mobile Number"
-            value={bookingData.guest.phone}
-            fullWidth
-            margin="normal"
-          /> */}
-          {/* <CustomButton
-            variant="contained"
-            color="primary"
-            fullWidth
-            sx={{ mt: 2 }}
-          >
-            Pay Now
-          </CustomButton> */}
           <form onSubmit={formik.handleSubmit}>
             <Typography
               variant="h6"
@@ -500,7 +476,7 @@ const BookingSummary = () => {
             }}
           >
             <Typography sx={typoStyle}>
-              <strong>Room price: </strong>₹{room[selectedSlot.slot]}
+              <strong>Room price: </strong>₹{room?.[selectedSlot.slot]}
             </Typography>
             <Typography sx={typoStyle}>
               <strong>Tax: </strong>₹{room?.tax}
