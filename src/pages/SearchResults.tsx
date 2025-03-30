@@ -101,34 +101,7 @@ const SearchResults = () => {
   const navigate = useNavigate();
 
   const location = useLocation();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
 
-  // const [aprovedhotel, setAprovedHotel] = useState<any[]>([]);
-  // // const [count, setCount] = useState<any>("");
-
-  // useEffect(() => {
-  //   getMyAllHotelswithBelongsTo({
-  //     userId: getUserId(),
-  //     // status: 'Aproved',
-  //     secondTable: 'Room'
-  //   }).then((res) => {
-  //     const data = res?.data?.data;
-  //     if (data) {
-  //       const pendingHotels = data.filter((hotel: any) => hotel.status === 'Pending');
-  //       const approvedHotels = data.filter((hotel: any) => hotel.status === 'Aproved');
-  //       const rejectedHotels = data.filter((hotel: any) => hotel.status === 'Reject');
-  //       setPendingHotel(pendingHotels);
-  //       setAprovedHotel(approvedHotels);
-  //       setRejectHotel(rejectedHotels);
-
-  //       // console.log('Pending:', pendingHotels);
-  //       // console.log('Approved:', approvedHotels);
-  //       // console.log('Rejected:', rejectedHotels);
-  //     }
-  //   })
-  // }, [])
-
-  // const [hotel, setHotel] = useState<any[]>([]);
 
   const [mergedData, setMergedData] = useState<any[]>([]);
 
@@ -171,7 +144,7 @@ const SearchResults = () => {
     fetchHotelsWithRooms();
   }, []);
 
-  // console.log(mergedData);
+  console.log(mergedData);
 
   const queryParams = new URLSearchParams(location.search);
 
@@ -578,15 +551,14 @@ const SearchResults = () => {
           {filteredData.length > 0 ? (
             filteredData.map((hotel) => {
               const maxAmenities = isMobile ? 2 : 5;
-              const visibleAmenities = hotel?.rooms[0]?.amenities.slice(
-                0,
-                maxAmenities
-              );
-              const remainingAmenities =
-                hotel?.rooms[0]?.amenities.length - maxAmenities;
+              const visibleAmenities = hotel?.rooms[0]?.amenities?.slice(0, maxAmenities) || [];
+              const remainingAmenities = Math.max(0, (hotel?.rooms[0]?.amenities?.length || 0) - maxAmenities);
+              const isAvailable = hotel?.roomAvailable === "Available";
+
               return (
                 <Card
                   onClick={() => {
+                    if (!isAvailable) return;
                     const queryString = new URLSearchParams(queryParams).toString();
                     navigate(`/hotel/${hotel.id}${queryString ? `?${queryString}` : ''}`, {
                       state: { hotelData: hotel },
@@ -598,29 +570,68 @@ const SearchResults = () => {
                     flexDirection: { xs: "column", md: "row" },
                     pb: { xs: 2, md: 0 },
                     mb: 2,
-                    background: color.thirdColor,
+                    background: isAvailable ? color.thirdColor : "#f5f5f5",
                     boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.12)",
                     borderRadius: "12px",
                     transition: "all 0.3s ease",
-                    cursor: "pointer",
-                    border: "solid 1px transparent",
+                    cursor: isAvailable ? "pointer" : "not-allowed",
+                    border: `solid 1px ${isAvailable ? "transparent" : "#ddd"}`,
                     height: { xs: "fit-content", md: 200 },
+                    position: "relative",
+                    overflow: "hidden",
                     "&:hover": {
-                      transform: "scale(1.02)",
-                      borderColor: color.firstColor,
+                      transform: isAvailable ? "scale(1.02)" : "none",
+                      borderColor: isAvailable ? color.firstColor : "#ddd",
                     },
+                    opacity: isAvailable ? 1 : 0.7,
                   }}
                 >
+                  {/* Sold Out Overlay */}
+                  {!isAvailable && (
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        zIndex: 2,
+                        background: "rgba(255,255,255,0.7)",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          background: "#ff4d4d",
+                          color: "white",
+                          px: 2,
+                          py: 1,
+                          borderRadius: "4px",
+                          fontWeight: "bold",
+                          fontSize: "14px",
+                          transform: "rotate(-5deg)",
+                        }}
+                      >
+                        SOLD OUT
+                      </Typography>
+                    </Box>
+                  )}
+
                   <CardMedia
                     component="img"
                     sx={{
                       width: { xs: "100%", md: 280 },
                       height: "100%",
                       maxHeight: 250,
+                      filter: isAvailable ? "none" : "grayscale(80%)",
+                      opacity: isAvailable ? 1 : 0.8,
                     }}
                     image={hotel?.propertyImages?.[0]}
                     alt={hotel?.propertyName}
                   />
+
                   <CardContent
                     style={{
                       padding: "0px 10px",
@@ -643,7 +654,7 @@ const SearchResults = () => {
                       <Typography
                         variant="body2"
                         fontWeight={600}
-                        color={color.firstColor}
+                        color={isAvailable ? color.firstColor : "#888"}
                         lineHeight={1}
                         sx={{
                           fontSize: { xs: "12px", md: "14px" },
@@ -651,7 +662,7 @@ const SearchResults = () => {
                       >
                         {getRatingText(hotel?.ratings?.rating)} <br />{" "}
                         <span style={{ fontSize: "10px" }}>
-                          ({hotel?.reviews} 0 reviews)
+                          ({hotel?.reviews || 0} reviews)
                         </span>
                       </Typography>
 
@@ -670,7 +681,7 @@ const SearchResults = () => {
                           gap: "4px",
                         }}
                       >
-                        {hotel?.ratings?.rating} <StarRounded></StarRounded>
+                        {hotel?.ratings?.rating || "N/A"} <StarRounded fontSize="small" />
                       </Typography>
                     </Box>
 
@@ -685,22 +696,21 @@ const SearchResults = () => {
                         fontSize: "8px",
                         my: 1,
                         mt: { xs: 2, md: 1.5 },
-                        background: color.background,
+                        background: isAvailable ? color.background : "#aaa",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                       }}
                     >
-                      <Whatshot
-                        style={{ fontSize: "10px", marginRight: "2px" }}
-                      />{" "}
+                      <Whatshot style={{ fontSize: "10px", marginRight: "2px" }} />{" "}
                       HUTS4U PREMIUM
                     </Typography>
+
                     <Typography
                       sx={{
                         fontSize: "18px",
                         fontWeight: 600,
-                        color: color.firstColor,
+                        color: isAvailable ? color.firstColor : "#666",
                         mt: { xs: 1.5, md: 1 },
                         display: "-webkit-box",
                         overflow: "hidden",
@@ -711,11 +721,12 @@ const SearchResults = () => {
                     >
                       {hotel?.propertyName}
                     </Typography>
+
                     <Typography
-                      color="textSecondary"
                       sx={{
                         fontFamily: "CustomFontSB",
                         fontSize: { xs: "12px", md: "14px" },
+                        color: isAvailable ? "textSecondary" : "#888",
                         display: "-webkit-box",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
@@ -734,11 +745,12 @@ const SearchResults = () => {
                       }}
                     >
                       <Typography
-                        color="textSecondary"
                         sx={{
                           fontFamily: "CustomFontSB",
                           fontSize: "12px",
                           border: "solid 1px",
+                          borderColor: isAvailable ? "textSecondary" : "#ddd",
+                          color: isAvailable ? "textSecondary" : "#ddd",
                           width: "fit-content",
                           px: 1,
                           borderRadius: "4px",
@@ -747,11 +759,12 @@ const SearchResults = () => {
                         Couple Friendly
                       </Typography>
                       <Typography
-                        color="textSecondary"
                         sx={{
                           fontFamily: "CustomFontSB",
                           fontSize: "12px",
                           border: "solid 1px",
+                          borderColor: isAvailable ? "textSecondary" : "#ddd",
+                          color: isAvailable ? "textSecondary" : "#ddd",
                           width: "fit-content",
                           px: 1,
                           borderRadius: "4px",
@@ -776,14 +789,22 @@ const SearchResults = () => {
                           label={amenity}
                           icon={amenityIcons[amenity] || <AddCircleOutline />}
                           size="small"
-                          sx={{ bgcolor: "transparent", fontSize: "10px" }}
+                          sx={{
+                            bgcolor: "transparent",
+                            fontSize: "10px",
+                            color: isAvailable ? "inherit" : "#aaa",
+                          }}
                         />
                       ))}
                       {remainingAmenities > 0 && (
                         <Chip
                           label={`+${remainingAmenities} more`}
                           size="small"
-                          sx={{ bgcolor: "#eee", fontSize: "10px" }}
+                          sx={{
+                            bgcolor: isAvailable ? "#eee" : "#f5f5f5",
+                            fontSize: "10px",
+                            color: isAvailable ? "inherit" : "#aaa",
+                          }}
                         />
                       )}
                     </Box>
@@ -794,21 +815,14 @@ const SearchResults = () => {
                         maxWidth: "200px",
                         minWidth: "120px",
                         mr: { xs: 3, md: 0 },
-
-                        // pr: 2,
-                        // ml:'auto',
-                        // mt:4,
-                        // mx: -1,
-
                         bottom: { xs: -16, md: 0 },
                         right: { xs: -8, md: 0 },
                         borderRadius: "12px 0px 12px 0px",
                         p: 1,
-                        background: color.background,
-                        color: color.thirdColor,
+                        background: isAvailable ? color.background : "#f0f0f0",
+                        color: isAvailable ? color.thirdColor : "#888",
                         textAlign: "end",
-                        border: "solid 1px",
-                        borderColor: color.firstColor,
+                        border: `solid 1px ${isAvailable ? color.firstColor : "#ddd"}`,
                         pt: 4,
                       }}
                     >
@@ -819,47 +833,59 @@ const SearchResults = () => {
                           left: 0,
                           borderRadius: "12px 0px 12px 0px",
                           p: 1,
-                          background: color.thirdColor,
-                          color: color.firstColor,
+                          background: isAvailable ? color.thirdColor : "#ddd",
+                          color: isAvailable ? color.firstColor : "#888",
                           fontSize: "8px",
                           fontWeight: 600,
                         }}
                       >
-                        Limited Time Offer
+                        {isAvailable ? "Limited Time Offer" : "Unavailable"}
                       </Box>
 
                       <Typography
                         sx={{
                           textDecoration: "line-through",
                           fontSize: { xs: "10px", md: "12px" },
+                          color: isAvailable ? "inherit" : "#aaa",
                         }}
                       >
                         ₹
-                        {(
-                          (hotel?.rooms?.[0] &&
+                        {isAvailable
+                          ? ((hotel?.rooms?.[0] &&
                             [
                               hotel.rooms[0].rateFor3Hour,
                               hotel.rooms[0].rateFor6Hour,
                               hotel.rooms[0].rateFor12Hour,
                               hotel.rooms[0].rateFor1Night,
-                            ].find((rate) => rate > 0)) * 1.1
-                        ).toFixed(2)}
+                            ].find((rate) => rate > 0) * 1.1).toFixed(2))
+                          : "---"}
                       </Typography>
-                      <Typography sx={{ fontSize: "18px" }}>
-                        ₹{" "}
-                        {hotel?.rooms?.[0] &&
+                      <Typography
+                        sx={{
+                          fontSize: "18px",
+                          color: isAvailable ? "inherit" : "#888",
+                        }}
+                      >
+                        {isAvailable
+                          ? `₹ ${hotel?.rooms?.[0] &&
                           [
                             hotel.rooms[0].rateFor3Hour,
                             hotel.rooms[0].rateFor6Hour,
                             hotel.rooms[0].rateFor12Hour,
                             hotel.rooms[0].rateFor1Night,
-                          ].find((rate) => rate > 0)}
+                          ].find((rate) => rate > 0)}`
+                          : "---"}
                       </Typography>
                       <Typography
-                        sx={{ fontSize: { xs: "10px", md: "12px" } }}
+                        sx={{
+                          fontSize: { xs: "10px", md: "12px" },
+                          color: isAvailable ? "inherit" : "#aaa",
+                        }}
                         variant="body2"
                       >
-                        + ₹{hotel.taxnfees} taxes & fees
+                        {isAvailable
+                          ? `+ ₹${hotel.taxnfees || 0} taxes & fees`
+                          : "Not available"}
                       </Typography>
                     </Box>
                   </CardContent>
@@ -867,13 +893,14 @@ const SearchResults = () => {
               );
             })
           ) : (
-            <>
-              <Typography>
-                No properties matched your search criteria. Try exploring a
-                different location or adjusting your filters to find the best
-                results.
+            <Box sx={{ textAlign: "center", py: 4 }}>
+              <Typography variant="h6" color="textSecondary" sx={{ mb: 2 }}>
+                No properties matched your search criteria
               </Typography>
-            </>
+              <Typography variant="body1">
+                Try exploring a different location or adjusting your filters to find the best results.
+              </Typography>
+            </Box>
           )}
         </Grid>
       </Grid>

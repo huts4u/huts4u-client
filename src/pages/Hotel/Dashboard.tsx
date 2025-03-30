@@ -29,6 +29,7 @@ import color from "../../components/color";
 import BookingTable from "./BookingTable";
 import { useEffect, useState } from "react";
 import { getAllBookingsofMyHotel } from "../../services/services";
+import { getUserId } from "../../services/axiosClient";
 
 const Dashboard = () => {
   const data = [
@@ -40,17 +41,28 @@ const Dashboard = () => {
   const [booking, setBooking] = useState<any[]>([])
 
   useEffect(() => {
-    const payLoad = {
-      data: { filter: "" },
+    const today = new Date();
+    const next10Days = new Date();
+    next10Days.setDate(today.getDate() + 10);
+
+    getAllBookingsofMyHotel({
+      data: { filter: "", userId: getUserId() },
       page: 0,
       pageSize: 50,
-      order: [["createdAt", "ASC"]]
-    };
-    getAllBookingsofMyHotel(payLoad).then((res) => {
-      // console.log(res);
-      setBooking(res?.data?.data?.rows)
-    })
-  }, [])
+      order: [["createdAt", "ASC"]],
+    }).then((res) => {
+      const allBookings = res?.data?.data?.rows || [];
+
+      // Filter bookings where checkInDate is within the next 10 days
+      const filteredBookings = allBookings.filter((booking: any) => {
+        const checkInDate = new Date(booking.checkInDate);
+        return checkInDate >= today && checkInDate <= next10Days;
+      });
+
+      setBooking(filteredBookings);
+    });
+  }, []);
+
 
   return (
     <Box p={3} sx={{ background: color.thirdColor }}>

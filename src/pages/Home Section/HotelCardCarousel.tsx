@@ -57,6 +57,7 @@ const HotelCardCarousel = () => {
           order: [["createdAt", "ASC"]],
         };
         const hotelRes = await getAllHotels(hotelPayload);
+        console.log(hotelRes)
         const hotelData = hotelRes?.data?.data?.rows || [];
         const hotelIds = hotelData.map((hotel: any) => hotel.id);
 
@@ -89,6 +90,7 @@ const HotelCardCarousel = () => {
 
     fetchHotelsWithRooms();
   }, []);
+  console.log(mergedData)
 
   const navigate = useNavigate();
 

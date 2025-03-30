@@ -80,3 +80,7 @@ export function editUser(payLoad:any){
 export function editHotel(id:any,payLoad:any){
     return client.patch(`/Hotel/update-record/${id}`, payLoad);
 }
+
+export function getHotel(userId: any) {
+    return client.get(`/Hotel/search-one-record`, { params: { userId} });
+};

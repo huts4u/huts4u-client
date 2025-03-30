@@ -112,7 +112,7 @@ const Header: React.FC = () => {
           { label: "Hotels", icon: <Hotel />, path: "/search" },
           { label: "Contact", icon: <ContactMail />, path: "/contact-us" },
           { label: "About", icon: <Info />, path: "/about-us" },
-          { label: "Join As a Hotel", icon: <Info />, path: "/dashboard" },
+          // { label: "Join As a Hotel", icon: <Info />, path: "/dashboard" },
         ];
 
   const location = useLocation();

@@ -20,9 +20,10 @@ interface RenderRazorpayProps {
 
 const RenderRazorpay: React.FC<RenderRazorpayProps> = ({
     orderDetails,
-    amount,
+    // amount,
 
 }) => {
+    console.log(orderDetails)
     const navigate = useNavigate();
     const [open, setOpen] = useState(true);
 

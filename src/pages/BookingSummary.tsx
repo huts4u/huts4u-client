@@ -50,6 +50,7 @@ const BookingSummary = () => {
   const hotel = location.state?.hotelData;
   const room = location.state?.selectedRoom;
   const selectedSlot = location.state?.selectedSlot;
+  const pricingDetails = location.state?.pricingDetails;
   const queryParams = new URLSearchParams(location.search);
 
   const bookingType = queryParams.get("bookingType");
@@ -77,26 +78,10 @@ const BookingSummary = () => {
     }
   }, []);
 
-  // const phoneNumber = location.state?.phoneNumber;
 
-  // const [user, setUser] = useState<any>({});
-  // console.log(user);
-
-  // useEffect(() => {
-  //   getPortfolioDetails(phoneNumber.slice(2))
-  //     .then((res) => {
-  //       setUser(res?.data?.data);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // }, [phoneNumber]);
   const [orderDetails, setOrderDetails] = useState(null);
 
-  const totalAmount =
-    Number(room?.[selectedSlot?.slot] ?? 0) +
-    Number(room?.tax) +
-    Number(room?.extraFees);
+  const totalAmount = pricingDetails?.totalPrice;
   const handlePayment = async () => {
     try {
       // console.log("Total Amount before payment:", totalAmount);
@@ -476,13 +461,13 @@ const BookingSummary = () => {
             }}
           >
             <Typography sx={typoStyle}>
-              <strong>Room price: </strong>₹{room?.[selectedSlot.slot]}
+              <strong>Room price: </strong>₹{pricingDetails?.basePrice}
             </Typography>
             <Typography sx={typoStyle}>
-              <strong>Tax: </strong>₹{room?.tax}
+              <strong>Tax: </strong>₹{pricingDetails?.tax}
             </Typography>
             <Typography sx={typoStyle}>
-              <strong>Extra fees: </strong>₹{room?.extraFees}
+              <strong>Extra fees: </strong>₹{pricingDetails?.extraFees}
             </Typography>
 
             <Divider sx={{ my: 2 }}></Divider>
@@ -495,7 +480,7 @@ const BookingSummary = () => {
                 lineHeight: 1,
               }}
             >
-              Total price: ₹{totalAmount}.00 <br />
+              Total price: ₹{pricingDetails?.totalPrice}.00 <br />
               <span style={{ fontSize: "12px", fontWeight: "normal" }}>
                 incl. of all taxes
               </span>
