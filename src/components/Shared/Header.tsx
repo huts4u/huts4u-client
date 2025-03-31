@@ -84,7 +84,7 @@ const Header: React.FC = () => {
       ? [
         { label: "Home", icon: <CorporateFare />, path: "/my-hotels" },
         // { label: "My Bookings", icon: <Hotel />, path: "/my-bookings" },
-        { label: "Manage Rooms", icon: <Hotel />, path: "/manage-rooms" },
+        // { label: "Manage Rooms", icon: <Hotel />, path: "/manage-rooms" },
         { label: "Reviews", icon: <ContactMail />, path: "/reviews" },
       ]
       : userRoll === "Admin"
@@ -105,7 +105,7 @@ const Header: React.FC = () => {
             path: "/search",
           },
           { label: "Hotel Applications", icon: <Hotel />, path: "/hotel-applications" },
-          { label: "Reports", icon: <Info />, path: "/reports" },
+          { label: "Messages", icon: <Info />, path: "/messages" },
         ]
         : [
           { label: "Home", icon: <Home />, path: "/" },
@@ -155,7 +155,7 @@ const Header: React.FC = () => {
               height: "64px",
               width: "120px",
             }}
-            image="/assets/logo bg.png"
+            image="https://s3.ap-south-1.amazonaws.com/huts4u.shop/logo+bg.png"
           />
           <CardMedia
             onClick={() => {
@@ -171,7 +171,7 @@ const Header: React.FC = () => {
               top: "50%",
               transform: "translateY(-50%)",
             }}
-            image="/assets/logo.png"
+            image="https://s3.ap-south-1.amazonaws.com/huts4u.shop/huts4ufinallogo-removebg-preview.png"
           />
 
           {!isMobile &&
@@ -270,7 +270,7 @@ const Header: React.FC = () => {
                   objectFit: "contain",
                   mb: 1,
                 }}
-                image="/assets/logo.png"
+                image="https://s3.ap-south-1.amazonaws.com/huts4u.shop/huts4ufinallogo-removebg-preview.png"
               />
               {navLinks.map((link) => (
                 <ListItem key={link.label} disablePadding>

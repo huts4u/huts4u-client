@@ -1,20 +1,22 @@
 import { HourglassBottom } from "@mui/icons-material";
 import {
-    Box,
-    Button,
-    Card,
-    CardContent,
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    Divider,
-    Grid,
-    Rating,
-    Typography
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  Grid,
+  Rating,
+  Typography
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import color from "../components/color";
 import { CustomTextField } from "../components/style";
+import { getUserId } from "../services/axiosClient";
+import { getAllMyBookings } from "../services/services";
 
 const initialData: any[] = [
   {
@@ -110,9 +112,25 @@ const ReviewPopup = ({ open, handleClose, selectedCard, onSubmit }: any) => {
 };
 
 const MyBookings = () => {
-  const [data, setData] = useState<any[]>(initialData);
+  const [data, setData] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState<any | null>(null);
+
+
+
+  useEffect(() => {
+    const Payload = {
+      data: { filter: "", userId: getUserId() },
+      page: 0,
+      pageSize: 50,
+      order: [["createdAt", "ASC"]],
+    };
+    getAllMyBookings(Payload).then((res) => {
+      // console.log(res);
+      setData(res?.data?.data?.rows);
+    })
+  }, [])
+
 
   const handleOpen = (card: any) => {
     setSelectedCard(card);
@@ -174,11 +192,11 @@ const MyBookings = () => {
                     right: { xs: 25, md: 0 },
                     background:
                       card.status === "checked in" ||
-                      card.status === "checked out"
+                        card.status === "checked out"
                         ? "Green"
                         : card.status === "pending"
-                        ? "#faaf00"
-                        : "Red",
+                          ? "#faaf00"
+                          : "Red",
                     color: "white",
                     px: 1,
                     borderRadius: { xs: "4px", md: "0 6px 0 6px" },
@@ -193,13 +211,13 @@ const MyBookings = () => {
                   {card.status}{" "}
                 </Box>
 
-                <Typography variant="h6">{card.title}</Typography>
+                <Typography variant="h6">{card?.hotelName}</Typography>
                 <Typography color="textSecondary">
-                  {card.date}, {card.time}, {card.variant}
+                  {card?.checkInDate}, {card?.checkInTime}, {card?.geustName}
                 </Typography>
-                <Typography>{card.guests}</Typography>
+                <Typography>{card?.adults}Adults,{card?.children}Child</Typography>
                 <Typography variant="h6" sx={{ marginTop: 1 }}>
-                  {card.price}
+                  {card?.amountPaid}
                 </Typography>
 
                 <Divider

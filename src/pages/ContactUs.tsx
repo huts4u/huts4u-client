@@ -15,6 +15,10 @@ import * as Yup from "yup";
 import color from "../components/color";
 import CustomButton from "../components/CustomButton";
 import { CustomTextField } from "../components/style";
+import { getUserId, getUserRole, isLoggedIn } from "../services/axiosClient";
+import { createContact } from "../services/services";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const modalStyle = {
   bgcolor: "background.paper",
@@ -38,6 +42,7 @@ const validationSchema = Yup.object({
 });
 
 const ContactUs = ({ open, handleClose }: any) => {
+  const navigate = useNavigate();
   const initialValues = {
     name: "",
     email: "",
@@ -47,7 +52,30 @@ const ContactUs = ({ open, handleClose }: any) => {
   };
 
   const handleSubmit = (values: any, { setSubmitting }: any) => {
-    console.log(values);
+    // console.log(values);
+    if (isLoggedIn()) {
+      const payLoad = {
+        userId: getUserId(),
+        userType: getUserRole(),
+        ...values
+      }
+      createContact(payLoad).then((res) => {
+        toast("Message send SuccessFully To The Admin");
+        // navigate('/');
+        if (getUserRole() === 'Hotel') {
+          navigate('/dashboard')
+        } else {
+          navigate('/')
+        }
+
+      }).catch((err) => {
+        toast("Error Occured While Sending Message");
+
+      })
+    } else {
+      toast("Please Login First,Or Book Your First Hotel Then!");
+    }
+
     setSubmitting(false);
     handleClose();
   };
@@ -165,15 +193,8 @@ const ContactUs = ({ open, handleClose }: any) => {
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
           >
-            {({ isSubmitting, touched, errors }) => (
-              <Form
-                style={{
-                  marginTop: "16px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "16px",
-                }}
-              >
+            {({ isSubmitting, touched, errors, handleBlur, handleChange, values }) => (
+              <Form style={{ marginTop: "16px", display: "flex", flexDirection: "column", gap: "16px" }}>
                 <Box sx={{ display: "flex", gap: "6px" }}>
                   <CustomTextField
                     as={TextField}
@@ -182,6 +203,9 @@ const ContactUs = ({ open, handleClose }: any) => {
                     fullWidth
                     error={touched.name && Boolean(errors.name)}
                     helperText={touched.name && errors.name}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.name}
                   />
                   <CustomTextField
                     as={TextField}
@@ -190,6 +214,9 @@ const ContactUs = ({ open, handleClose }: any) => {
                     fullWidth
                     error={touched.phone && Boolean(errors.phone)}
                     helperText={touched.phone && errors.phone}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.phone}
                   />
                 </Box>
 
@@ -201,6 +228,9 @@ const ContactUs = ({ open, handleClose }: any) => {
                     fullWidth
                     error={touched.email && Boolean(errors.email)}
                     helperText={touched.email && errors.email}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.email}
                   />
                   <CustomTextField
                     as={TextField}
@@ -209,6 +239,9 @@ const ContactUs = ({ open, handleClose }: any) => {
                     fullWidth
                     error={touched.subject && Boolean(errors.subject)}
                     helperText={touched.subject && errors.subject}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.subject}
                   />
                 </Box>
 
@@ -221,9 +254,18 @@ const ContactUs = ({ open, handleClose }: any) => {
                   fullWidth
                   error={touched.message && Boolean(errors.message)}
                   helperText={touched.message && errors.message}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.message}
                 />
 
-                <CustomButton customStyles={{margin:'auto'}} variant="contained" color="primary" type="submit">
+                <CustomButton
+                  customStyles={{ margin: 'auto' }}
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                  disabled={isSubmitting}
+                >
                   Submit
                 </CustomButton>
               </Form>

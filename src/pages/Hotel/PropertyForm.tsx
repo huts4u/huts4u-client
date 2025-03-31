@@ -21,8 +21,8 @@ import {
   Typography,
 } from "@mui/material";
 import { FieldArray, FormikErrors, FormikProvider, useFormik } from "formik";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
 import color from "../../components/color";
@@ -35,7 +35,7 @@ import {
 import ImageUploader from "../../components/ImageUploader";
 import { BpRadio, CustomTextField, inputSx } from "../../components/style";
 import { getUserId } from "../../services/axiosClient";
-import { docsUpload, hotelPost, roomPost } from "../../services/services";
+import { docsUpload, editHotel, editRoom, getMyAllHotelswithBelongsTo, hotelPost, roomPost } from "../../services/services";
 
 const validationSchema = Yup.object().shape({
   propertyName: Yup.string()
@@ -166,16 +166,7 @@ const validationSchema = Yup.object().shape({
               .min(100, "Minimum Rate is ₹100 "),
           otherwise: (schema) => schema.notRequired(),
         }),
-      rateFor9Hour: Yup.number()
-        .typeError("Rate for 9 hours must be a valid number")
-        .when("$stayType", {
-          is: "hourly",
-          then: (schema) =>
-            schema
-              .required("Rate for 9 hours is required")
-              .min(100, "Minimum Rate is ₹100 "),
-          otherwise: (schema) => schema.notRequired(),
-        }),
+
       rateFor12Hour: Yup.number()
         .typeError("Rate for 12 hours must be a valid number")
         .when("$stayType", {
@@ -186,17 +177,7 @@ const validationSchema = Yup.object().shape({
               .min(100, "Minimum Rate is ₹100 "),
           otherwise: (schema) => schema.notRequired(),
         }),
-      rateFor24Hour: Yup.number()
-        .typeError("Rate for 24 hours must be a valid number")
-        .when("$stayType", {
-          is: "hourly",
-          then: (schema) =>
-            schema
-              .required("Rate for 24 hours is required")
-              .min(100, "Minimum Rate is ₹100 "),
 
-          otherwise: (schema) => schema.notRequired(),
-        }),
       additionalGuestRate: Yup.number()
         .typeError("Additional guest rate must be a valid number")
         .required("Additional guest rate is required")
@@ -239,7 +220,27 @@ const validationSchema = Yup.object().shape({
     })
   ),
 });
-
+interface Room {
+  id: string;
+  roomCategory: string;
+  roomSize: string;
+  numberOfRoomsAvailable: string;
+  rateFor1Night?: string;
+  rateFor3Hour?: string;
+  rateFor6Hour?: string;
+  rateFor9Hour?: string;
+  rateFor12Hour?: string;
+  rateFor24Hour?: string;
+  additionalGuestRate: string;
+  additionalChildRate: string;
+  standardRoomOccupancy: string;
+  maxRoomOccupancy: string;
+  numberOfFreeChildren: string;
+  tax: string;
+  extraFees: string;
+  amenities: string[];
+  roomImage: string | null;
+}
 const PropertyForm = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null); // To hold a single image
   const [uploading, setUploading] = useState(false);
@@ -303,38 +304,103 @@ const PropertyForm = () => {
   const navigate = useNavigate();
   const sanitizeValue = (value: any) => (value === "" ? null : value);
 
-  const formik = useFormik({
-    initialValues: {
-      propertyName: "",
-      propertyType: "",
-      propertyDescription: "",
-      ownerMobile: "",
-      ownerEmail: "",
-      receptionMobile: "",
-      receptionEmail: "",
-      address: "",
-      city: "",
-      state: "",
-      pincode: "",
-      landmark: "",
-      bankaccountNo: "",
-      bankname: "",
-      ifsccode: "",
-      bankpassbook: "",
-      googleBusinessPage: "",
-      gstNo: "",
-      panNo: "",
-      gstCertificate: null,
-      panCard: null,
-      propertyImages: [],
-      propertyServices: "",
-      propertyPolicies: "",
-      stayType: "overnight",
-      coupleFriendly: "yes", //new
-      businessFriendly: "yes", //new
-      familyFriendly: "yes", //new
-      petFriendly: "yes", //new
-      rooms: [
+  const location = useLocation();
+  const id = location.state;
+
+
+  // console.log(id)
+  const [hotelData, setHotelData] = useState<any>({})
+  useEffect(() => {
+    if (id) {
+      getMyAllHotelswithBelongsTo({
+        id: id,
+        secondTable: "Room",
+      }).then((res) => {
+        const data = res?.data?.data?.[0];
+        // console.log(data)
+        setHotelData(data);
+      }
+      );
+    }
+  }, [id])
+  const isEditMode = !!hotelData?.id;
+
+
+  const initialValues = useMemo(() => ({
+    propertyName: hotelData?.propertyName || "",
+    propertyType: hotelData?.propertyType || "",
+    propertyDescription: hotelData?.propertyDesc || "",
+    ownerMobile: hotelData?.ownerMobile || "",
+    ownerEmail: hotelData?.ownerEmail || "",
+    receptionMobile: hotelData?.receptionMobile || "",
+    receptionEmail: hotelData?.receptionEmail || "",
+    address: hotelData?.address || "",
+    city: hotelData?.city || "",
+    state: hotelData?.state || "",
+    pincode: hotelData?.pincode || "",
+    landmark: hotelData?.landmark || "",
+    bankaccountNo: hotelData?.bankAccountNumber || "",
+    bankname: hotelData?.bankName || "",
+    ifsccode: hotelData?.bankIfsc || "",
+    bankpassbook: hotelData?.bankPassbook || "",
+    googleBusinessPage: hotelData?.googleBusinessPage || "",
+    gstNo: hotelData?.gstNo || "",
+    panNo: hotelData?.panNo || "",
+    gstCertificate: hotelData?.gstCertificateImage || null,
+    panCard: hotelData?.panCardImage || null,
+    propertyImages: hotelData?.propertyImages || [],
+    propertyServices: hotelData?.extraService || "",
+    propertyPolicies: hotelData?.propertyPolicy || "",
+    stayType: hotelData?.romms?.[0]?.stayType || "overnight",
+    coupleFriendly: hotelData?.coupleFriendly || "yes",
+    businessFriendly: hotelData?.businessFriendly || "yes",
+    familyFriendly: hotelData?.familyFriendly || "yes",
+    petFriendly: hotelData?.petFriendly || "yes",
+    // rooms: [
+    //   {
+    //     roomCategory: "",
+    //     roomSize: "",
+    //     rateFor1Night: "",
+    //     rateFor3Hour: "",
+    //     rateFor6Hour: "",
+    //     rateFor9Hour: "",
+    //     rateFor12Hour: "",
+    //     rateFor24Hour: "",
+    //     additionalGuestRate: "",
+    //     additionalChildRate: "",
+    //     standardRoomOccupancy: "",
+    //     maxRoomOccupancy: "",
+    //     numberOfFreeChildren: "",
+    //     numberOfRoomsAvailable: "",
+    //     extraFees: "",
+    //     tax: "",
+    //     amenities: [] as string[],
+    //     roomImage: null,
+    //   },
+    // ],
+    rooms: hotelData?.rooms?.length
+      ? hotelData?.rooms?.map((room: any) => ({
+        id: room?.id || "",
+        roomCategory: room?.roomCategory || "",
+        roomSize: room?.roomSize || "",
+        rateFor1Night: room?.rateFor1Night || "",
+        rateFor3Hour: room?.rateFor3Hour || "",
+        rateFor6Hour: room?.rateFor6Hour || "",
+        rateFor9Hour: room?.rateFor9Hour || "",
+        rateFor12Hour: room?.rateFor12Hour || "",
+        rateFor24Hour: room?.rateFor24Hour || "",
+        additionalGuestRate: room?.additionalGuestRate || "",
+        additionalChildRate: room?.additionalChildRate || "",
+        standardRoomOccupancy: room?.standardRoomOccupancy || "",
+        maxRoomOccupancy: room?.maxRoomOccupancy || "",
+        numberOfFreeChildren: room?.numberOfFreeChildren || "",
+        numberOfRoomsAvailable: room?.availableRooms || "",
+        extraFees: room?.extrafees || "",
+        tax: room?.taxRate || "",
+        amenities: room?.amenities || [],
+        roomImage: room?.roomImage || null,
+      }))
+      : [
         {
           roomCategory: "",
           roomSize: "",
@@ -350,14 +416,75 @@ const PropertyForm = () => {
           maxRoomOccupancy: "",
           numberOfFreeChildren: "",
           numberOfRoomsAvailable: "",
-          extraFees: "", //new
-          tax: "", //new
-          amenities: [] as string[],
+          extraFees: "",
+          tax: "",
+          amenities: [],
           roomImage: null,
         },
       ],
-    },
+  }), [hotelData]); // React will reinitialize Formik when hotelData changes
+
+
+
+
+  const formik = useFormik({
+
+    // initialValues: {
+    //   propertyName: hotelData.propertyName || "",
+    //   propertyType: "",
+    //   propertyDescription: "",
+    //   ownerMobile: "",
+    //   ownerEmail: "",
+    //   receptionMobile: "",
+    //   receptionEmail: "",
+    //   address: "",
+    //   city: "",
+    //   state: "",
+    //   pincode: "",
+    //   landmark: "",
+    //   bankaccountNo: "",
+    //   bankname: "",
+    //   ifsccode: "",
+    //   bankpassbook: "",
+    //   googleBusinessPage: "",
+    //   gstNo: "",
+    //   panNo: "",
+    //   gstCertificate: null,
+    //   panCard: null,
+    //   propertyImages: [],
+    //   propertyServices: "",
+    //   propertyPolicies: "",
+    //   stayType: "overnight",
+    //   coupleFriendly: "yes", //new
+    //   businessFriendly: "yes", //new
+    //   familyFriendly: "yes", //new
+    //   petFriendly: "yes", //new
+    //   rooms: [
+    //     {
+    //       roomCategory: "",
+    //       roomSize: "",
+    //       rateFor1Night: "",
+    //       rateFor3Hour: "",
+    //       rateFor6Hour: "",
+    //       rateFor9Hour: "",
+    //       rateFor12Hour: "",
+    //       rateFor24Hour: "",
+    //       additionalGuestRate: "",
+    //       additionalChildRate: "",
+    //       standardRoomOccupancy: "",
+    //       maxRoomOccupancy: "",
+    //       numberOfFreeChildren: "",
+    //       numberOfRoomsAvailable: "",
+    //       extraFees: "", //new
+    //       tax: "", //new
+    //       amenities: [] as string[],
+    //       roomImage: null,
+    //     },
+    //   ],
+    // },
+    initialValues,
     validationSchema,
+    enableReinitialize: true,
     onSubmit: (values) => {
       console.log(values);
       const payLoad = {
@@ -394,43 +521,126 @@ const PropertyForm = () => {
 
       };
 
-      hotelPost(payLoad)
-        .then((res) => {
-          if (res?.data?.data?.id) {
-            const roomPayload = values.rooms.map((room) => ({
-              hotelId: res?.data?.data?.id,
-              stayType: values.stayType,
-              roomCategory: room.roomCategory,
-              roomSize: room.roomSize,
-              availableRooms: room.numberOfRoomsAvailable,
-              rateFor1Night: sanitizeValue(room.rateFor1Night),
-              rateFor3Hour: sanitizeValue(room.rateFor3Hour),
-              rateFor6Hour: sanitizeValue(room.rateFor6Hour),
-              rateFor12Hour: sanitizeValue(room.rateFor12Hour),
-              additionalGuestRate: sanitizeValue(room.additionalGuestRate),
-              additionalChildRate: sanitizeValue(room.additionalChildRate),
-              standardRoomOccupancy: room.standardRoomOccupancy,
-              maxRoomOccupancy: room.maxRoomOccupancy,
-              numberOfFreeChildren: room.numberOfFreeChildren,
-              taxRate: room.tax,
-              extrafees: room.extraFees,
-              amenities: room.amenities,
-              roomImages: room.roomImage,
-            }));
-            console.log(roomPayload);
-            roomPost(roomPayload)
-              .then((res) => {
-                toast(res?.data?.msg);
-                navigate("/hotel-applications");
-              })
-              .catch((err) => {
-                console.log(err);
-              });
+      const editpayLoad = {
+        userId: getUserId(),
+        propertyName: values.propertyName,
+        propertyType: values.propertyType,
+        propertyDesc: values.propertyDescription,
+        ownerMobile: values.ownerMobile,
+        ownerEmail: values.ownerEmail,
+        receptionMobile: values.receptionMobile,
+        receptionEmail: values.receptionEmail,
+        address: values.address,
+        city: values.city,
+        state: values.state,
+        pincode: values.pincode,
+        landmark: values.landmark,
+        googleBusinessPage: values.googleBusinessPage,
+        gstNo: values.gstNo,
+        panNo: values.panNo,
+        gstCertificateImage: values.gstCertificate,
+        panCardImage: values.panCard,
+        extraService: values.propertyServices,
+        bankName: values.bankname,
+        bankAccountNumber: values.bankaccountNo,
+        bankIfsc: values.ifsccode,
+        propertyImages: values.propertyImages,
+        bankPassbook: values.bankpassbook,
+        propertyPolicy: values.propertyPolicies,
+        coupleFriendly: values.coupleFriendly,
+        petFriendly: values.petFriendly,
+        familyFriendly: values.familyFriendly,
+        businessFriendly: values.businessFriendly,
+
+      };
+      console.log(editpayLoad)
+      if (isEditMode) {
+
+
+        editHotel(hotelData?.id, editpayLoad).then(async (res) => {
+          if (res?.data?.status_code) {
+            const roomUpdates = values.rooms.map(async (room: any) => {
+              const roomPayload = {
+                hotelId: hotelData?.id,
+                stayType: values.stayType,
+                roomCategory: room.roomCategory,
+                roomSize: room.roomSize,
+                availableRooms: room.numberOfRoomsAvailable,
+                rateFor1Night: sanitizeValue(room.rateFor1Night),
+                rateFor3Hour: sanitizeValue(room.rateFor3Hour),
+                rateFor6Hour: sanitizeValue(room.rateFor6Hour),
+                rateFor9Hour: sanitizeValue(room.rateFor9Hour),
+                rateFor12Hour: sanitizeValue(room.rateFor12Hour),
+                rateFor24Hour: sanitizeValue(room.rateFor24Hour),
+                additionalGuestRate: sanitizeValue(room.additionalGuestRate),
+                additionalChildRate: sanitizeValue(room.additionalChildRate),
+                standardRoomOccupancy: room.standardRoomOccupancy,
+                maxRoomOccupancy: room.maxRoomOccupancy,
+                numberOfFreeChildren: room.numberOfFreeChildren,
+                taxRate: room.tax,
+                extrafees: room.extraFees,
+                amenities: room.amenities,
+                roomImages: room.roomImage,
+              };
+
+              console.log(room.id)
+              // Check if room exists (has ID) or is new
+              if (room.id) {
+                return editRoom(room.id, roomPayload);
+              } else {
+                return roomPost(roomPayload);
+              }
+            });
+
+            const roomResponse = await Promise.all(roomUpdates);
+            console.log(roomResponse)
+            if (roomResponse) {
+              toast.success("Hotel and rooms updated successfully!");
+            }
+
           }
+
         })
-        .catch((err) => {
-          console.log(err);
-        });
+      } else {
+
+        hotelPost(payLoad)
+          .then((res) => {
+            if (res?.data?.data?.id) {
+              const roomPayload = values.rooms.map((room: any) => ({
+                hotelId: res?.data?.data?.id,
+                stayType: values.stayType,
+                roomCategory: room.roomCategory,
+                roomSize: room.roomSize,
+                availableRooms: room.numberOfRoomsAvailable,
+                rateFor1Night: sanitizeValue(room.rateFor1Night),
+                rateFor3Hour: sanitizeValue(room.rateFor3Hour),
+                rateFor6Hour: sanitizeValue(room.rateFor6Hour),
+                rateFor12Hour: sanitizeValue(room.rateFor12Hour),
+                additionalGuestRate: sanitizeValue(room.additionalGuestRate),
+                additionalChildRate: sanitizeValue(room.additionalChildRate),
+                standardRoomOccupancy: room.standardRoomOccupancy,
+                maxRoomOccupancy: room.maxRoomOccupancy,
+                numberOfFreeChildren: room.numberOfFreeChildren,
+                taxRate: room.tax,
+                extrafees: room.extraFees,
+                amenities: room.amenities,
+                roomImages: room.roomImage,
+              }));
+              console.log(roomPayload);
+              roomPost(roomPayload)
+                .then((res) => {
+                  toast(res?.data?.msg);
+                  navigate("/hotel-applications");
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
     },
   });
 
@@ -485,8 +695,11 @@ const PropertyForm = () => {
                     Boolean(formik.errors.propertyName)
                   }
                   helperText={
-                    formik.touched.propertyName && formik.errors.propertyName
+                    formik.touched.propertyName && typeof formik.errors.propertyName === "string"
+                      ? formik.errors.propertyName
+                      : undefined
                   }
+
                 />
               </Grid>
               <Grid item xs={12} md={4}>
@@ -500,7 +713,9 @@ const PropertyForm = () => {
                     Boolean(formik.errors.propertyType)
                   }
                   helperText={
-                    formik.touched.propertyType && formik.errors.propertyType
+                    formik.touched.propertyType && typeof formik.errors.propertyType === "string"
+                      ? formik.errors.propertyType
+                      : undefined
                   }
                 >
                   <MenuItem value="Hotel">Hotel</MenuItem>
@@ -524,7 +739,9 @@ const PropertyForm = () => {
                   }
                   helperText={
                     formik.touched.propertyDescription &&
-                    formik.errors.propertyDescription
+                      typeof formik.errors.propertyDescription === "string"
+                      ? formik.errors.propertyDescription
+                      : undefined
                   }
                 />
               </Grid>
@@ -539,7 +756,9 @@ const PropertyForm = () => {
                     Boolean(formik.errors.ownerMobile)
                   }
                   helperText={
-                    formik.touched.ownerMobile && formik.errors.ownerMobile
+                    formik.touched.ownerMobile && typeof formik.errors.ownerMobile === "string"
+                      ? formik.errors.ownerMobile
+                      : undefined
                   }
                 />
               </Grid>
@@ -553,7 +772,9 @@ const PropertyForm = () => {
                     Boolean(formik.errors.ownerEmail)
                   }
                   helperText={
-                    formik.touched.ownerEmail && formik.errors.ownerEmail
+                    formik.touched.ownerEmail && typeof formik.errors.ownerEmail === "string"
+                      ? formik.errors.ownerEmail
+                      : undefined
                   }
                 />
               </Grid>
@@ -567,8 +788,9 @@ const PropertyForm = () => {
                     Boolean(formik.errors.receptionMobile)
                   }
                   helperText={
-                    formik.touched.receptionMobile &&
-                    formik.errors.receptionMobile
+                    formik.touched.receptionMobile && typeof formik.errors.receptionMobile === "string"
+                      ? formik.errors.receptionMobile
+                      : undefined
                   }
                 />
               </Grid>
@@ -582,8 +804,9 @@ const PropertyForm = () => {
                     Boolean(formik.errors.receptionEmail)
                   }
                   helperText={
-                    formik.touched.receptionEmail &&
-                    formik.errors.receptionEmail
+                    formik.touched.receptionEmail && typeof formik.errors.receptionEmail === "string"
+                      ? formik.errors.receptionEmail
+                      : undefined
                   }
                 />
               </Grid>
@@ -596,7 +819,11 @@ const PropertyForm = () => {
                   error={
                     formik.touched.address && Boolean(formik.errors.address)
                   }
-                  helperText={formik.touched.address && formik.errors.address}
+                  helperText={
+                    formik.touched.address && typeof formik.errors.address === "string"
+                      ? formik.errors.address
+                      : undefined
+                  }
                   sx={{
                     "& .MuiInputBase-input": { resize: "vertical" },
                     "& textarea": { resize: "vertical" },
@@ -620,7 +847,11 @@ const PropertyForm = () => {
                   label="City"
                   {...formik.getFieldProps("city")}
                   error={formik.touched.city && Boolean(formik.errors.city)}
-                  helperText={formik.touched.city && formik.errors.city}
+                  helperText={
+                    formik.touched.city && typeof formik.errors.city === "string"
+                      ? formik.errors.city
+                      : undefined
+                  }
                 />
               </Grid>
               <Grid item xs={12} md={4}>
@@ -629,7 +860,11 @@ const PropertyForm = () => {
                   label="State"
                   {...formik.getFieldProps("state")}
                   error={formik.touched.state && Boolean(formik.errors.state)}
-                  helperText={formik.touched.state && formik.errors.state}
+                  helperText={
+                    formik.touched.state && typeof formik.errors.state === "string"
+                      ? formik.errors.state
+                      : undefined
+                  }
                 />
               </Grid>
               <Grid item xs={12} md={4}>
@@ -640,7 +875,11 @@ const PropertyForm = () => {
                   error={
                     formik.touched.pincode && Boolean(formik.errors.pincode)
                   }
-                  helperText={formik.touched.pincode && formik.errors.pincode}
+                  helperText={
+                    formik.touched.pincode && typeof formik.errors.pincode === "string"
+                      ? formik.errors.pincode
+                      : undefined
+                  }
                 />
               </Grid>
               <Grid item xs={12} md={4}>
@@ -651,7 +890,11 @@ const PropertyForm = () => {
                   error={
                     formik.touched.landmark && Boolean(formik.errors.landmark)
                   }
-                  helperText={formik.touched.landmark && formik.errors.landmark}
+                  helperText={
+                    formik.touched.landmark && typeof formik.errors.landmark === "string"
+                      ? formik.errors.landmark
+                      : undefined
+                  }
                 />
               </Grid>
               <Grid item xs={12} md={4}>
@@ -664,8 +907,9 @@ const PropertyForm = () => {
                     Boolean(formik.errors.googleBusinessPage)
                   }
                   helperText={
-                    formik.touched.googleBusinessPage &&
-                    formik.errors.googleBusinessPage
+                    formik.touched.googleBusinessPage && typeof formik.errors.googleBusinessPage === "string"
+                      ? formik.errors.googleBusinessPage
+                      : undefined
                   }
                 />
               </Grid>
@@ -675,7 +919,11 @@ const PropertyForm = () => {
                   label="GST No"
                   {...formik.getFieldProps("gstNo")}
                   error={formik.touched.gstNo && Boolean(formik.errors.gstNo)}
-                  helperText={formik.touched.gstNo && formik.errors.gstNo}
+                  helperText={
+                    formik.touched.gstNo && typeof formik.errors.gstNo === "string"
+                      ? formik.errors.gstNo
+                      : undefined
+                  }
                 />
               </Grid>
               <Grid item xs={12} md={4}>
@@ -684,7 +932,11 @@ const PropertyForm = () => {
                   label="PAN No"
                   {...formik.getFieldProps("panNo")}
                   error={formik.touched.panNo && Boolean(formik.errors.panNo)}
-                  helperText={formik.touched.panNo && formik.errors.panNo}
+                  helperText={
+                    formik.touched.panNo && typeof formik.errors.panNo === "string"
+                      ? formik.errors.panNo
+                      : undefined
+                  }
                 />
               </Grid>
               <Grid item xs={12} md={4}>
@@ -695,7 +947,11 @@ const PropertyForm = () => {
                   error={
                     formik.touched.bankname && Boolean(formik.errors.bankname)
                   }
-                  helperText={formik.touched.bankname && formik.errors.bankname}
+                  helperText={
+                    formik.touched.bankname && typeof formik.errors.bankname === "string"
+                      ? formik.errors.bankname
+                      : undefined
+                  }
                 />
               </Grid>
               <Grid item xs={12} md={4}>
@@ -708,7 +964,9 @@ const PropertyForm = () => {
                     Boolean(formik.errors.bankaccountNo)
                   }
                   helperText={
-                    formik.touched.bankaccountNo && formik.errors.bankaccountNo
+                    formik.touched.bankaccountNo && typeof formik.errors.bankaccountNo === "string"
+                      ? formik.errors.bankaccountNo
+                      : undefined
                   }
                 />
               </Grid>
@@ -720,7 +978,11 @@ const PropertyForm = () => {
                   error={
                     formik.touched.ifsccode && Boolean(formik.errors.ifsccode)
                   }
-                  helperText={formik.touched.ifsccode && formik.errors.ifsccode}
+                  helperText={
+                    formik.touched.ifsccode && typeof formik.errors.ifsccode === "string"
+                      ? formik.errors.ifsccode
+                      : undefined
+                  }
                 />
               </Grid>
               <Grid item xs={12} md={6}>
@@ -735,7 +997,9 @@ const PropertyForm = () => {
                 {formik.touched.gstCertificate &&
                   formik.errors.gstCertificate && (
                     <Typography color="error" variant="caption">
-                      {formik.errors.gstCertificate}
+                      {typeof formik.errors.gstCertificate === "string"
+                        ? formik.errors.gstCertificate
+                        : "Invalid GST Certificate"}
                     </Typography>
                   )}
               </Grid>
@@ -751,7 +1015,9 @@ const PropertyForm = () => {
                 />
                 {formik.touched.panCard && formik.errors.panCard && (
                   <Typography color="error" variant="caption">
-                    {formik.errors.panCard}
+                    {typeof formik.errors.panCard === "string"
+                      ? formik.errors.panCard
+                      : "Invalid PAN Card"}
                   </Typography>
                 )}
               </Grid>
@@ -767,7 +1033,9 @@ const PropertyForm = () => {
                 />
                 {formik.touched.bankpassbook && formik.errors.bankpassbook && (
                   <Typography color="error" variant="caption">
-                    {formik.errors.bankpassbook}
+                    {typeof formik.errors.bankpassbook === "string"
+                      ? formik.errors.bankpassbook
+                      : "Invalid bank passbook"}
                   </Typography>
                 )}
               </Grid>
@@ -813,7 +1081,9 @@ const PropertyForm = () => {
                   }
                   helperText={
                     formik.touched.propertyPolicies &&
-                    formik.errors.propertyPolicies
+                      typeof formik.errors.propertyPolicies === "string"
+                      ? formik.errors.propertyPolicies
+                      : undefined
                   }
                 />
               </Grid>
@@ -870,7 +1140,9 @@ const PropertyForm = () => {
                 {formik.touched.propertyImages &&
                   formik.errors.propertyImages && (
                     <Typography color="error" variant="caption">
-                      {formik.errors.propertyImages}
+                      {typeof formik.errors.propertyImages === "string"
+                        ? formik.errors.propertyImages
+                        : "Invalid property images"}
                     </Typography>
                   )}
               </Grid>
@@ -916,7 +1188,7 @@ const PropertyForm = () => {
                 name="rooms"
                 render={(arrayHelpers) => (
                   <>
-                    {formik.values.rooms.map((room, index) => (
+                    {/* {formik.values.rooms.map((room:any, index: number) => (
                       <Grid
                         container
                         spacing={2}
@@ -926,144 +1198,100 @@ const PropertyForm = () => {
                         px={2}
                       >
                         <Grid
-                          style={{ paddingLeft: "30px" }}
-                          item
-                          xs={12}
-                          md={12}
-                          display={"flex"}
-                          justifyContent={"space-between"}
-                          alignItems={"center"}
-                          width={"100%"}
-                          fontSize={"18px"}
-                          fontWeight={"bold"}
-                          mb={-1}
-                        //   mt={1}
-                        >
-                          {formik.values.rooms.length > 1 && (
-                            <>Room {index + 1}</>
-                          )}
+  style={{ paddingLeft: "30px" }}
+  item
+  xs={12}
+  md={12}
+  display={"flex"}
+  justifyContent={"space-between"}
+  alignItems={"center"}
+  width={"100%"}
+  fontSize={"18px"}
+  fontWeight={"bold"}
+  mb={-1}
+>
+  {formik.values.rooms.length > 1 && <>Room {index + 1}</>}
 
-                          {formik.values.rooms.length > 1 && (
-                            <IconButton
-                              sx={{ color: color.firstColor }}
-                              onClick={() => arrayHelpers.remove(index)}
-                            >
-                              <Delete />
-                            </IconButton>
-                          )}
-                        </Grid>
-                        <Grid item xs={12} md={3}>
-                          <CustomTextField
-                            fullWidth
-                            select
-                            label="Room Category"
-                            {...formik.getFieldProps(
-                              `rooms.${index}.roomCategory`
-                            )}
-                            error={
-                              formik.touched.rooms?.[index]?.roomCategory &&
-                              Array.isArray(formik.errors.rooms) &&
-                              Boolean(
-                                (
-                                  formik.errors.rooms as FormikErrors<
-                                    typeof formik.values.rooms
-                                  >
-                                )[index]?.roomCategory
-                              )
-                            }
-                            helperText={
-                              formik.touched.rooms?.[index]?.roomCategory &&
-                              Array.isArray(formik.errors.rooms) &&
-                              (
-                                formik.errors.rooms as FormikErrors<
-                                  typeof formik.values.rooms
-                                >
-                              )[index]?.roomCategory
-                            }
-                            SelectProps={{
-                              renderValue: (selected) => {
-                                const selectedRoom = roomTypes.find(
-                                  (room) => room.value === selected
-                                );
-                                return selectedRoom ? selectedRoom.label : "";
-                              },
-                            }}
-                          >
-                            {roomTypes.map((room) => (
-                              <MenuItem key={room.value} value={room.value}>
-                                <div>
-                                  <Typography variant="body1" fontWeight="bold">
-                                    {room.label}
-                                  </Typography>
-                                  <Typography
-                                    variant="body2"
-                                    color="textSecondary"
-                                  >
-                                    {room.details}
-                                  </Typography>
-                                </div>
-                              </MenuItem>
-                            ))}
-                          </CustomTextField>
-                        </Grid>
-                        <Grid item xs={12} md={3}>
-                          <CustomTextField
-                            fullWidth
-                            label="Room Size (in sqft)"
-                            {...formik.getFieldProps(`rooms.${index}.roomSize`)}
-                            error={
-                              formik.touched.rooms?.[index]?.roomSize &&
-                              Array.isArray(formik.errors.rooms) &&
-                              Boolean(
-                                (
-                                  formik.errors.rooms as FormikErrors<
-                                    typeof formik.values.rooms
-                                  >
-                                )[index]?.roomSize
-                              )
-                            }
-                            helperText={
-                              formik.touched.rooms?.[index]?.roomSize &&
-                              Array.isArray(formik.errors.rooms) &&
-                              (
-                                formik.errors.rooms as FormikErrors<
-                                  typeof formik.values.rooms
-                                >
-                              )[index]?.roomSize
-                            }
-                          />
-                        </Grid>
-                        <Grid item xs={12} md={3}>
-                          <CustomTextField
-                            fullWidth
-                            label="Available Rooms"
-                            {...formik.getFieldProps(
-                              `rooms.${index}.numberOfRoomsAvailable`
-                            )}
-                            error={
-                              formik.touched.rooms?.[index]
-                                ?.numberOfRoomsAvailable &&
-                              Array.isArray(formik.errors.rooms) &&
-                              Boolean(
-                                (
-                                  formik.errors.rooms as FormikErrors<
-                                    typeof formik.values.rooms
-                                  >
-                                )[index]?.numberOfRoomsAvailable
-                              )
-                            }
-                            helperText={
-                              formik.touched.rooms?.[index]
-                                ?.numberOfRoomsAvailable &&
-                              Array.isArray(formik.errors.rooms) &&
-                              (
-                                formik.errors.rooms as FormikErrors<
-                                  typeof formik.values.rooms
-                                >
-                              )[index]?.numberOfRoomsAvailable
-                            }
-                          />
-                        </Grid>
+  {formik.values.rooms.length > 1 && (
+    <IconButton sx={{ color: color.firstColor }} onClick={() => arrayHelpers.remove(index)}>
+      <Delete />
+    </IconButton>
+  )}
+</Grid>
+
+<Grid item xs={12} md={3}>
+  <CustomTextField
+    fullWidth
+    select
+    label="Room Category"
+    {...formik.getFieldProps(`rooms.${index}.roomCategory`)}
+    error={
+      formik.touched.rooms?.[index]?.roomCategory &&
+      Boolean(formik.errors.rooms?.[index]?.roomCategory)
+    }
+    helperText={
+      formik.touched.rooms?.[index]?.roomCategory &&
+      formik.errors.rooms?.[index]?.roomCategory
+    }
+    SelectProps={{
+      renderValue: (selected) => {
+        const selectedRoom = roomTypes.find((room) => room.value === selected);
+        return selectedRoom ? selectedRoom.label : "";
+      },
+    }}
+  >
+    {roomTypes.map((room) => (
+      <MenuItem key={room.value} value={room.value}>
+        <div>
+          <Typography variant="body1" fontWeight="bold">
+            {room.label}
+          </Typography>
+          <Typography variant="body2" color="textSecondary">
+            {room.details}
+          </Typography>
+        </div>
+      </MenuItem>
+    ))}
+  </CustomTextField>
+</Grid>
+
+<Grid item xs={12} md={3}>
+  <CustomTextField
+    fullWidth
+    label="Room Size (in sqft)"
+    {...formik.getFieldProps(`rooms.${index}.roomSize`)}
+    error={
+      Array.isArray(formik.touched.rooms) &&
+      formik.touched.rooms[index] &&
+      Boolean(formik.errors.rooms?.[index]?.roomSize)
+    }
+    helperText={
+      Array.isArray(formik.touched.rooms) &&
+      formik.touched.rooms[index] &&
+      formik.errors.rooms?.[index]?.roomSize
+    }
+  />
+</Grid>
+
+<Grid item xs={12} md={3}>
+  <CustomTextField
+    fullWidth
+    label="Available Rooms"
+    {...formik.getFieldProps(`rooms.${index}.numberOfRoomsAvailable`)}
+    error={
+      Array.isArray(formik.touched.rooms) &&
+      formik.touched.rooms[index] &&
+      Boolean(formik.errors.rooms?.[index]?.numberOfRoomsAvailable)
+    }
+    helperText={
+      Array.isArray(formik.touched.rooms) &&
+      formik.touched.rooms[index] &&
+      formik.errors.rooms?.[index]?.numberOfRoomsAvailable
+    }
+  />
+</Grid>
+
+
                         {formik.values.stayType === "overnight" ? (
                           <Grid item xs={12} md={3}>
                             <CustomTextField
@@ -1571,7 +1799,257 @@ const PropertyForm = () => {
                             )}
                         </Grid>
                       </Grid>
-                    ))}
+                    ))} */}
+
+                    {formik.values.rooms.map((room: any, index: number) => {
+                      // Type-safe error helper
+                      const getFieldProps = <T extends keyof Room>(field: T) => {
+                        const touched = Array.isArray(formik.touched.rooms) ? formik.touched.rooms[index]?.[field] : false;
+                        const error = Array.isArray(formik.errors.rooms) ? (formik.errors.rooms[index] as Record<string, string>)?.[field] : undefined;
+
+                        return {
+                          touched,
+                          error,
+                          fieldProps: formik.getFieldProps(`rooms.${index}.${field}`),
+                        };
+                      };
+
+                      return (
+                        <Grid container spacing={2} key={index} alignItems="center" mb={2} px={2}>
+                          {/* Room header */}
+                          <Grid
+                            style={{ paddingLeft: "30px" }}
+                            item
+                            xs={12}
+                            md={12}
+                            display={"flex"}
+                            justifyContent={"space-between"}
+                            alignItems={"center"}
+                            width={"100%"}
+                            fontSize={"18px"}
+                            fontWeight={"bold"}
+                            mb={-1}
+                          >
+                            {formik.values.rooms.length > 1 && <>Room {index + 1}</>}
+                            {formik.values.rooms.length > 1 && (
+                              <IconButton sx={{ color: color.firstColor }} onClick={() => arrayHelpers.remove(index)}>
+                                <Delete />
+                              </IconButton>
+                            )}
+                          </Grid>
+
+                          {/* Room Category */}
+                          <Grid item xs={12} md={3}>
+                            <CustomTextField
+                              fullWidth
+                              select
+                              label="Room Category"
+                              {...getFieldProps('roomCategory').fieldProps}
+                              error={Boolean(getFieldProps('roomCategory').touched && getFieldProps('roomCategory').error)}
+                              helperText={getFieldProps('roomCategory').touched && getFieldProps('roomCategory').error}
+                              SelectProps={{
+                                renderValue: (selected) => {
+                                  const selectedRoom = roomTypes.find((room) => room.value === selected);
+                                  return selectedRoom ? selectedRoom.label : "";
+                                },
+                              }}
+                            >
+                              {roomTypes.map((room) => (
+                                <MenuItem key={room.value} value={room.value}>
+                                  <div>
+                                    <Typography variant="body1" fontWeight="bold">
+                                      {room.label}
+                                    </Typography>
+                                    <Typography variant="body2" color="textSecondary">
+                                      {room.details}
+                                    </Typography>
+                                  </div>
+                                </MenuItem>
+                              ))}
+                            </CustomTextField>
+                          </Grid>
+
+                          {/* Room Size */}
+                          <Grid item xs={12} md={3}>
+                            <CustomTextField
+                              fullWidth
+                              label="Room Size (in sqft)"
+                              {...getFieldProps('roomSize').fieldProps}
+                              error={Boolean(getFieldProps('roomSize').touched && getFieldProps('roomSize').error)}
+                              helperText={getFieldProps('roomSize').touched && getFieldProps('roomSize').error}
+                            />
+                          </Grid>
+
+                          {/* Available Rooms */}
+                          <Grid item xs={12} md={3}>
+                            <CustomTextField
+                              fullWidth
+                              label="Available Rooms"
+                              {...getFieldProps('numberOfRoomsAvailable').fieldProps}
+                              error={Boolean(getFieldProps('numberOfRoomsAvailable').touched && getFieldProps('numberOfRoomsAvailable').error)}
+                              helperText={getFieldProps('numberOfRoomsAvailable').touched && getFieldProps('numberOfRoomsAvailable').error}
+                            />
+                          </Grid>
+
+                          {/* Conditional Rate Fields */}
+                          {formik.values.stayType === "overnight" ? (
+                            <Grid item xs={12} md={3}>
+                              <CustomTextField
+                                fullWidth
+                                label="Rate for 1 Night"
+                                {...getFieldProps('rateFor1Night').fieldProps}
+                                error={Boolean(getFieldProps('rateFor1Night').touched && getFieldProps('rateFor1Night').error)}
+                                helperText={getFieldProps('rateFor1Night').touched && getFieldProps('rateFor1Night').error}
+                              />
+                            </Grid>
+                          ) : (
+                            <>
+                              <Grid item xs={12} md={3}>
+                                <CustomTextField
+                                  fullWidth
+                                  label="Rate for 3 Hour Slot"
+                                  {...getFieldProps('rateFor3Hour').fieldProps}
+                                  error={Boolean(getFieldProps('rateFor3Hour').touched && getFieldProps('rateFor3Hour').error)}
+                                  helperText={getFieldProps('rateFor3Hour').touched && getFieldProps('rateFor3Hour').error}
+                                />
+                              </Grid>
+
+                              {/* Repeat for other hourly rates (6, 9, 12, 24) */}
+                              <Grid item xs={12} md={3}>
+                                <CustomTextField
+                                  fullWidth
+                                  label="Rate for 6 Hour Slot"
+                                  {...getFieldProps('rateFor6Hour').fieldProps}
+                                  error={Boolean(getFieldProps('rateFor6Hour').touched && getFieldProps('rateFor6Hour').error)}
+                                  helperText={getFieldProps('rateFor6Hour').touched && getFieldProps('rateFor6Hour').error}
+                                />
+                              </Grid>
+                              <Grid item xs={12} md={3}>
+                                <CustomTextField
+                                  fullWidth
+                                  label="Rate for 12 Hour Slot"
+                                  {...getFieldProps('rateFor12Hour').fieldProps}
+                                  error={Boolean(getFieldProps('rateFor12Hour').touched && getFieldProps('rateFor12Hour').error)}
+                                  helperText={getFieldProps('rateFor12Hour').touched && getFieldProps('rateFor12Hour').error}
+                                />
+                              </Grid>
+
+                              {/* Continue with 9, 12, 24 hour slots... */}
+                            </>
+                          )}
+
+                          {/* Additional Rates */}
+                          <Grid item xs={12} md={3}>
+                            <CustomTextField
+                              fullWidth
+                              label="Additional Guest Rate"
+                              {...getFieldProps('additionalGuestRate').fieldProps}
+                              error={Boolean(getFieldProps('additionalGuestRate').touched && getFieldProps('additionalGuestRate').error)}
+                              helperText={getFieldProps('additionalGuestRate').touched && getFieldProps('additionalGuestRate').error}
+                            />
+                          </Grid>
+
+                          <Grid item xs={12} md={3}>
+                            <CustomTextField
+                              fullWidth
+                              label="Additional Child Rate"
+                              {...getFieldProps('additionalChildRate').fieldProps}
+                              error={Boolean(getFieldProps('additionalChildRate').touched && getFieldProps('additionalChildRate').error)}
+                              helperText={getFieldProps('additionalChildRate').touched && getFieldProps('additionalChildRate').error}
+                            />
+                          </Grid>
+
+                          {/* Occupancy Fields */}
+                          <Grid item xs={12} md={3}>
+                            <CustomTextField
+                              fullWidth
+                              label="Standard Room Occupancy"
+                              {...getFieldProps('standardRoomOccupancy').fieldProps}
+                              error={Boolean(getFieldProps('standardRoomOccupancy').touched && getFieldProps('standardRoomOccupancy').error)}
+                              helperText={getFieldProps('standardRoomOccupancy').touched && getFieldProps('standardRoomOccupancy').error}
+                            />
+                          </Grid>
+
+                          <Grid item xs={12} md={3}>
+                            <CustomTextField
+                              fullWidth
+                              label="Max Room Occupancy"
+                              {...getFieldProps('maxRoomOccupancy').fieldProps}
+                              error={Boolean(getFieldProps('maxRoomOccupancy').touched && getFieldProps('maxRoomOccupancy').error)}
+                              helperText={getFieldProps('maxRoomOccupancy').touched && getFieldProps('maxRoomOccupancy').error}
+                            />
+                          </Grid>
+
+                          {/* Other Fields */}
+                          <Grid item xs={12} md={3}>
+                            <CustomTextField
+                              fullWidth
+                              label="Number of Free Children"
+                              {...getFieldProps('numberOfFreeChildren').fieldProps}
+                              error={Boolean(getFieldProps('numberOfFreeChildren').touched && getFieldProps('numberOfFreeChildren').error)}
+                              helperText={getFieldProps('numberOfFreeChildren').touched && getFieldProps('numberOfFreeChildren').error}
+                            />
+                          </Grid>
+
+                          <Grid item xs={12} md={3}>
+                            <CustomTextField
+                              fullWidth
+                              label="Tax Rate"
+                              {...getFieldProps('tax').fieldProps}
+                              error={Boolean(getFieldProps('tax').touched && getFieldProps('tax').error)}
+                              helperText={getFieldProps('tax').touched && getFieldProps('tax').error}
+                            />
+                          </Grid>
+
+                          <Grid item xs={12} md={3}>
+                            <CustomTextField
+                              fullWidth
+                              label="Extra Fees"
+                              {...getFieldProps('extraFees').fieldProps}
+                              error={Boolean(getFieldProps('extraFees').touched && getFieldProps('extraFees').error)}
+                              helperText={getFieldProps('extraFees').touched && getFieldProps('extraFees').error}
+                            />
+                          </Grid>
+
+                          {/* Amenities */}
+                          <Grid item xs={12} md={3}>
+                            <FormControl fullWidth sx={{ ...inputSx, mb: 1 }}>
+                              <InputLabel sx={{ color: color.firstColor }}>Amenities</InputLabel>
+                              <Select
+                                style={{ border: "none" }}
+                                multiple
+                                {...formik.getFieldProps(`rooms.${index}.amenities`)}
+                                renderValue={(selected: string[]) => selected.join(", ")}
+                              >
+                                {amenitiesOptions.map((amenity) => (
+                                  <MenuItem key={amenity} value={amenity}>
+                                    <Checkbox
+                                      checked={formik.values.rooms[index].amenities.includes(amenity)}
+                                    />
+                                    {amenityIcons[amenity] && (
+                                      <ListItemIcon>{amenityIcons[amenity]}</ListItemIcon>
+                                    )}
+                                    <ListItemText primary={amenity} />
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
+                          </Grid>
+
+                          {/* Room Image Upload */}
+                          <Grid item xs={12} md={12}>
+                            <ImageUploader
+                              label="Room Image"
+                              onFileSelect={(file) =>
+                                handleFileChange(file as File, (value) =>
+                                  formik.setFieldValue(`rooms.${index}.roomImage`, value)
+                                )
+                              }
+                            />
+                          </Grid>
+                        </Grid>
+                      );
+                    })}
 
                     <Grid
                       item
@@ -1618,8 +2096,19 @@ const PropertyForm = () => {
                   type="submit"
                   variant="contained"
                   color="primary"
+                  onClick={() => {
+                    // Force validation
+                    formik.validateForm().then(errors => {
+                      console.log("Form errors:", errors);
+                      if (Object.keys(errors).length === 0) {
+                        formik.submitForm();
+                      } else {
+                        toast.error("Please fix the form errors");
+                      }
+                    });
+                  }}
                 >
-                  Submit Application
+                  {isEditMode ? "Save Changes" : "Submit Application"}
                 </CustomButton>
               </Grid>
             </Grid>

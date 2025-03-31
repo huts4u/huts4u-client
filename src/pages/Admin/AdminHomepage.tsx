@@ -21,10 +21,9 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { deleteUser, getAllHotels, getAllUser } from "../../services/services";
+import { deleteHotel, deleteUser, getAllHotels, getAllUser } from "../../services/services";
 import { toast } from "react-toastify";
-
-
+import { useNavigate } from "react-router-dom";
 
 const AdminHomepage: React.FC = () => {
     const [users, setUsers] = useState<any[]>([]);
@@ -32,6 +31,7 @@ const AdminHomepage: React.FC = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [deleteType, setDeleteType] = useState<"user" | "hotel" | null>(null);
+    const [selectedName, setSelectedName] = useState<string>("");
 
     useEffect(() => {
         const payLoad = {
@@ -62,10 +62,12 @@ const AdminHomepage: React.FC = () => {
         });
     }, []);
 
+    const navigate = useNavigate();
 
-    const handleOpenDialog = (id: number, type: "user" | "hotel") => {
+    const handleOpenDialog = (id: number, type: "user" | "hotel", name: string) => {
         setSelectedId(id);
         setDeleteType(type);
+        setSelectedName(name);
         setOpenDialog(true);
     };
 
@@ -73,19 +75,28 @@ const AdminHomepage: React.FC = () => {
         setOpenDialog(false);
         setSelectedId(null);
         setDeleteType(null);
+        setSelectedName("");
     };
 
     const handleConfirmDelete = () => {
+        if (!selectedId || !deleteType) return;
+
         if (deleteType === "user") {
             deleteUser(selectedId).then(() => {
-                toast("User Deleted Successfully")
+                toast.success("User deleted successfully");
                 setUsers(users.filter(user => user.id !== selectedId));
             }).catch((err) => {
-                console.log(err)
+                console.log(err);
+                toast.error("Failed to delete user");
+            });
+        } else if (deleteType === "hotel") {
+            deleteHotel(selectedId).then((res) => {
+                setHotels(hotels.filter(hotel => hotel.id !== selectedId));
+                toast.success("Hotel deleted successfully");
+            }).catch((err) => {
+                console.log(err);
             })
 
-        } else if (deleteType === "hotel") {
-            setHotels(hotels.filter(hotel => hotel.id !== selectedId));
         }
         handleCloseDialog();
     };
@@ -118,7 +129,10 @@ const AdminHomepage: React.FC = () => {
                                         <TableCell>{user.phoneNumber}</TableCell>
                                         <TableCell>{user.role}</TableCell>
                                         {/* <TableCell>
-                                            <IconButton color="error" onClick={() => handleOpenDialog(user.id, "user")}>
+                                            <IconButton 
+                                                color="error" 
+                                                onClick={() => handleOpenDialog(user.id, "user", user.userName)}
+                                            >
                                                 <DeleteIcon />
                                             </IconButton>
                                         </TableCell> */}
@@ -141,7 +155,6 @@ const AdminHomepage: React.FC = () => {
                                     <TableCell>ID</TableCell>
                                     <TableCell>Hotel Name</TableCell>
                                     <TableCell>Location</TableCell>
-
                                     <TableCell>Contact</TableCell>
                                     <TableCell>Actions</TableCell>
                                 </TableRow>
@@ -152,13 +165,18 @@ const AdminHomepage: React.FC = () => {
                                         <TableCell>{hotel.id}</TableCell>
                                         <TableCell>{hotel.propertyName}</TableCell>
                                         <TableCell>{hotel.city}</TableCell>
-
                                         <TableCell>{hotel.ownerMobile}</TableCell>
                                         <TableCell>
-                                            <IconButton color="primary" onClick={() => console.log(`Edit Hotel ID: ${hotel.id}`)}>
+                                            <IconButton
+                                                color="primary"
+                                                onClick={() => navigate('/property-registration', { state: hotel.id })}
+                                            >
                                                 <EditIcon />
                                             </IconButton>
-                                            <IconButton color="error" onClick={() => handleOpenDialog(hotel.id, "hotel")}>
+                                            <IconButton
+                                                color="error"
+                                                onClick={() => handleOpenDialog(hotel.id, "hotel", hotel.propertyName)}
+                                            >
                                                 <DeleteIcon />
                                             </IconButton>
                                         </TableCell>
@@ -175,12 +193,16 @@ const AdminHomepage: React.FC = () => {
                 <DialogTitle>Confirm Deletion</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Are you sure you want to delete this {deleteType === "user" ? "user" : "hotel"}?
+                        {deleteType === "user"
+                            ? `Are you sure you want to delete the user "${selectedName}"? This action cannot be undone.`
+                            : `Are you sure you want to delete the hotel "${selectedName}"? This action cannot be undone.`}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseDialog} color="primary">Cancel</Button>
-                    <Button onClick={handleConfirmDelete} color="error">Delete</Button>
+                    <Button onClick={handleConfirmDelete} color="error" autoFocus>
+                        Delete {deleteType === "user" ? "User" : "Hotel"}
+                    </Button>
                 </DialogActions>
             </Dialog>
         </Box>

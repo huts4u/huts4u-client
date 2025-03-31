@@ -38,30 +38,6 @@ const Dashboard = () => {
     { name: "Feb 28", revenue: 215060 },
   ];
 
-  const [booking, setBooking] = useState<any[]>([])
-
-  useEffect(() => {
-    const today = new Date();
-    const next10Days = new Date();
-    next10Days.setDate(today.getDate() + 10);
-
-    getAllBookingsofMyHotel({
-      data: { filter: "", userId: getUserId() },
-      page: 0,
-      pageSize: 50,
-      order: [["createdAt", "ASC"]],
-    }).then((res) => {
-      const allBookings = res?.data?.data?.rows || [];
-
-      // Filter bookings where checkInDate is within the next 10 days
-      const filteredBookings = allBookings.filter((booking: any) => {
-        const checkInDate = new Date(booking.checkInDate);
-        return checkInDate >= today && checkInDate <= next10Days;
-      });
-
-      setBooking(filteredBookings);
-    });
-  }, []);
 
 
   return (
@@ -307,11 +283,7 @@ const Dashboard = () => {
         </Grid>
       </Grid>
 
-      <Grid container spacing={3} mt={0}>
-        <Grid item xs={12} md={12}>
-          <BookingTable booking={booking}></BookingTable>
-        </Grid>
-      </Grid>
+
     </Box>
   );
 };

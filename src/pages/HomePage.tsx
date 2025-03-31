@@ -1,14 +1,16 @@
 import { Box, Container } from "@mui/material";
+import { lazy, Suspense } from "react";
 import SectionHeader from "../components/SectionHeader";
 import FAQSection from "./Home Section/FAQSection";
 import ImageGridLayout from "./Home Section/FeaturesGridLayout";
 import HeroSection from "./Home Section/HeroSection";
-import HotelCardCarousel from "./Home Section/HotelCardCarousel";
 import ImageGallery from "./Home Section/ImageGallery";
 import TestimonialsCarousel from "./Home Section/TestimonialsCarousel";
 
-const HomePage = () => {
 
+const LazyHotelCardCarousel = lazy(() => import("./Home Section/HotelCardCarousel"));
+
+const HomePage = () => {
   return (
     <Box>
       <HeroSection></HeroSection>
@@ -20,7 +22,11 @@ const HomePage = () => {
           primaryText={"Discover Top Rooms"}
           subText={"Raising Comfort To The Highest Level"}
         ></SectionHeader>
-        <HotelCardCarousel />
+
+        {/* Wrap the lazy-loaded component in Suspense */}
+        <Suspense fallback={<div>Loading hotels...</div>}>
+          <LazyHotelCardCarousel />
+        </Suspense>
 
         <ImageGridLayout></ImageGridLayout>
 

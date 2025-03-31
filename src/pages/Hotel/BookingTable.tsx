@@ -1,21 +1,21 @@
 import { useState, useEffect } from "react";
-import { Avatar, Box, Button, Chip, FormControl, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { Avatar, Box, Button, Chip, FormControl, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import color from "../../components/color";
 import { editHotel, getHotel } from "../../services/services";
-import { getUserId } from "../../services/axiosClient";
 
-const BookingTable = ({ booking }: any) => {
+
+const BookingTable = ({ booking, hotelId }: any) => {
   console.log(booking)
   const [availability, setAvailability] = useState(""); // Store "Available" or "Unavailable"
-  const [hotelId, setHotelId] = useState("");
+  // const [hotelId, setHotelId] = useState("");
 
   // Fetch hotel availability on mount
   useEffect(() => {
-    getHotel(getUserId()).then((res) => {
+    getHotel(hotelId).then((res) => {
       setAvailability(res?.data?.data?.roomAvailable); // Should return "Available" or "Unavailable"
-      setHotelId(res?.data?.data?.id);
+      // setHotelId(res?.data?.data?.id);
     });
-  }, []);
+  }, [hotelId]);
 
   // Toggle and update DB
   const toggleAvailability = () => {

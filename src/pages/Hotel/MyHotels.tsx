@@ -27,64 +27,7 @@ import {
   getMyAllHotelswithBelongsTo
 } from "../../services/services";
 
-// const hotels = [
-//   {
-//     id: 1,
-//     status: "Approved",
-//     propertyName: "Hotel Metropol by Maier Private hotels",
-//     location: "Mancheswar, Bhubaneswar",
-//     rating: 4.7,
-//     reviews: 354,
-//     price: 1340.0,
-//     originalPrice: 3240.0,
-//     taxnfees: 827,
-//     amenities: [
-//       "Gym",
-//       "Swimming Pool",
-//       "Free WiFi",
-//       "Private Beach",
-//       "Breakfast",
-//       "Breakfast",
-//     ],
-//     image: "/assets/hotel 1.jpg",
-//   },
-//   {
-//     id: 2,
-//     propertyName: "Hotel Metropol by Maier Private hotels",
-//     location: "Mancheswar, Bhubaneswar",
-//     rating: 4.7,
-//     reviews: 354,
-//     price: 1340.0,
-//     taxnfees: 827,
-//     originalPrice: 3240.0,
-//     amenities: [
-//       "Gym",
-//       "Swimming Pool",
-//       "Free WiFi",
-//       "Private Beach",
-//       "Breakfast",
-//     ],
-//     image: "/assets/hotel 2.jpg",
-//   },
-//   {
-//     id: 3,
-//     propertyName: "Hotel Metropol by Maier Private hotels",
-//     location: "Mancheswar, Bhubaneswar",
-//     rating: 4.7,
-//     reviews: 354,
-//     price: 1340.0,
-//     taxnfees: 827,
-//     originalPrice: 3240.0,
-//     amenities: [
-//       "Gym",
-//       "Swimming Pool",
-//       "Free WiFi",
-//       "Private Beach",
-//       "Breakfast",
-//     ],
-//     image: "/assets/room-image 2.jpg",
-//   },
-// ];
+
 
 const MyHotels = () => {
   const navigate = useNavigate();
@@ -128,8 +71,6 @@ const MyHotels = () => {
       });
     } else {
       getMyAllHotelswithBelongsTo({
-        // userId: getUserId(),
-        // status: 'Aproved',
         secondTable: "Room",
       }).then((res) => {
         const data = res?.data?.data;
@@ -147,9 +88,7 @@ const MyHotels = () => {
           setAprovedHotel(approvedHotels);
           setRejectHotel(rejectedHotels);
 
-          // console.log('Pending:', pendingHotels);
-          // console.log('Approved:', approvedHotels);
-          // console.log('Rejected:', rejectedHotels);
+
         }
       });
     }
@@ -166,7 +105,7 @@ const MyHotels = () => {
     }
   };
 
-  // console.log("my hotels:", hotel)
+
 
   const displayHotels =
     renderUrl() === "application"

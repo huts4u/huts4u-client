@@ -44,12 +44,19 @@ const Login = () => {
           setCurrentAccessToken(res?.data?.data?.accessToken);
         }
         if (res?.data?.data?.role === "Hotel") {
-          window.location.href = "/dashboard"
+          window.location.href = "/dashboard";
         } else {
-          window.location.href = "/admin-homepage"
+          window.location.href = "/admin-homepage";
         }
-        toast(res?.data?.msg);
-      })
+        toast.success(res?.data?.msg);
+      }).catch((err) => {
+
+        const errorMessage = err.response?.data?.msg ||
+          err.response?.data?.message ||
+          err.message ||
+          "Login failed. Please try again.";
+        toast.error(errorMessage);
+      });
     },
   });
 
@@ -58,7 +65,7 @@ const Login = () => {
       sx={{
         margin: "auto",
         minHeight: "calc(100vh - 64px)",
-        background: "url('/assets/login.jpg')",
+        background: "url('https://s3.ap-south-1.amazonaws.com/huts4u.shop/login.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "bottom",
         display: "flex",

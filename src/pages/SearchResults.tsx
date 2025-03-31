@@ -21,6 +21,7 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  Skeleton
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -39,75 +40,444 @@ import {
 } from "../services/services";
 import SearchSection from "./Home Section/SearchSection";
 
-// const hotels = [
-//   {
-//     id: 1,
-//     propertyName: "Hotel Metropol by Maier Private hotels",
-//     location: "Mancheswar, Bhubaneswar",
-//     rating: 4.7,
-//     reviews: 354,
-//     price: 1340.0,
-//     originalPrice: 3240.0,
-//     taxnfees: 827,
-//     amenities: [
-//       "Gym",
-//       "Swimming Pool",
-//       "Free WiFi",
-//       "Private Beach",
-//       "Breakfast",
-//       "Breakfast",
-//     ],
-//     image: "/assets/hotel 1.jpg",
-//   },
-//   {
-//     id: 2,
-//     propertyName: "Hotel Metropol by Maier Private hotels",
-//     location: "Mancheswar, Bhubaneswar",
-//     rating: 4.7,
-//     reviews: 354,
-//     price: 1340.0,
-//     taxnfees: 827,
-//     originalPrice: 3240.0,
-//     amenities: [
-//       "Gym",
-//       "Swimming Pool",
-//       "Free WiFi",
-//       "Private Beach",
-//       "Breakfast",
-//     ],
-//     image: "/assets/hotel 2.jpg",
-//   },
-//   {
-//     id: 3,
-//     propertyName: "Hotel Metropol by Maier Private hotels",
-//     location: "Mancheswar, Bhubaneswar",
-//     rating: 4.7,
-//     reviews: 354,
-//     price: 1340.0,
-//     taxnfees: 827,
-//     originalPrice: 3240.0,
-//     amenities: [
-//       "Gym",
-//       "Swimming Pool",
-//       "Free WiFi",
-//       "Private Beach",
-//       "Breakfast",
-//     ],
-//     image: "/assets/room-image 2.jpg",
-//   },
-// ];
+const HotelCardSkeleton = ({ isMobile }: { isMobile: boolean }) => (
+  <Card sx={{ mb: 2, height: { xs: 'auto', md: 200 } }}>
+    <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
+      <Skeleton
+        variant="rectangular"
+        width={isMobile ? '100%' : 280}
+        height={isMobile ? 200 : '100%'}
+      />
+      <Box sx={{ p: 2, flex: 1, position: 'relative' }}>
+        <Skeleton width="40%" height={24} />
+        <Skeleton width="60%" height={20} sx={{ mt: 1 }} />
+        <Skeleton width="80%" height={20} sx={{ mt: 1 }} />
+        <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} width={80} height={24} />
+          ))}
+        </Box>
+        <Box sx={{
+          position: 'absolute',
+          bottom: 16,
+          right: 16,
+          width: 120,
+          height: 80
+        }}>
+          <Skeleton variant="rectangular" width="100%" height="100%" />
+        </Box>
+      </Box>
+    </Box>
+  </Card>
+);
+
+const HotelCard = ({
+  hotel,
+  queryParams,
+  isMobile
+}: {
+  hotel: any,
+  queryParams: URLSearchParams,
+  isMobile: boolean
+}) => {
+  // console.log(hotel)
+  const navigate = useNavigate();
+  const maxAmenities = isMobile ? 2 : 5;
+  const visibleAmenities = hotel?.rooms[0]?.amenities?.slice(0, maxAmenities) || [];
+  const remainingAmenities = Math.max(0, (hotel?.rooms[0]?.amenities?.length || 0) - maxAmenities);
+  const isAvailable = hotel?.roomAvailable === "Available";
+
+  return (
+    <Card
+      onClick={() => {
+        if (!isAvailable) return;
+        const queryString = queryParams.toString();
+        navigate(`/hotel/${hotel.id}${queryString ? `?${queryString}` : ''}`, {
+          state: { hotelData: hotel },
+        });
+      }}
+      sx={{
+        display: "flex",
+        flexDirection: { xs: "column", md: "row" },
+        pb: { xs: 2, md: 0 },
+        mb: 2,
+        background: isAvailable ? color.thirdColor : "#f5f5f5",
+        boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.12)",
+        borderRadius: "12px",
+        transition: "all 0.3s ease",
+        cursor: isAvailable ? "pointer" : "not-allowed",
+        border: `solid 1px ${isAvailable ? "transparent" : "#ddd"}`,
+        height: { xs: "fit-content", md: 200 },
+        position: "relative",
+        overflow: "hidden",
+        "&:hover": {
+          transform: isAvailable ? "scale(1.02)" : "none",
+          borderColor: isAvailable ? color.firstColor : "#ddd",
+        },
+        opacity: isAvailable ? 1 : 0.7,
+      }}
+    >
+      {!isAvailable && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 2,
+            background: "rgba(255,255,255,0.7)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Typography
+            sx={{
+              background: "#ff4d4d",
+              color: "white",
+              px: 2,
+              py: 1,
+              borderRadius: "4px",
+              fontWeight: "bold",
+              fontSize: "14px",
+              transform: "rotate(-5deg)",
+            }}
+          >
+            SOLD OUT
+          </Typography>
+        </Box>
+      )}
+
+      <CardMedia
+        component="img"
+        sx={{
+          width: { xs: "100%", md: 280 },
+          height: "100%",
+          maxHeight: 250,
+          filter: isAvailable ? "none" : "grayscale(80%)",
+          opacity: isAvailable ? 1 : 0.8,
+        }}
+        image={hotel?.propertyImages?.[0]}
+        alt={hotel?.propertyName}
+      />
+
+      <CardContent
+        style={{
+          padding: "0px 10px",
+          position: "relative",
+          width: "100%",
+          minHeight: "185px",
+        }}
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: { xs: 10, md: 10 },
+            right: { xs: 30, md: 10 },
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: "6px",
+          }}
+        >
+          <Typography
+            variant="body2"
+            fontWeight={600}
+            color={isAvailable ? color.firstColor : "#888"}
+            lineHeight={1}
+            sx={{
+              fontSize: { xs: "12px", md: "14px" },
+            }}
+          >
+            {getRatingText(hotel?.ratings?.rating)} <br />{" "}
+            <span style={{ fontSize: "10px" }}>
+              ({hotel?.reviews || 0} reviews)
+            </span>
+          </Typography>
+
+          <Typography
+            variant="body2"
+            fontWeight={600}
+            color="#fff"
+            sx={{
+              background: getRatingColor(hotel?.ratings?.rating),
+              px: 1,
+              borderRadius: "4px",
+              fontSize: { xs: "14px", md: "16px" },
+              boxShadow: "0px -10px 10px rgba(0, 0, 0, 0.12) inset",
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
+            }}
+          >
+            {hotel?.ratings?.rating || "N/A"} <StarRounded fontSize="small" />
+          </Typography>
+        </Box>
+
+        <Typography
+          sx={{
+            fontWeight: 600,
+            color: color.thirdColor,
+            width: "fit-content",
+            px: 1,
+            py: 0.2,
+            borderRadius: "4px",
+            fontSize: "8px",
+            my: 1,
+            mt: { xs: 2, md: 1.5 },
+            background: isAvailable ? color.background : "#aaa",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Whatshot style={{ fontSize: "10px", marginRight: "2px" }} />{" "}
+          HUTS4U PREMIUM
+        </Typography>
+
+        <Typography
+          sx={{
+            fontSize: "18px",
+            fontWeight: 600,
+            color: isAvailable ? color.firstColor : "#666",
+            mt: { xs: 1.5, md: 1 },
+            display: "-webkit-box",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            WebkitLineClamp: 1,
+            WebkitBoxOrient: "vertical",
+          }}
+        >
+          {hotel?.propertyName}
+        </Typography>
+
+        <Typography
+          sx={{
+            fontFamily: "CustomFontSB",
+            fontSize: { xs: "12px", md: "14px" },
+            color: isAvailable ? "textSecondary" : "#888",
+            display: "-webkit-box",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            WebkitLineClamp: 1,
+            WebkitBoxOrient: "vertical",
+          }}
+        >
+          {hotel?.city}
+        </Typography>
+
+        <Box
+          sx={{
+            display: { xs: "none", md: "flex" },
+            gap: 2,
+            mt: 2,
+          }}
+        >
+          {hotel?.coupleFriendly === 'yes' && (
+            <Typography
+              sx={{
+                fontFamily: "CustomFontSB",
+                fontSize: "12px",
+                border: "solid 1px",
+                borderColor: isAvailable ? "textSecondary" : "#ddd",
+                color: isAvailable ? "textSecondary" : "#ddd",
+                width: "fit-content",
+                px: 1,
+                borderRadius: "4px",
+              }}
+            >
+              Couple Friendly
+            </Typography>
+          )}
+
+          {hotel?.petFriendly === 'yes' && (
+            <Typography
+              sx={{
+                fontFamily: "CustomFontSB",
+                fontSize: "12px",
+                border: "solid 1px",
+                borderColor: isAvailable ? "textSecondary" : "#ddd",
+                color: isAvailable ? "textSecondary" : "#ddd",
+                width: "fit-content",
+                px: 1,
+                borderRadius: "4px",
+              }}
+            >
+              Pet Friendly
+            </Typography>
+          )}
+
+          {hotel?.familyFriendly === 'yes' && (
+            <Typography
+              sx={{
+                fontFamily: "CustomFontSB",
+                fontSize: "12px",
+                border: "solid 1px",
+                borderColor: isAvailable ? "textSecondary" : "#ddd",
+                color: isAvailable ? "textSecondary" : "#ddd",
+                width: "fit-content",
+                px: 1,
+                borderRadius: "4px",
+              }}
+            >
+              Family Friendly
+            </Typography>
+          )}
+
+          {hotel?.businessFriendly === 'yes' && (
+            <Typography
+              sx={{
+                fontFamily: "CustomFontSB",
+                fontSize: "12px",
+                border: "solid 1px",
+                borderColor: isAvailable ? "textSecondary" : "#ddd",
+                color: isAvailable ? "textSecondary" : "#ddd",
+                width: "fit-content",
+                px: 1,
+                borderRadius: "4px",
+              }}
+            >
+              Business Friendly
+            </Typography>
+          )}
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            gap: 0.5,
+            flexWrap: "wrap",
+            mt: 2,
+            maxWidth: { xs: "50%", md: "60%" },
+          }}
+        >
+          {visibleAmenities.map((amenity: any, index: any) => (
+            <Chip
+              key={index}
+              label={amenity}
+              icon={amenityIcons[amenity] || <AddCircleOutline />}
+              size="small"
+              sx={{
+                bgcolor: "transparent",
+                fontSize: "10px",
+                color: isAvailable ? "inherit" : "#aaa",
+              }}
+            />
+          ))}
+          {remainingAmenities > 0 && (
+            <Chip
+              label={`+${remainingAmenities} more`}
+              size="small"
+              sx={{
+                bgcolor: isAvailable ? "#eee" : "#f5f5f5",
+                fontSize: "10px",
+                color: isAvailable ? "inherit" : "#aaa",
+              }}
+            />
+          )}
+        </Box>
+
+        <Box
+          sx={{
+            position: { xs: "absolute", md: "absolute" },
+            maxWidth: "200px",
+            minWidth: "120px",
+            mr: { xs: 3, md: 0 },
+            bottom: { xs: -16, md: 0 },
+            right: { xs: -8, md: 0 },
+            borderRadius: "12px 0px 12px 0px",
+            p: 1,
+            background: isAvailable ? color.background : "#f0f0f0",
+            color: isAvailable ? color.thirdColor : "#888",
+            textAlign: "end",
+            border: `solid 1px ${isAvailable ? color.firstColor : "#ddd"}`,
+            pt: 4,
+          }}
+        >
+          <Box
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              borderRadius: "12px 0px 12px 0px",
+              p: 1,
+              background: isAvailable ? color.thirdColor : "#ddd",
+              color: isAvailable ? color.firstColor : "#888",
+              fontSize: "8px",
+              fontWeight: 600,
+            }}
+          >
+            {isAvailable ? "Limited Time Offer" : "Unavailable"}
+          </Box>
+
+          <Typography
+            sx={{
+              textDecoration: "line-through",
+              fontSize: { xs: "10px", md: "12px" },
+              color: isAvailable ? "inherit" : "#aaa",
+            }}
+          >
+            ₹
+            {isAvailable
+              ? ((hotel?.rooms?.[0] &&
+                [
+                  hotel.rooms[0].rateFor3Hour,
+                  hotel.rooms[0].rateFor6Hour,
+                  hotel.rooms[0].rateFor12Hour,
+                  hotel.rooms[0].rateFor1Night,
+                ].find((rate) => rate > 0) * 1.1).toFixed(2))
+              : "---"}
+          </Typography>
+          <Typography
+            sx={{
+              fontSize: "18px",
+              color: isAvailable ? "inherit" : "#888",
+            }}
+          >
+            {isAvailable
+              ? `₹ ${hotel?.rooms?.[0] &&
+              [
+                hotel.rooms[0].rateFor3Hour,
+                hotel.rooms[0].rateFor6Hour,
+                hotel.rooms[0].rateFor12Hour,
+                hotel.rooms[0].rateFor1Night,
+              ].find((rate) => rate > 0)}`
+              : "---"}
+          </Typography>
+          <Typography
+            sx={{
+              fontSize: { xs: "10px", md: "12px" },
+              color: isAvailable ? "inherit" : "#aaa",
+            }}
+            variant="body2"
+          >
+            {isAvailable
+              ? `+ ₹${hotel.taxnfees || 0} taxes & fees`
+              : "Not available"}
+          </Typography>
+        </Box>
+      </CardContent>
+    </Card>
+  );
+};
 
 const SearchResults = () => {
   const navigate = useNavigate();
-
   const location = useLocation();
-
-
   const [mergedData, setMergedData] = useState<any[]>([]);
+  const [filteredData, setFilteredData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
+
+  const queryParams = new URLSearchParams(location.search);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   useEffect(() => {
     const fetchHotelsWithRooms = async () => {
       try {
+        setLoading(true);
         const hotelPayload = {
           data: { filter: "", status: "Approved" },
           page: 0,
@@ -138,27 +508,23 @@ const SearchResults = () => {
         setMergedData(mergedData);
       } catch (error) {
         console.error("Error fetching hotels with rooms:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchHotelsWithRooms();
   }, []);
 
-  console.log(mergedData);
-
-  const queryParams = new URLSearchParams(location.search);
-
-  const locationFilter = queryParams.get("location") || "";
-  const bookingType = queryParams.get("bookingType");
-  const bookingHours = queryParams.get("bookingHours");
-  const sortByFilter = queryParams.get("sortBy");
-  const maxBudget = Number(queryParams.get("maxBudget")) || 20000;
-  const minBudget = Number(queryParams.get("minBudget")) || 100;
-
-  const [filteredData, setFilteredData] = useState<any[]>([]);
-
   useEffect(() => {
     const filterProperties = () => {
+      const locationFilter = queryParams.get("location") || "";
+      const bookingType = queryParams.get("bookingType");
+      const bookingHours = queryParams.get("bookingHours");
+      const sortByFilter = queryParams.get("sortBy");
+      const maxBudget = Number(queryParams.get("maxBudget")) || 20000;
+      const minBudget = Number(queryParams.get("minBudget")) || 100;
+
       let filteredHotels = mergedData.filter((hotel: any) => {
         if (bookingType === "hourly") {
           return (
@@ -244,16 +610,10 @@ const SearchResults = () => {
       return filteredHotels;
     };
 
-    setFilteredData(filterProperties());
-  }, [
-    bookingHours,
-    bookingType,
-    mergedData,
-    sortByFilter,
-    minBudget,
-    maxBudget,
-    locationFilter,
-  ]);
+    if (!loading) {
+      setFilteredData(filterProperties());
+    }
+  }, [loading, mergedData, queryParams]);
 
   const defaultBudget = [
     Number(queryParams.get("minBudget")) || 100,
@@ -280,7 +640,6 @@ const SearchResults = () => {
     navigate({ search: newParams.toString() }, { replace: true });
   };
 
-  // Ensure default values are in query params when the component mounts
   useEffect(() => {
     const newParams = new URLSearchParams(location.search);
     let updated = false;
@@ -305,7 +664,7 @@ const SearchResults = () => {
     if (updated) {
       navigate({ search: newParams.toString() }, { replace: true });
     }
-  });
+  }, []);
 
   const handleBudgetChange = (
     event: Event,
@@ -328,27 +687,10 @@ const SearchResults = () => {
     updateQueryParams("sortBy", value);
   };
 
-  // const handlePaymentChange = (value: string) => {
-  //   setPayment(value);
-  //   updateQueryParams("payment", value);
-  // };
-
   const sidebar = (
     <>
-      <Box
-        sx={{
-          ...BoxStyle,
-          mt: 3,
-        }}
-      >
-        <Typography
-          sx={{
-            ...style,
-            mb: 5,
-          }}
-        >
-          Budget
-        </Typography>
+      <Box sx={{ ...BoxStyle, mt: 3 }}>
+        <Typography sx={{ ...style, mb: 5 }}>Budget</Typography>
         <Slider
           value={budget}
           onChange={handleBudgetChange}
@@ -357,9 +699,7 @@ const SearchResults = () => {
           max={20000}
           sx={{
             color: color.secondColor,
-            "& .MuiSlider-thumb": {
-              backgroundColor: "white",
-            },
+            "& .MuiSlider-thumb": { backgroundColor: "white" },
             "& .MuiSlider-valueLabel": {
               backgroundColor: color.secondColor,
               color: "white",
@@ -370,41 +710,15 @@ const SearchResults = () => {
           valueLabelFormat={(value) => `₹${value}`}
           valueLabelDisplay="on"
         />
-
-        <Typography
-          sx={{
-            fontSize: "14px",
-            fontWeight: 600,
-            mt: 1,
-            ml: -1,
-          }}
-        >
+        <Typography sx={{ fontSize: "14px", fontWeight: 600, mt: 1, ml: -1 }}>
           ₹{budget[0]} - ₹{budget[1]}
         </Typography>
       </Box>
 
-      {bookingType === "hourly" && (
-        <Box
-          sx={{
-            ...BoxStyle,
-          }}
-        >
-          <Typography
-            sx={{
-              ...style,
-            }}
-          >
-            Book For
-          </Typography>
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              alignItems: "center",
-              justifyContent: "space-around",
-              gap: "6px",
-            }}
-          >
+      {queryParams.get("bookingType") === "hourly" && (
+        <Box sx={{ ...BoxStyle }}>
+          <Typography sx={{ ...style }}>Book For</Typography>
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-around", gap: "6px" }}>
             {["3", "6", "12"].map((hour) => (
               <StyledToggleButton
                 key={hour}
@@ -448,99 +762,47 @@ const SearchResults = () => {
           />
         </RadioGroup>
       </Box>
-
-      {/* <Box sx={{ ...BoxStyle }}>
-        <Typography sx={{ ...style }}>Payment</Typography>
-        <RadioGroup
-          sx={{ mt: -1 }}
-          value={payment}
-          onChange={(e) => handlePaymentChange(e.target.value)}
-        >
-          <StyledFormControlLabel
-            value="prePayOnline"
-            control={<BpRadio />}
-            label="Prepay Online"
-          />
-          <StyledFormControlLabel
-            value="payAtHotel"
-            control={<BpRadio />}
-            label="Pay At Hotel"
-          />
-        </RadioGroup>
-      </Box> */}
     </>
   );
 
-  const [open, setOpen] = useState(false);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-
   return (
-    <Box
-      sx={{
-        background: color.thirdColor,
-        p: { xs: 2, md: 4 },
-      }}
-    >
-      <SearchSection></SearchSection>
+    <Box sx={{ background: color.thirdColor, p: { xs: 2, md: 4 } }}>
+      <SearchSection />
 
       <Grid container spacing={2}>
-        <>
-          {isMobile ? (
-            <>
-              <Drawer
-                anchor="left"
-                open={open}
-                onClose={() => setOpen(false)}
-                sx={{ "& .MuiDrawer-paper": { width: "100%" } }}
-              >
-                <Box p={2}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Typography variant="h5">Filter</Typography>
-                    <Cancel onClick={() => setOpen(false)}></Cancel>
-                  </div>
-                  {sidebar}
-                </Box>
-              </Drawer>
-            </>
-          ) : (
-            <Grid item xs={3} sx={{ px: 2 }}>
+        {isMobile ? (
+          <Drawer
+            anchor="left"
+            open={open}
+            onClose={() => setOpen(false)}
+            sx={{ "& .MuiDrawer-paper": { width: "100%" } }}
+          >
+            <Box p={2}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <Typography variant="h5">Filter</Typography>
+                <Cancel onClick={() => setOpen(false)} />
+              </div>
               {sidebar}
-            </Grid>
-          )}
-        </>
+            </Box>
+          </Drawer>
+        ) : (
+          <Grid item xs={3} sx={{ px: 2 }}>
+            {sidebar}
+          </Grid>
+        )}
 
         <Grid item xs={12} md={9}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Typography
-              variant="h6"
-              sx={{
-                mt: 2,
-                mb: 2,
-                fontWeight: 600,
-                fontSize: { xs: "16px", md: "20px" },
-              }}
-            >
-              {filteredData.length} properties found
-            </Typography>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: '20px' }}>
+            {loading ? (
+              <Skeleton width={200} height={32} />
+            ) : (
+              <Typography variant="h6" sx={{ fontWeight: 600, fontSize: { xs: "16px", md: "20px" } }}>
+                {filteredData.length} properties found
+              </Typography>
+            )}
             {isMobile && (
               <CustomButton
-                customStyles={{
-                  padding: "6px",
-                  fontSize: "16px",
-                }}
+                customStyles={{ padding: "6px", fontSize: "16px" }}
                 onClick={() => setOpen(true)}
                 variant="contained"
               >
@@ -548,357 +810,27 @@ const SearchResults = () => {
               </CustomButton>
             )}
           </div>
-          {filteredData.length > 0 ? (
-            filteredData.map((hotel) => {
-              const maxAmenities = isMobile ? 2 : 5;
-              const visibleAmenities = hotel?.rooms[0]?.amenities?.slice(0, maxAmenities) || [];
-              const remainingAmenities = Math.max(0, (hotel?.rooms[0]?.amenities?.length || 0) - maxAmenities);
-              const isAvailable = hotel?.roomAvailable === "Available";
 
-              return (
-                <Card
-                  onClick={() => {
-                    if (!isAvailable) return;
-                    const queryString = new URLSearchParams(queryParams).toString();
-                    navigate(`/hotel/${hotel.id}${queryString ? `?${queryString}` : ''}`, {
-                      state: { hotelData: hotel },
-                    });
-                  }}
-                  key={hotel.id}
-                  sx={{
-                    display: "flex",
-                    flexDirection: { xs: "column", md: "row" },
-                    pb: { xs: 2, md: 0 },
-                    mb: 2,
-                    background: isAvailable ? color.thirdColor : "#f5f5f5",
-                    boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.12)",
-                    borderRadius: "12px",
-                    transition: "all 0.3s ease",
-                    cursor: isAvailable ? "pointer" : "not-allowed",
-                    border: `solid 1px ${isAvailable ? "transparent" : "#ddd"}`,
-                    height: { xs: "fit-content", md: 200 },
-                    position: "relative",
-                    overflow: "hidden",
-                    "&:hover": {
-                      transform: isAvailable ? "scale(1.02)" : "none",
-                      borderColor: isAvailable ? color.firstColor : "#ddd",
-                    },
-                    opacity: isAvailable ? 1 : 0.7,
-                  }}
-                >
-                  {/* Sold Out Overlay */}
-                  {!isAvailable && (
-                    <Box
-                      sx={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        zIndex: 2,
-                        background: "rgba(255,255,255,0.7)",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Typography
-                        sx={{
-                          background: "#ff4d4d",
-                          color: "white",
-                          px: 2,
-                          py: 1,
-                          borderRadius: "4px",
-                          fontWeight: "bold",
-                          fontSize: "14px",
-                          transform: "rotate(-5deg)",
-                        }}
-                      >
-                        SOLD OUT
-                      </Typography>
-                    </Box>
-                  )}
-
-                  <CardMedia
-                    component="img"
-                    sx={{
-                      width: { xs: "100%", md: 280 },
-                      height: "100%",
-                      maxHeight: 250,
-                      filter: isAvailable ? "none" : "grayscale(80%)",
-                      opacity: isAvailable ? 1 : 0.8,
-                    }}
-                    image={hotel?.propertyImages?.[0]}
-                    alt={hotel?.propertyName}
-                  />
-
-                  <CardContent
-                    style={{
-                      padding: "0px 10px",
-                      position: "relative",
-                      width: "100%",
-                      minHeight: "185px",
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        position: "absolute",
-                        top: { xs: 10, md: 10 },
-                        right: { xs: 30, md: 10 },
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        gap: "6px",
-                      }}
-                    >
-                      <Typography
-                        variant="body2"
-                        fontWeight={600}
-                        color={isAvailable ? color.firstColor : "#888"}
-                        lineHeight={1}
-                        sx={{
-                          fontSize: { xs: "12px", md: "14px" },
-                        }}
-                      >
-                        {getRatingText(hotel?.ratings?.rating)} <br />{" "}
-                        <span style={{ fontSize: "10px" }}>
-                          ({hotel?.reviews || 0} reviews)
-                        </span>
-                      </Typography>
-
-                      <Typography
-                        variant="body2"
-                        fontWeight={600}
-                        color="#fff"
-                        sx={{
-                          background: getRatingColor(hotel?.ratings?.rating),
-                          px: 1,
-                          borderRadius: "4px",
-                          fontSize: { xs: "14px", md: "16px" },
-                          boxShadow: "0px -10px 10px rgba(0, 0, 0, 0.12) inset",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
-                        }}
-                      >
-                        {hotel?.ratings?.rating || "N/A"} <StarRounded fontSize="small" />
-                      </Typography>
-                    </Box>
-
-                    <Typography
-                      sx={{
-                        fontWeight: 600,
-                        color: color.thirdColor,
-                        width: "fit-content",
-                        px: 1,
-                        py: 0.2,
-                        borderRadius: "4px",
-                        fontSize: "8px",
-                        my: 1,
-                        mt: { xs: 2, md: 1.5 },
-                        background: isAvailable ? color.background : "#aaa",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Whatshot style={{ fontSize: "10px", marginRight: "2px" }} />{" "}
-                      HUTS4U PREMIUM
-                    </Typography>
-
-                    <Typography
-                      sx={{
-                        fontSize: "18px",
-                        fontWeight: 600,
-                        color: isAvailable ? color.firstColor : "#666",
-                        mt: { xs: 1.5, md: 1 },
-                        display: "-webkit-box",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        WebkitLineClamp: 1,
-                        WebkitBoxOrient: "vertical",
-                      }}
-                    >
-                      {hotel?.propertyName}
-                    </Typography>
-
-                    <Typography
-                      sx={{
-                        fontFamily: "CustomFontSB",
-                        fontSize: { xs: "12px", md: "14px" },
-                        color: isAvailable ? "textSecondary" : "#888",
-                        display: "-webkit-box",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        WebkitLineClamp: 1,
-                        WebkitBoxOrient: "vertical",
-                      }}
-                    >
-                      {hotel?.city}
-                    </Typography>
-
-                    <Box
-                      sx={{
-                        display: { xs: "none", md: "flex" },
-                        gap: 2,
-                        mt: 2,
-                      }}
-                    >
-                      <Typography
-                        sx={{
-                          fontFamily: "CustomFontSB",
-                          fontSize: "12px",
-                          border: "solid 1px",
-                          borderColor: isAvailable ? "textSecondary" : "#ddd",
-                          color: isAvailable ? "textSecondary" : "#ddd",
-                          width: "fit-content",
-                          px: 1,
-                          borderRadius: "4px",
-                        }}
-                      >
-                        Couple Friendly
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontFamily: "CustomFontSB",
-                          fontSize: "12px",
-                          border: "solid 1px",
-                          borderColor: isAvailable ? "textSecondary" : "#ddd",
-                          color: isAvailable ? "textSecondary" : "#ddd",
-                          width: "fit-content",
-                          px: 1,
-                          borderRadius: "4px",
-                        }}
-                      >
-                        Pet Friendly
-                      </Typography>
-                    </Box>
-
-                    <Box
-                      sx={{
-                        display: "flex",
-                        gap: 0.5,
-                        flexWrap: "wrap",
-                        mt: 2,
-                        maxWidth: { xs: "50%", md: "60%" },
-                      }}
-                    >
-                      {visibleAmenities.map((amenity: any, index: any) => (
-                        <Chip
-                          key={index}
-                          label={amenity}
-                          icon={amenityIcons[amenity] || <AddCircleOutline />}
-                          size="small"
-                          sx={{
-                            bgcolor: "transparent",
-                            fontSize: "10px",
-                            color: isAvailable ? "inherit" : "#aaa",
-                          }}
-                        />
-                      ))}
-                      {remainingAmenities > 0 && (
-                        <Chip
-                          label={`+${remainingAmenities} more`}
-                          size="small"
-                          sx={{
-                            bgcolor: isAvailable ? "#eee" : "#f5f5f5",
-                            fontSize: "10px",
-                            color: isAvailable ? "inherit" : "#aaa",
-                          }}
-                        />
-                      )}
-                    </Box>
-
-                    <Box
-                      sx={{
-                        position: { xs: "absolute", md: "absolute" },
-                        maxWidth: "200px",
-                        minWidth: "120px",
-                        mr: { xs: 3, md: 0 },
-                        bottom: { xs: -16, md: 0 },
-                        right: { xs: -8, md: 0 },
-                        borderRadius: "12px 0px 12px 0px",
-                        p: 1,
-                        background: isAvailable ? color.background : "#f0f0f0",
-                        color: isAvailable ? color.thirdColor : "#888",
-                        textAlign: "end",
-                        border: `solid 1px ${isAvailable ? color.firstColor : "#ddd"}`,
-                        pt: 4,
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          position: "absolute",
-                          top: 0,
-                          left: 0,
-                          borderRadius: "12px 0px 12px 0px",
-                          p: 1,
-                          background: isAvailable ? color.thirdColor : "#ddd",
-                          color: isAvailable ? color.firstColor : "#888",
-                          fontSize: "8px",
-                          fontWeight: 600,
-                        }}
-                      >
-                        {isAvailable ? "Limited Time Offer" : "Unavailable"}
-                      </Box>
-
-                      <Typography
-                        sx={{
-                          textDecoration: "line-through",
-                          fontSize: { xs: "10px", md: "12px" },
-                          color: isAvailable ? "inherit" : "#aaa",
-                        }}
-                      >
-                        ₹
-                        {isAvailable
-                          ? ((hotel?.rooms?.[0] &&
-                            [
-                              hotel.rooms[0].rateFor3Hour,
-                              hotel.rooms[0].rateFor6Hour,
-                              hotel.rooms[0].rateFor12Hour,
-                              hotel.rooms[0].rateFor1Night,
-                            ].find((rate) => rate > 0) * 1.1).toFixed(2))
-                          : "---"}
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontSize: "18px",
-                          color: isAvailable ? "inherit" : "#888",
-                        }}
-                      >
-                        {isAvailable
-                          ? `₹ ${hotel?.rooms?.[0] &&
-                          [
-                            hotel.rooms[0].rateFor3Hour,
-                            hotel.rooms[0].rateFor6Hour,
-                            hotel.rooms[0].rateFor12Hour,
-                            hotel.rooms[0].rateFor1Night,
-                          ].find((rate) => rate > 0)}`
-                          : "---"}
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontSize: { xs: "10px", md: "12px" },
-                          color: isAvailable ? "inherit" : "#aaa",
-                        }}
-                        variant="body2"
-                      >
-                        {isAvailable
-                          ? `+ ₹${hotel.taxnfees || 0} taxes & fees`
-                          : "Not available"}
-                      </Typography>
-                    </Box>
-                  </CardContent>
-                </Card>
-              );
-            })
+          {loading ? (
+            [...Array(3)].map((_, index) => (
+              <HotelCardSkeleton key={index} isMobile={isMobile} />
+            ))
+          ) : filteredData.length > 0 ? (
+            filteredData.map((hotel) => (
+              <HotelCard
+                key={hotel.id}
+                hotel={hotel}
+                queryParams={queryParams}
+                isMobile={isMobile}
+              />
+            ))
           ) : (
             <Box sx={{ textAlign: "center", py: 4 }}>
               <Typography variant="h6" color="textSecondary" sx={{ mb: 2 }}>
                 No properties matched your search criteria
               </Typography>
               <Typography variant="body1">
-                Try exploring a different location or adjusting your filters to find the best results.
+                Try exploring a different location or adjusting your filters
               </Typography>
             </Box>
           )}
@@ -907,8 +839,6 @@ const SearchResults = () => {
     </Box>
   );
 };
-
-export default SearchResults;
 
 const style = {
   background: "#f3eee1",
@@ -942,3 +872,5 @@ const StyledFormControlLabel = styled(FormControlLabel)({
     fontWeight: 600,
   },
 });
+
+export default SearchResults;

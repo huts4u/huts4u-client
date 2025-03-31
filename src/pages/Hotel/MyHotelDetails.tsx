@@ -27,7 +27,8 @@ import CustomButton from "../../components/CustomButton";
 import { amenityIcons } from "../../components/data";
 import { BoxStyle, ImageGrid, RoomAmenities } from "../../components/style";
 import theme from "../../theme";
-import { getMyAllHotelswithBelongsTo } from "../../services/services";
+import { getAllBookingsofMyHotel, getMyAllHotelswithBelongsTo } from "../../services/services";
+import BookingTable from "./BookingTable";
 
 const hotelData = {
   propertyName: "Hotel Metropol by Maier Private hotels",
@@ -128,6 +129,31 @@ const MyHotelDetails = () => {
   const [selectedRoom, setSelectedRoom] = useState(hotelData.rooms[0]);
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const { id } = useParams();
+
+  const [booking, setBooking] = useState<any[]>([])
+
+  useEffect(() => {
+    const today = new Date();
+    const next10Days = new Date();
+    next10Days.setDate(today.getDate() + 10);
+
+    getAllBookingsofMyHotel({
+      data: { filter: "" },
+      page: 0,
+      pageSize: 50,
+      order: [["createdAt", "ASC"]],
+    }).then((res) => {
+      const allBookings = res?.data?.data?.rows || [];
+
+      // Filter bookings where checkInDate is within the next 10 days
+      const filteredBookings = allBookings.filter((booking: any) => {
+        const checkInDate = new Date(booking.checkInDate);
+        return checkInDate >= today && checkInDate <= next10Days;
+      });
+
+      setBooking(filteredBookings);
+    });
+  }, []);
 
   const [expanded, setExpanded] = useState(false);
   const maxLength = isMobile ? 100 : 350;
@@ -534,6 +560,11 @@ const MyHotelDetails = () => {
           <Typography>Hotel policies and guidelines.</Typography>
         </TabPanel> */}
         </Box>
+        <Grid container spacing={3} mt={0}>
+          <Grid item xs={12} md={12}>
+            <BookingTable booking={booking} hotelId={id}></BookingTable>
+          </Grid>
+        </Grid>
       </Box>
     </Box>
   );

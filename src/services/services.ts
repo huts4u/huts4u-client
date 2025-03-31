@@ -81,6 +81,29 @@ export function editHotel(id:any,payLoad:any){
     return client.patch(`/Hotel/update-record/${id}`, payLoad);
 }
 
-export function getHotel(userId: any) {
-    return client.get(`/Hotel/search-one-record`, { params: { userId} });
+export function getHotel(id: any) {
+    return client.get(`/Hotel/search-one-record`, { params: { id} });
 };
+
+export function editRoom(id:any,payLoad:any){
+    return client.patch(`/Room/update-record/${id}`, payLoad);
+}
+
+export function postBooking(payLoad:any){
+    return client.post('/Booking/create', payLoad);
+}
+export function getAllMyBookings(payLoad:any){
+    return client.post('/Booking/search-record', payLoad);
+}
+
+export function deleteHotel(id:any){
+    return client.delete(`/Hotel/delete-record/${id}`);
+}
+
+export function createContact(payLoad:any){
+    return client.post('/Contact/create', payLoad);
+}
+
+export function getAllMessage(payLoad:any){
+    return client.post('/Contact/search-record', payLoad);
+}

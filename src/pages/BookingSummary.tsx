@@ -173,6 +173,30 @@ const BookingSummary = () => {
 
   const textContainerRef = useRef<HTMLDivElement>(null);
   const [imageHeight, setImageHeight] = useState("auto");
+  const calculateCheckoutTime = () => {
+    if (bookingType === "hourly" && checkinTime && extractedNumber) {
+      // For hourly bookings, calculate checkout time by adding hours to check-in time
+      const checkInDateTime = dayjs(`${checkinDate} ${checkinTime}`);
+      const checkOutDateTime = checkInDateTime.add(extractedNumber, 'hour');
+
+      return {
+        checkInDate: checkInDateTime.format("DD MMM YYYY"),
+        checkInTime: checkInDateTime.format("hh:mm A"),
+        checkOutDate: checkOutDateTime.format("DD MMM YYYY"),
+        checkOutTime: checkOutDateTime.format("hh:mm A"),
+        duration: `${extractedNumber} hrs`
+      };
+    } else {
+      // For overnight bookings, use the provided dates
+      return {
+        checkInDate: dayjs(checkinDate).format("DD MMM YYYY"),
+        checkInTime: "12.00 PM",
+        checkOutDate: dayjs(checkOutDate).format("DD MMM YYYY"),
+        checkOutTime: "11.00 AM",
+        duration: dayjs(checkOutDate).diff(dayjs(checkinDate), 'day') + 1 + " night(s)"
+      };
+    }
+  };
 
   useEffect(() => {
     if (textContainerRef.current) {
@@ -426,6 +450,17 @@ const BookingSummary = () => {
               <RenderRazorpay
                 orderDetails={orderDetails}
                 amount={bookingData.roomPrice}
+                bookingDetails={{
+                  hotel,
+                  room,
+                  guestInfo: formik.values,
+                  timing: calculateCheckoutTime(),
+                  pricingDetails,
+                  bookingType,
+                  rooms,
+                  adults,
+                  children
+                }}
               />
             )}
           </form>

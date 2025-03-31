@@ -16,7 +16,7 @@ import color from "../../components/color";
 import CustomButton from "../../components/CustomButton";
 import { CustomTextField } from "../../components/style";
 import { editHotel, getMyAllHotelswithBelongsTo } from "../../services/services";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getUserRole } from "../../services/axiosClient";
 import { toast } from "react-toastify";
 
@@ -104,6 +104,8 @@ const ApplicationPreview = () => {
     setOpenDialog(true);
   };
 
+  const navigate = useNavigate();
+
   const handleConfirmAction = () => {
     if (!actionType) return;
 
@@ -114,13 +116,13 @@ const ApplicationPreview = () => {
 
     editHotel(id, payLoad)
       .then((res) => {
-        console.log(res);
+
         toast.success(`Application ${actionType === "approve" ? "Approved" : "Rejected"} successfully`);
         setOpenDialog(false);
-        // You might want to refresh the data or navigate away
+        navigate(-1);
       })
       .catch((err) => {
-        console.error(err);
+        // console.error(err);
         toast.error(`Error while ${actionType === "approve" ? "approving" : "rejecting"} application`);
       });
   };

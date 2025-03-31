@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { verifyPayment } from "../../services/services";
+import { postBooking, verifyPayment } from "../../services/services";
 import { R_KEY_ID, R_KEY_SECRET } from "../../services/Secret";
 import { useNavigate } from "react-router-dom";
 import {
@@ -11,19 +11,44 @@ import {
 } from "@mui/material";
 import color from "../color";
 import { toast } from "react-toastify";
+import { getUserId } from "../../services/axiosClient";
+interface BookingDetails {
+    hotel: any;
+    room: any;
+    guestInfo: {
+        name: string;
+        email: string;
+        phoneNumber: string;
+    };
+    timing: {
+        checkInDate: string;
+        checkInTime: string;
+        checkOutDate: string;
+        checkOutTime: string;
+        duration: string;
+    };
+    pricingDetails: any;
+    bookingType: string | null;
+    rooms: string | null;
+    adults: string | null;
+    children: string | null;
+}
 
 interface RenderRazorpayProps {
     orderDetails: any;
     amount: any;
+    bookingDetails: BookingDetails;
 
 }
+
 
 const RenderRazorpay: React.FC<RenderRazorpayProps> = ({
     orderDetails,
     // amount,
+    bookingDetails
 
 }) => {
-    console.log(orderDetails)
+    console.log(bookingDetails)
     const navigate = useNavigate();
     const [open, setOpen] = useState(true);
 
@@ -53,7 +78,7 @@ const RenderRazorpay: React.FC<RenderRazorpayProps> = ({
             return;
         }
 
-        console.log(orderDetails)
+        // console.log(orderDetails)
         const options = {
             key: R_KEY_ID || "",
             amount: orderDetails.data.amount,
@@ -67,17 +92,31 @@ const RenderRazorpay: React.FC<RenderRazorpayProps> = ({
                         signature: response.razorpay_signature,
                     });
                     alert("Payment Successful");
-                    // const payLoad = {
-                    //     transactionId: response.razorpay_payment_id,
-                    //     status: "success",
-                    //     amount: amount,
-                    //     courseId: courseId,
-                    //     userId: userId,
-                    // };
-                    // console.log(payLoad);
-                    // navigate("/my-courses");
-                    // toast('payment Successful!')
-                    navigate('/');
+                    const payLoad = {
+                        userId: getUserId(),
+                        hotelId: bookingDetails?.hotel?.id,
+                        geustName: bookingDetails?.guestInfo?.name,
+                        amountPaid: orderDetails.data.amount,
+                        checkInDate: bookingDetails?.timing?.checkInDate,
+                        checkInTime: bookingDetails?.timing?.checkInTime,
+                        checkOutDate: bookingDetails?.timing?.checkOutDate,
+                        checkOutTime: bookingDetails?.timing?.checkOutTime,
+                        bookingType: bookingDetails?.bookingType,
+                        geustDetails: bookingDetails?.guestInfo,
+                        adults: bookingDetails?.adults,
+                        children: bookingDetails?.children,
+                        hotelName: bookingDetails?.hotel?.propertyName,
+                        status: 'pending'
+                    }
+
+                    postBooking(payLoad).then((res) => {
+
+                        toast(res?.data?.msg)
+                    }).catch((err) => {
+                        console.log(err);
+                    })
+                    navigate('/my-bookings');
+
                 } catch (error) {
                     alert("Payment verification failed. Please try again.");
                 }

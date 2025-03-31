@@ -75,7 +75,7 @@ const Signup = () => {
       sx={{
         margin: "auto",
         minHeight: "calc(100vh - 64px)",
-        background: "url('/assets/login.jpg')",
+        background: "url('https://s3.ap-south-1.amazonaws.com/huts4u.shop/login.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "bottom",
         display: "flex",

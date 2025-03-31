@@ -1,51 +1,21 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
-import dayjs from "dayjs";
 
 const images = [
-  { src: "/assets/khandagiri.jpg", name: "khandagiri" },
-  { src: "/assets/puri.jpg", name: "puri" },
-  { src: "/assets/dhauli.jpg", name: "dhauli" },
-  { src: "/assets/konark.jpg", name: "konark" },
-  { src: "/assets/chilika.jpg", name: "chilika" },
+  { src: "https://s3.ap-south-1.amazonaws.com/huts4u.shop/khandagiri_optimized.jpg", name: "khandagiri" },
+  { src: "https://s3.ap-south-1.amazonaws.com/huts4u.shop/puri.jpg", name: "puri" },
+  { src: "https://s3.ap-south-1.amazonaws.com/huts4u.shop/dhauli.jpg", name: "dhauli" },
+  { src: "https://s3.ap-south-1.amazonaws.com/huts4u.shop/konark_hero_optimized.jpg", name: "konark" },
+  { src: "https://s3.ap-south-1.amazonaws.com/huts4u.shop/chilika.jpg", name: "chilika" },
 ];
 
 const ImageGallery = () => {
+  const navigate = useNavigate();
 
-  const locationsMap: Record<string, string> = {
-    khandagiri: "Khandagiri, Khordha, Odisha, 751015, India",
-    puri: "Puri, Puri (M), Puri, Odisha, 752001, India",
-    dhauli: "Dhauli, Uttara P.S, Khordha, Odisha, 752104, India",
-    konark: "Konark, Puri, Odisha, 752111, India",
-    chilika: "Chilika Bypass, Belapada, Balugaon, Khordha, Odisha, 752030, India",
-  };
-  
   const handleClick = (name: string) => {
-    const location = locationsMap[name] || "Unknown Location";
-  
-    const searchData = {
-      bookingType: "hourly",
-      location,
-      time: dayjs().format("HH:mm") ,
-      checkinDate: dayjs(),
-      checkOutDate: dayjs(),
-      rooms: 1,
-      adults: 2,
-      children: 0,
-    };
-    const queryParams = new URLSearchParams();
-  
-    Object.entries(searchData).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        queryParams.append(key, String(value));
-      }
-    });
-  
-    window.location.href = `/search?${queryParams.toString()}`;
+    navigate(`/search/${name}`);
   };
-
-
 
   return (
     <Box
