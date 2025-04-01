@@ -141,7 +141,7 @@ const SearchSection = () => {
       }
     });
 
-    window.location.href = `/search?${queryParams.toString()}`;
+    window.location.assign(`/search?${queryParams.toString()}`);
     setShowDetails(false);
   };
 

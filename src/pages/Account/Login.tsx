@@ -43,10 +43,12 @@ const Login = () => {
         if (res?.data?.data?.accessToken) {
           setCurrentAccessToken(res?.data?.data?.accessToken);
         }
+
         if (res?.data?.data?.role === "Hotel") {
-          window.location.href = "/my-hotels";
+          window.location.assign("/dashboard");
+
         } else {
-          window.location.href = "/admin-homepage";
+          window.location.assign("/admin-homepage");
         }
         toast.success(res?.data?.msg);
       }).catch((err) => {
