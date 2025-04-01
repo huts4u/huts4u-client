@@ -587,8 +587,6 @@ const PropertyForm = () => {
               // Check if room exists (has ID) or is new
               if (room.id) {
                 return editRoom(room.id, roomPayload);
-              } else {
-                return roomPost(roomPayload);
               }
             });
 
