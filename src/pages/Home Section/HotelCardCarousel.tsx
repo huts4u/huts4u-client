@@ -20,12 +20,12 @@ import { useNavigate } from "react-router-dom";
 
 const HotelCardCarousel = () => {
   const { isBelow400px } = useScreenSize();
-
+  const [mergedData, setMergedData] = useState<any[]>([]);
   const settings = {
     dots: false,
-    infinite: true,
+    infinite: false,
     speed: 500,
-    slidesToShow: 3,
+    slidesToShow: Math.min(3, mergedData.length),
     slidesToScroll: 1,
     // prevArrow: <CustomPrevArrow />,
     nextArrow: <CustomNextArrow />,
@@ -45,7 +45,7 @@ const HotelCardCarousel = () => {
     ],
   };
 
-  const [mergedData, setMergedData] = useState<any[]>([]);
+
 
   useEffect(() => {
     const fetchHotelsWithRooms = async () => {
