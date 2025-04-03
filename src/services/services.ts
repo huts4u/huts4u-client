@@ -107,3 +107,11 @@ export function createContact(payLoad:any){
 export function getAllMessage(payLoad:any){
     return client.post('/Contact/search-record', payLoad);
 }
+
+export function getUserProfile(id:any){
+    return client.get(`/User/get-one-record/${id}`);
+}
+
+export function getHotelByUser(userId: any) {
+    return client.get(`/Hotel/search-one-record`, { params: { userId} });
+};

@@ -79,6 +79,15 @@ const BookingSummary = () => {
   }, []);
 
 
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [otpData, setOtpData] = useState({
+    phone: '',
+    name: '',
+    email: '',
+    token: ''
+  });
+
+
   const [orderDetails, setOrderDetails] = useState(null);
 
   const totalAmount = pricingDetails?.totalPrice;
@@ -156,13 +165,21 @@ const BookingSummary = () => {
         sendOTP(payLoad)
           .then((res) => {
             console.log(res);
+            setShowOtpModal(true);
             toast("Otp send Succesfully please verify the OTP");
-            openModal(
-              values.phoneNumber.slice(2),
-              values.name,
-              values.email,
-              res?.data?.data
-            );
+            setOtpData({
+              phone: values.phoneNumber.slice(2),
+              name: values.name,
+              email: values.email,
+              token: res?.data?.data
+            });
+            // openModal(
+            //   values.phoneNumber.slice(2),
+            //   values.name,
+            //   values.email,
+            //   res?.data?.data
+            // );
+
           })
           .catch((err) => {
             console.log(err);
@@ -170,6 +187,10 @@ const BookingSummary = () => {
       }
     },
   });
+  const handleOtpSuccess = () => {
+    setShowOtpModal(false);
+    handlePayment(); // Directly call payment after verification
+  };
 
   const textContainerRef = useRef<HTMLDivElement>(null);
   const [imageHeight, setImageHeight] = useState("auto");
@@ -443,7 +464,15 @@ const BookingSummary = () => {
               </>
             )}
 
-            <LoginOtpModal></LoginOtpModal>
+            <LoginOtpModal
+              open={showOtpModal}
+              onClose={() => setShowOtpModal(false)}
+              onVerificationSuccess={handleOtpSuccess}
+              phone={otpData.phone}
+              name={otpData.name}
+              email={otpData.email}
+              token={otpData.token}
+            ></LoginOtpModal>
 
             {/* Render Razorpay */}
             {orderDetails && (

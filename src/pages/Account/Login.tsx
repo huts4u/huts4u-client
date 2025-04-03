@@ -45,7 +45,7 @@ const Login = () => {
         }
 
         if (res?.data?.data?.role === "Hotel") {
-          window.location.assign("/dashboard");
+          window.location.href = "/dashboard";
 
         } else {
           window.location.assign("/admin-homepage");

@@ -28,7 +28,7 @@ import {
 import color from "../../components/color";
 import BookingTable from "./BookingTable";
 import { useEffect, useState } from "react";
-import { getAllBookingsofMyHotel } from "../../services/services";
+import { getAllHotels, getAllMyBookings } from "../../services/services";
 import { getUserId } from "../../services/axiosClient";
 
 const Dashboard = () => {
@@ -38,7 +38,74 @@ const Dashboard = () => {
     { name: "Feb 28", revenue: 215060 },
   ];
 
+  const [hotels, setHotels] = useState<Array<{ id: string, name: string }>>([]);
+  const [hotelBookings, setHotelBookings] = useState<Record<string, any[]>>({});
+  const [selectedHotelId, setSelectedHotelId] = useState<string>("");
 
+  useEffect(() => {
+    const fetchHotels = async () => {
+      const payLoad = {
+        data: { filter: "", userId: getUserId() },
+        page: 0,
+        pageSize: 50,
+        order: [["createdAt", "ASC"]]
+      };
+
+      try {
+        const res = await getAllHotels(payLoad);
+        if (res?.data?.data?.rows) {
+          const hotelData = res.data.data.rows.map((hotel: any) => ({
+            id: hotel.id,
+            name: hotel.propertyName // assuming the API returns a 'name' field
+          }));
+          setHotels(hotelData);
+          if (hotelData.length > 0) {
+            setSelectedHotelId(hotelData[0].id);
+          }
+          return hotelData.map((hotel: any) => hotel.id);
+        }
+      } catch (error) {
+        console.error("Error fetching hotels:", error);
+      }
+      return [];
+    };
+
+    const fetchBookingsForHotels = async (ids: string[]) => {
+      if (ids.length === 0) return;
+
+      const bookingsMap: Record<string, any[]> = {};
+
+      await Promise.all(
+        ids.map(async (hotelId) => {
+          try {
+            const payLoad = {
+              data: {
+                filter: "",
+                hotelId: hotelId
+              },
+              page: 0,
+              pageSize: 50,
+              order: [["checkInDate", "ASC"]]
+            };
+
+            const bookingsRes = await getAllMyBookings(payLoad);
+            bookingsMap[hotelId] = bookingsRes?.data?.data?.rows || [];
+          } catch (error) {
+            console.error(`Error fetching bookings for hotel ${hotelId}:`, error);
+            bookingsMap[hotelId] = [];
+          }
+        })
+      );
+
+      setHotelBookings(bookingsMap);
+    };
+
+    fetchHotels().then(ids => fetchBookingsForHotels(ids ?? []));
+  }, []);
+
+  const handleHotelChange = (event: any) => {
+    setSelectedHotelId(event.target.value);
+  };
 
   return (
     <Box p={3} sx={{ background: color.thirdColor }}>
@@ -74,8 +141,6 @@ const Dashboard = () => {
                     background: color.thirdColor,
                     boxShadow: "0px 0px 14px rgba(0, 0, 0, 0.14)",
                     borderRadius: "12px",
-                    // border:'solid 1px',
-                    // borderColor:color.firstColor
                   }}
                 >
                   <CardContent>
@@ -281,9 +346,52 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         </Grid>
+
+        {/* Booking Table Section */}
+        <Grid item xs={12}>
+          <Card
+            sx={{
+              background: color.thirdColor,
+              boxShadow: "0px 0px 14px rgba(0, 0, 0, 0.14)",
+              borderRadius: "12px",
+            }}
+          >
+            <CardContent>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                mb={2}
+              >
+                <Typography fontWeight={"bold"} variant="h6">
+                  Upcoming Bookings
+                </Typography>
+                {hotels.length > 0 && (
+                  <FormControl sx={{ minWidth: 200 }}>
+                    <Select
+                      value={selectedHotelId}
+                      onChange={handleHotelChange}
+                      size="small"
+                    >
+                      {hotels.map((hotel) => (
+                        <MenuItem key={hotel.id} value={hotel.id}>
+                          {hotel.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                )}
+              </Box>
+              {selectedHotelId && (
+                <BookingTable
+                  bookings={hotelBookings[selectedHotelId] || []}
+                  hotelId={selectedHotelId}
+                />
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
       </Grid>
-
-
     </Box>
   );
 };

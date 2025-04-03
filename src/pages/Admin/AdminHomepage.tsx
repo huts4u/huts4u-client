@@ -21,50 +21,54 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { deleteHotel, deleteUser, getAllHotels, getAllUser } from "../../services/services";
+import { deleteHotel, getAllBookingsofMyHotel, getAllHotels } from "../../services/services";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 const AdminHomepage: React.FC = () => {
-    const [users, setUsers] = useState<any[]>([]);
+    const [bookings, setBookings] = useState<any[]>([]);
     const [hotels, setHotels] = useState<any[]>([]);
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedId, setSelectedId] = useState<number | null>(null);
-    const [deleteType, setDeleteType] = useState<"user" | "hotel" | null>(null);
+    const [deleteType, setDeleteType] = useState<"booking" | "hotel" | null>(null);
     const [selectedName, setSelectedName] = useState<string>("");
 
     useEffect(() => {
-        const payLoad = {
-            data: { filter: "" },
-            page: 0,
-            pageSize: 50,
-            order: [["createdAt", "ASC"]]
-        };
-        getAllUser(payLoad).then((res) => {
-            setUsers(res?.data?.data?.rows);
-        }).catch((err) => {
-            console.log(err);
-        });
-    }, []);
+        // Fetch bookings
 
-    useEffect(() => {
+
+        // Fetch hotels
         const payLoad = {
             data: { filter: "" },
             page: 0,
             pageSize: 50,
             order: [["createdAt", "ASC"]]
         };
+        getAllBookingsofMyHotel(payLoad).then((res) => {
+            const sortedBookings = (res?.data?.data?.rows || [])
+                .filter((booking: any) => booking.checkInDate) // Ensure checkinDate exists
+                .sort((a: any, b: any) =>
+                    new Date(b.checkInDate).getTime() - new Date(a.checkInDate).getTime()
+                );
+
+            setBookings(sortedBookings);
+        }).catch((err) => {
+            console.log(err);
+        })
         getAllHotels(payLoad).then((res) => {
-            console.log(res)
-            setHotels(res?.data?.data?.rows);
+            setHotels(res?.data?.data?.rows || []);
         }).catch((err) => {
             console.log(err);
         });
     }, []);
+    const formattedAmount = (amount: any) => {
+        const strAmount = amount.toString();
+        return strAmount.slice(0, -2) + "." + strAmount.slice(-2);
+    };
 
     const navigate = useNavigate();
 
-    const handleOpenDialog = (id: number, type: "user" | "hotel", name: string) => {
+    const handleOpenDialog = (id: number, type: "booking" | "hotel", name: string) => {
         setSelectedId(id);
         setDeleteType(type);
         setSelectedName(name);
@@ -81,57 +85,54 @@ const AdminHomepage: React.FC = () => {
     const handleConfirmDelete = () => {
         if (!selectedId || !deleteType) return;
 
-        if (deleteType === "user") {
-            deleteUser(selectedId).then(() => {
-                toast.success("User deleted successfully");
-                setUsers(users.filter(user => user.id !== selectedId));
-            }).catch((err) => {
-                console.log(err);
-                toast.error("Failed to delete user");
-            });
-        } else if (deleteType === "hotel") {
+        if (deleteType === "hotel") {
             deleteHotel(selectedId).then((res) => {
                 setHotels(hotels.filter(hotel => hotel.id !== selectedId));
                 toast.success("Hotel deleted successfully");
             }).catch((err) => {
                 console.log(err);
-            })
-
+                toast.error("Failed to delete hotel");
+            });
         }
+        // Add booking deletion logic here if needed
         handleCloseDialog();
     };
 
     return (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3, padding: 3, width: "90%", alignItems: 'center' }}>
 
-            {/* User Table Card */}
+            {/* Booking Table Card */}
             <Card sx={{ width: "100%", display: "flex", flexDirection: "column" }}>
                 <CardContent sx={{ flex: 1 }}>
-                    <Typography variant="h5" gutterBottom>User Table</Typography>
+                    <Typography variant="h5" gutterBottom>Booking Table</Typography>
                     <TableContainer component={Paper} sx={{ maxHeight: "400px", overflowY: "auto" }}>
                         <Table stickyHeader>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>ID</TableCell>
-                                    <TableCell>User Name</TableCell>
-                                    <TableCell>Email</TableCell>
-                                    <TableCell>Phone Number</TableCell>
-                                    <TableCell>Role</TableCell>
-                                    {/* <TableCell>Action</TableCell> */}
+                                    <TableCell>Booking ID</TableCell>
+                                    <TableCell>Hotel Name</TableCell>
+                                    <TableCell>Guest Name</TableCell>
+                                    <TableCell>Check-In</TableCell>
+                                    <TableCell>Check-Out</TableCell>
+                                    <TableCell>Status</TableCell>
+                                    <TableCell>Amount</TableCell>
+                                    {/* <TableCell>Actions</TableCell> */}
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {users.map((user) => (
-                                    <TableRow key={user.id}>
-                                        <TableCell>{user.id}</TableCell>
-                                        <TableCell>{user.userName}</TableCell>
-                                        <TableCell>{user.email}</TableCell>
-                                        <TableCell>{user.phoneNumber}</TableCell>
-                                        <TableCell>{user.role}</TableCell>
+                                {bookings.map((booking) => (
+                                    <TableRow key={booking.id}>
+                                        <TableCell>{booking.id}</TableCell>
+                                        <TableCell>{booking?.hotelName || 'N/A'}</TableCell>
+                                        <TableCell>{booking?.geustName || 'N/A'}</TableCell>
+                                        <TableCell>{booking.checkInDate || 'N/A'}</TableCell>
+                                        <TableCell>{booking.checkOutDate || 'N/A'}</TableCell>
+                                        <TableCell>{booking.status || 'N/A'}</TableCell>
+                                        <TableCell>₹{formattedAmount(booking.amountPaid) || '0'}</TableCell>
                                         {/* <TableCell>
-                                            <IconButton 
-                                                color="error" 
-                                                onClick={() => handleOpenDialog(user.id, "user", user.userName)}
+                                            <IconButton
+                                                color="error"
+                                                onClick={() => handleOpenDialog(booking.id, "booking", `Booking #${booking.id}`)}
                                             >
                                                 <DeleteIcon />
                                             </IconButton>
@@ -193,15 +194,15 @@ const AdminHomepage: React.FC = () => {
                 <DialogTitle>Confirm Deletion</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        {deleteType === "user"
-                            ? `Are you sure you want to delete the user "${selectedName}"? This action cannot be undone.`
-                            : `Are you sure you want to delete the hotel "${selectedName}"? This action cannot be undone.`}
+                        {deleteType === "hotel"
+                            ? `Are you sure you want to delete the hotel "${selectedName}"? This action cannot be undone.`
+                            : `Are you sure you want to delete the booking "${selectedName}"? This action cannot be undone.`}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseDialog} color="primary">Cancel</Button>
                     <Button onClick={handleConfirmDelete} color="error" autoFocus>
-                        Delete {deleteType === "user" ? "User" : "Hotel"}
+                        Delete {deleteType === "hotel" ? "Hotel" : "Booking"}
                     </Button>
                 </DialogActions>
             </Dialog>

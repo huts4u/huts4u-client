@@ -825,7 +825,7 @@ const HotelDetails = () => {
                 Book Now
               </CustomButton>
 
-              <LoginOtpModal />
+              {/* <LoginOtpModal /> */}
             </Box>
           </Box>
         </Box>

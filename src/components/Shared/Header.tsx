@@ -232,21 +232,24 @@ const Header: React.FC = () => {
 
             ) : (
               <>
-                {" "}
-                <CustomButton
-                  onClick={() => {
-                    navigate("/login");
-                  }}
-                  variant="contained"
-                  customStyles={{
-                    fontSize: "12px",
-                    marginRight: "20px",
-                  }}
-                >
-                  {" "}
-                  Join As a Hotel
-                </CustomButton>
+                {!isMobile && (
+                  <CustomButton
+                    onClick={() => {
+                      navigate("/login");
+                    }}
+                    variant="contained"
+                    customStyles={{
+                      fontSize: "12px",
+                      marginRight: "20px",
+                    }}
+                  >
+                    Join As a Hotel
+                  </CustomButton>
+                )}
               </>
+
+
+
             )}
             {isMobile && (
               <IconButton color="inherit" onClick={toggleDrawer(true)}>
@@ -301,32 +304,32 @@ const Header: React.FC = () => {
                   </ListItemButton>
                 </ListItem>
               ))}
-                 <ListItem  disablePadding>
-                  <ListItemButton
-                    onClick={() => {
-                      navigate('/login');
-                      setDrawerOpen(false);
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() => {
+                    navigate('/login');
+                    setDrawerOpen(false);
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      mr: 1,
+                      p: 0.5,
+                      background: color.background,
+                      borderRadius: "50%",
+                      color: "white",
+                      width: "24px",
+                      height: "24px",
+                      minWidth: "0px",
                     }}
                   >
-                    <ListItemIcon
-                      sx={{
-                        mr: 1,
-                        p: 0.5,
-                        background: color.background,
-                        borderRadius: "50%",
-                        color: "white",
-                        width: "24px",
-                        height: "24px",
-                        minWidth: "0px",
-                      }}
-                    >
-                      <HotelOutlined></HotelOutlined>
-                    </ListItemIcon>
-                    <ListItemText primary={'Join As a Hotel'} />
+                    <HotelOutlined></HotelOutlined>
+                  </ListItemIcon>
+                  <ListItemText primary={'Join As a Hotel'} />
 
-                    <ChevronRightRounded />
-                  </ListItemButton>
-                </ListItem>
+                  <ChevronRightRounded />
+                </ListItemButton>
+              </ListItem>
             </List>
           </Drawer>
 

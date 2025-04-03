@@ -540,16 +540,16 @@ const MyHotels = () => {
                         fontSize: { xs: "10px", md: "12px" },
                       }}
                     >
-                      ₹{hotel?.rooms[0]?.rateFor1Night}.00
+                      ₹{hotel?.rooms[0]?.rateFor1Night}
                     </Typography>
                     <Typography sx={{ fontSize: "18px" }}>
-                      ₹{hotel?.rooms[0]?.rateFor1Night}.00
+                      ₹{hotel?.rooms[0]?.rateFor1Night}
                     </Typography>
                     <Typography
                       sx={{ fontSize: { xs: "10px", md: "12px" } }}
                       variant="body2"
                     >
-                      + ₹{hotel.taxnfees} taxes & fees
+                      + ₹{hotel?.rooms[0]?.taxRate} taxes & fees
                     </Typography>
                   </Box>
                 </CardContent>

@@ -13,7 +13,24 @@ import {
   setCurrentUser,
 } from "../../services/axiosClient";
 
-const LoginOtpModal = () => {
+interface LoginOtpModalProps {
+  open: boolean;
+  onClose: () => void;
+  onVerificationSuccess: () => void;
+  phone: string;
+  name: string;
+  email: string;
+  token: string;
+}
+
+const LoginOtpModal = ({ open,
+  onClose,
+  onVerificationSuccess,
+  phone,
+  name,
+  email,
+  token
+}: LoginOtpModalProps) => {
   const [step, setStep] = useState(1);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [countryCode, setCountryCode] = useState("in");
@@ -21,12 +38,12 @@ const LoginOtpModal = () => {
   const navigate = useNavigate();
 
   const location = useLocation();
-  const state = location.state;
-  const queryParams = new URLSearchParams(location.search);
-  const phone = queryParams.get("phone");
-  const name = queryParams.get("name");
-  const session = queryParams.get("token");
-  const email = queryParams.get("email");
+  // const state = location.state;
+  // const queryParams = new URLSearchParams(location.search);
+  // const phone = queryParams.get("phone");
+  // const name = queryParams.get("name");
+  // const session = queryParams.get("token");
+  // const email = queryParams.get("email");
 
   const [otp, setOtp] = useState(Array(4).fill(""));
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -78,35 +95,28 @@ const LoginOtpModal = () => {
 
   const handleOtpSubmit = () => {
     if (otp.join("").length === 4) {
-      const payLoad = {
+      verifyOTP({
         otp: otp.join(""),
-        sessionId: session,
-        phone: phone,
-        name: name,
-        email: email,
-      };
-      verifyOTP(payLoad)
+        sessionId: token,
+        phone,
+        name,
+        email
+      })
         .then((res) => {
           setCurrentAccessToken(res?.data?.data?.token);
           setCurrentUser(res?.data?.data?.user);
-          toast(res?.data?.msg);
-          handleClose();
-
-          // ✅ Trigger payment if the callback exists
-          if (location.state?.onPaymentSuccess) {
-            location.state.onPaymentSuccess(); // 🔥 Call handlePayment from the previous page
-          }
+          toast.success("Verified successfully!");
+          onVerificationSuccess(); // Call the success callback
+          onClose();
         })
         .catch((err) => {
-          toast(err);
+          toast.error("Verification failed");
         });
-    } else {
-      alert("Enter complete OTP");
     }
   };
 
   return (
-    <Modal open={isModalOpen} onClose={handleClose}>
+    <Modal open={open} onClose={onClose}>
       <Box sx={modalStyle}>
         {/* {step === 1 ? (
           <form

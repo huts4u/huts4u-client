@@ -2094,17 +2094,17 @@ const PropertyForm = () => {
                   type="submit"
                   variant="contained"
                   color="primary"
-                  onClick={() => {
-                    // Force validation
-                    formik.validateForm().then(errors => {
-                      console.log("Form errors:", errors);
-                      if (Object.keys(errors).length === 0) {
-                        formik.submitForm();
-                      } else {
-                        toast.error("Please fix the form errors");
-                      }
-                    });
-                  }}
+                // onClick={() => {
+                //   // Force validation
+                //   formik.validateForm().then(errors => {
+                //     console.log("Form errors:", errors);
+                //     if (Object.keys(errors).length === 0) {
+                //       formik.submitForm();
+                //     } else {
+                //       toast.error("Please fix the form errors");
+                //     }
+                //   });
+                // }}
                 >
                   {isEditMode ? "Save Changes" : "Submit Application"}
                 </CustomButton>
