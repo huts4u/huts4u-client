@@ -1,10 +1,10 @@
 import { createAxiosClient } from "./axiosConfig";
 import { jwtDecode } from "jwt-decode";
 
-const BASE_URL = 'http://localhost:8080/api/'
+// const BASE_URL = 'http://localhost:8080/api/'
 
 
-// const BASE_URL = 'https://huts4u.shop/api'
+const BASE_URL = 'https://huts4u.shop/api'
 
 
 export function getCurrentAccessToken() {

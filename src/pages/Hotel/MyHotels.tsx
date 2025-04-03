@@ -534,17 +534,36 @@ const MyHotels = () => {
                       Limited Time Offer
                     </Box>
 
-                    <Typography
-                      sx={{
-                        textDecoration: "line-through",
-                        fontSize: { xs: "10px", md: "12px" },
-                      }}
-                    >
-                      ₹{hotel?.rooms[0]?.rateFor1Night}
-                    </Typography>
-                    <Typography sx={{ fontSize: "18px" }}>
-                      ₹{hotel?.rooms[0]?.rateFor1Night}
-                    </Typography>
+                    {
+                      hotel.rooms[0].stayType === 'Overnight' ? (<>
+                        <Typography
+                          sx={{
+                            textDecoration: "line-through",
+                            fontSize: { xs: "10px", md: "12px" },
+                          }}
+                        >
+                          ₹{hotel?.rooms[0]?.rateFor1Night}
+                        </Typography>
+                        <Typography sx={{ fontSize: "18px" }}>
+                          ₹{hotel?.rooms[0]?.rateFor1Night}
+                        </Typography>
+                      </>) : (<>
+
+                        <Typography
+                          sx={{
+                            textDecoration: "line-through",
+                            fontSize: { xs: "10px", md: "12px" },
+                          }}
+                        >
+                          ₹{hotel?.rooms[0]?.rateFor3Hour}
+                        </Typography>
+                        <Typography sx={{ fontSize: "18px" }}>
+                          ₹{hotel?.rooms[0]?.rateFor3Hour}
+                        </Typography>
+                      </>)
+                    }
+
+
                     <Typography
                       sx={{ fontSize: { xs: "10px", md: "12px" } }}
                       variant="body2"
