@@ -70,7 +70,7 @@ const Footer = () => {
     <Box
       sx={{
         background: renderColor,
-        pt: { xs: 20, md: 30 },
+        pt: { xs: 4, md: 4 },
       }}
     >
       <Box
@@ -81,7 +81,7 @@ const Footer = () => {
           pt: 6,
         }}
       >
-        <Box
+        {/* <Box
           justifyContent="center"
           sx={{
             position: "absolute",
@@ -188,7 +188,7 @@ const Footer = () => {
               Book Now
             </CustomButton>
           </Box>
-        </Box>
+        </Box> */}
         <Grid
           container
           spacing={4}

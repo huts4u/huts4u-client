@@ -5,6 +5,7 @@ import {
   CorporateFare,
   Home,
   Hotel,
+  HotelOutlined,
   Info,
   Logout,
   Menu,
@@ -112,7 +113,7 @@ const Header: React.FC = () => {
           { label: "Hotels", icon: <Hotel />, path: "/search" },
           { label: "Contact", icon: <ContactMail />, path: "/contact-us" },
           { label: "About", icon: <Info />, path: "/about-us" },
-          // { label: "Join As a Hotel", icon: <Info />, path: "/dashboard" },
+          // { label: "Join As a Hotel", icon: <Info />, path: "/login" },
         ];
 
   const location = useLocation();
@@ -300,6 +301,32 @@ const Header: React.FC = () => {
                   </ListItemButton>
                 </ListItem>
               ))}
+                 <ListItem  disablePadding>
+                  <ListItemButton
+                    onClick={() => {
+                      navigate('/login');
+                      setDrawerOpen(false);
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        mr: 1,
+                        p: 0.5,
+                        background: color.background,
+                        borderRadius: "50%",
+                        color: "white",
+                        width: "24px",
+                        height: "24px",
+                        minWidth: "0px",
+                      }}
+                    >
+                      <HotelOutlined></HotelOutlined>
+                    </ListItemIcon>
+                    <ListItemText primary={'Join As a Hotel'} />
+
+                    <ChevronRightRounded />
+                  </ListItemButton>
+                </ListItem>
             </List>
           </Drawer>
 
