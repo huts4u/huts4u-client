@@ -23,9 +23,9 @@ const HotelCardCarousel = () => {
   const [mergedData, setMergedData] = useState<any[]>([]);
   const settings = {
     dots: false,
-    infinite: false,
+    infinite: true,
     speed: 500,
-    slidesToShow: Math.min(3, mergedData.length),
+    slidesToShow: 3,
     slidesToScroll: 1,
     // prevArrow: <CustomPrevArrow />,
     nextArrow: <CustomNextArrow />,
