@@ -264,11 +264,11 @@ const Sidebar = () => {
                     borderRadius: "8px",
                     minWidth: "56px",
                     color:
-                      location.pathname === to
-                        ? color.thirdColor
+                      location.pathname !== to
+                        ? color.firstColor
                         : color.thirdColor,
                     background:
-                      location.pathname === to
+                      location.pathname !== to
                         ? color.thirdColor
                         : color.background,
                   }}

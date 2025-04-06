@@ -66,7 +66,7 @@ const AccountPage = () => {
     <Box
       sx={{
         margin: "auto",
-        minHeight: "100vh",
+        minHeight: "fit-content",
         p: 4,
         background: "url('/assets/bg.jpg')",
         backgroundSize: "cover",

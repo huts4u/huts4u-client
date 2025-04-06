@@ -110,6 +110,50 @@ const Dashboard = () => {
   return (
     <Box p={3} sx={{ background: color.thirdColor }}>
       <Grid container spacing={3}>
+        {/* Booking Table Section */}
+        <Grid item xs={12}>
+          <Card
+            sx={{
+              background: color.thirdColor,
+              boxShadow: "0px 0px 14px rgba(0, 0, 0, 0.14)",
+              borderRadius: "12px",
+            }}
+          >
+            <CardContent>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                mb={2}
+              >
+                <Typography fontWeight={"bold"} variant="h6">
+                  Upcoming Bookings
+                </Typography>
+                {hotels.length > 0 && (
+                  <FormControl sx={{ minWidth: 200 }}>
+                    <Select
+                      value={selectedHotelId}
+                      onChange={handleHotelChange}
+                      size="small"
+                    >
+                      {hotels.map((hotel) => (
+                        <MenuItem key={hotel.id} value={hotel.id}>
+                          {hotel.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                )}
+              </Box>
+              {selectedHotelId && (
+                <BookingTable
+                  bookings={hotelBookings[selectedHotelId] || []}
+                  hotelId={selectedHotelId}
+                />
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
         <Grid item xs={12} md={12}>
           <Grid container spacing={2.5}>
             {[
@@ -347,50 +391,7 @@ const Dashboard = () => {
           </Card>
         </Grid>
 
-        {/* Booking Table Section */}
-        <Grid item xs={12}>
-          <Card
-            sx={{
-              background: color.thirdColor,
-              boxShadow: "0px 0px 14px rgba(0, 0, 0, 0.14)",
-              borderRadius: "12px",
-            }}
-          >
-            <CardContent>
-              <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                mb={2}
-              >
-                <Typography fontWeight={"bold"} variant="h6">
-                  Upcoming Bookings
-                </Typography>
-                {hotels.length > 0 && (
-                  <FormControl sx={{ minWidth: 200 }}>
-                    <Select
-                      value={selectedHotelId}
-                      onChange={handleHotelChange}
-                      size="small"
-                    >
-                      {hotels.map((hotel) => (
-                        <MenuItem key={hotel.id} value={hotel.id}>
-                          {hotel.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                )}
-              </Box>
-              {selectedHotelId && (
-                <BookingTable
-                  bookings={hotelBookings[selectedHotelId] || []}
-                  hotelId={selectedHotelId}
-                />
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
+
       </Grid>
     </Box>
   );

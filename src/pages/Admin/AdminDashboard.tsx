@@ -52,13 +52,6 @@ const AdminDashboard = () => {
                                 color: "#A3E4D7",
                             },
                             {
-                                title: "Guest ratings",
-                                value: '4.7/5',
-                                icon: <StarRateRounded />,
-                                change: "-3.56%",
-                                color: "#D4EFDF",
-                            },
-                            {
                                 title: "Total Revenue",
                                 value: "₹123,980",
                                 icon: <CurrencyRupeeRounded />,
@@ -66,7 +59,7 @@ const AdminDashboard = () => {
                                 color: "#D5F5E3",
                             },
                         ].map((item, index) => (
-                            <Grid item xs={12} sm={6} md={4} key={index}>
+                            <Grid item xs={12} sm={6} md={6} key={index}>
                                 <Card
                                     sx={{
                                         background: color.thirdColor,

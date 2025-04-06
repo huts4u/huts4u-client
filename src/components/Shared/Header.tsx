@@ -106,6 +106,7 @@ const Header: React.FC = () => {
             path: "/search",
           },
           { label: "Hotel Applications", icon: <Hotel />, path: "/hotel-applications" },
+          { label: "Add Hotel", icon: <Hotel />, path: "/signup" },
           { label: "Messages", icon: <Info />, path: "/messages" },
         ]
         : [
